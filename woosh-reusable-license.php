@@ -6,7 +6,7 @@
  * Version: 1.0.0
  * Author: Daan van den Bergh (from WoOSH!)
  * Author URI: https://woosh.dev
- * Text Domain: woosh-child-page-menu
+ * Text Domain: woosh-reusable-license
  * GitHub Plugin URI: https://github.com/Dan0sz/reusable-license
  * @formatter:on
  */
