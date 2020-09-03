@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
 class WooshReusableLicense
 {
     /** @var string $license_key */
-    private $license_key = 'WOOSH_LICENSE_MANAGER';
+    private $license_key = 'FFWP_LICENSE_MANAGER';
 
     /** @var string $item_id */
     private $item_id = '4163';
