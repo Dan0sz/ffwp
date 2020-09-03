@@ -1,6 +1,6 @@
 <?php
 /**
- * @package
+ * @package   Fast FW Press
  * @author    Daan van den Bergh
  *            https://woosh.dev
  *            https://daan.dev
@@ -11,7 +11,7 @@
 
 defined('ABSPATH') || exit;
 
-class WooshReusableLicense
+class FFWP_ReusableLicense_Set
 {
     /** @var string $license_key */
     private $license_key = 'FFWP_LICENSE_MANAGER';
