@@ -28,7 +28,7 @@ function ffwp_autoload($class)
 {
     $path = explode('_', $class);
 
-    if ($path[0] != 'FFWP') {
+    if ($path[0] != 'FFWP' || (isset($path[1]) && $path[1] == 'Autoloader')) {
         return;
     }
 
