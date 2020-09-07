@@ -1,10 +1,10 @@
 <?php
 /**
  * @formatter:off
- * Plugin Name: Easy Digital Download - FFWP Modifications
+ * Plugin Name: Easy Digital Downloads - FFWP Modifications
  * Description: Custom additions to EDD for Fast FW Press.
  * Version: 1.1.3
- * Author: Daan van den Bergh (from Fast FW Press)
+ * Author: Daan (from Fast FW Press)
  * Author URI: https://ffwp.dev
  * Text Domain: ffwp
  * GitHub Plugin URI: https://github.com/Dan0sz/ffwp
