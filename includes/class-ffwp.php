@@ -22,6 +22,7 @@ class FFWP
         $this->process_auto_add_to_cart();
         $this->set_non_required_state_field();
         $this->add_custom_checkout_fields();
+        $this->insert_login_fields_legend();
 
         add_action('init', [$this, 'add_changelog_shortcode']);
         add_action('init', [$this, 'add_child_pages_menu']);
@@ -49,6 +50,14 @@ class FFWP
     private function add_custom_checkout_fields()
     {
         return new FFWP_CustomCheckoutFields_Add();
+    }
+
+    /**
+     * @return FFWP_LoginFieldsLegend_Insert
+     */
+    private function insert_login_fields_legend()
+    {
+        return new FFWP_LoginFieldsLegend_Insert();
     }
 
     /**
