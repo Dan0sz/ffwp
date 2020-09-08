@@ -32,7 +32,7 @@ class FFWP_LoginFieldsLegend_Insert
         ?>
         <legend><?= __('Have an Account?', $this->plugin_text_domain); ?></legend>
         <p>
-            <span class="edd-description"><?= __("Don't have an account? No worries. An account will be automatically created for you upon completion of your purchase.", $this->plugin_text_domain); ?></span>
+            <span class="edd-description"><?= __("Don't have an account? No worries. An account will be automatically created for after completing your purchase.", $this->plugin_text_domain); ?></span>
         </p>
         <?php
     }
