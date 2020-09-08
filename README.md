@@ -97,3 +97,6 @@ Loosely based on [this tutorial](https://scottdeluzio.com/add-custom-field-to-ea
 * Define download ID's 
 * Enjoy!
 
+## Login Fields Legend and Description
+
+Adds a custom translatable legend and description to the login form in checkout.
