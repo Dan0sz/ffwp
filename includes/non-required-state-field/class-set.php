@@ -62,14 +62,30 @@ class FFWP_NonRequiredStateField_Set
         <script>
             jQuery(document).ready(function ($) {
                 var ffwp = {
+                    $card_state_wrap: $('#edd-card-state-wrap'),
                     $card_state_label: $('#edd-card-state-wrap label'),
                     required_countries: <?= json_encode($this->required_countries); ?>,
 
+                    /**
+                     * ALL SYSTEMS GO!
+                     */
                     init: function () {
+                        $(document.body).on('change', '#billing_country', this.set_loader);
                         $(document.body).on('edd_cart_billing_address_updated', this.is_required);
                         this.is_required();
                     },
 
+                    /**
+                     * Set a loader to indicate that the state input is about to change.
+                     */
+                    set_loader: function () {
+                        ffwp.$card_state_wrap.append('<span class="ffwp-loader edd-loading-ajax edd-loading"></span>');
+                        ffwp.$card_state_wrap.css({ opacity: 0.5 });
+                    },
+
+                    /**
+                     * Set or remove asterisk and remove loader.
+                     */
                     is_required: function () {
                         var $billing_country = $('#billing_country').val();
 
@@ -78,12 +94,29 @@ class FFWP_NonRequiredStateField_Set
                         } else {
                             $('#edd-card-state-wrap label .edd-required-indicator').remove();
                         }
+
+                        $('#edd-card-state-wrap .ffwp-loader').remove();
+                        ffwp.$card_state_wrap.css({ opacity: 1 });
                     }
                 };
 
                 ffwp.init();
             });
         </script>
+        <style>
+            #edd-card-state-wrap {
+                position: relative;
+            }
+
+            #edd-card-state-wrap .ffwp-loader {
+                position: absolute;
+                top: 50%;
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
         <?php
     }
 }
