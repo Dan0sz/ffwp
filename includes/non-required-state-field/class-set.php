@@ -88,11 +88,14 @@ class FFWP_NonRequiredStateField_Set
                      */
                     is_required: function () {
                         var $billing_country = $('#billing_country').val();
+                        var $required_indicator = $('#edd-card-state-wrap label .edd-required-indicator');
 
                         if (ffwp.required_countries.includes($billing_country)) {
-                            ffwp.$card_state_label.append('<span class="edd-required-indicator">*</span>');
+                            if ($required_indicator.length === 0) {
+                                ffwp.$card_state_label.append('<span class="edd-required-indicator">*</span>');
+                            }
                         } else {
-                            $('#edd-card-state-wrap label .edd-required-indicator').remove();
+                            $required_indicator.remove();
                         }
 
                         $('#edd-card-state-wrap .ffwp-loader').remove();
