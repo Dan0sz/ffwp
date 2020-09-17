@@ -18,22 +18,15 @@ class FFWP
      */
     public function __construct()
     {
-        $this->set_reusable_license();
         $this->process_auto_add_to_cart();
-        $this->set_non_required_state_field();
         $this->add_custom_checkout_fields();
         $this->insert_login_fields_legend();
+        $this->set_non_required_state_field();
+        $this->set_reusable_license();
 
+        add_action('plugins_loaded', [$this, 'enable_better_checkout']);
         add_action('init', [$this, 'add_changelog_shortcode']);
         add_action('init', [$this, 'add_child_pages_menu']);
-    }
-
-    /**
-     * @return FFWP_ReusableLicense_Set
-     */
-    private function set_reusable_license()
-    {
-        return new FFWP_ReusableLicense_Set();
     }
 
     /**
@@ -42,6 +35,22 @@ class FFWP
     private function process_auto_add_to_cart()
     {
         return new FFWP_AutoAddToCart_Process();
+    }
+
+    /**
+     * @return FFWP_BetterCheckout_Enable
+     */
+    public function enable_better_checkout()
+    {
+        return new FFWP_BetterCheckout_Enable();
+    }
+
+    /**
+     * @return FFWP_ReusableLicense_Set
+     */
+    private function set_reusable_license()
+    {
+        return new FFWP_ReusableLicense_Set();
     }
 
     /**
