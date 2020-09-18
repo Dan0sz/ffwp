@@ -666,6 +666,53 @@ class FFWP_BetterCheckout_Enable {
                 padding: 20px;
                 margin-left: 30px;
             }
+
+            @media only screen and (max-width: 768px) {
+                .edd-gateway-column {
+                    width: 47.29%;
+                }
+
+                #edd_final_total_wrap {
+                    width: 46.88%;
+                }
+            }
+
+            @media only screen and (max-width: 480px) {
+                #edd-first-name-wrap, #edd-last-name-wrap, #edd-card-address-wrap, #edd-card-address-2-wrap, #edd-card-zip-wrap, #edd-card-city-wrap, #edd-card-state-wrap, #edd-card-country-wrap, #edd-vat-number {
+                    width: 91%;
+                }
+
+                #edd_checkout_cart td, #edd_checkout_cart th {
+                    padding: 10px 25px;
+                }
+
+                .edd-gateway-column {
+                    width: 100%;
+                }
+
+                .edd-gateway-column.right {
+                    margin-left: 0;
+                }
+
+                #edd-card-vat-wrap #edd-vat-number {
+                    width: 100%;
+                }
+
+                #edd-vat-check-button {
+                    padding: 15px 30px;
+                    margin-left: 0;
+                    margin-top: 15px;
+                }
+
+                #edd_final_total_wrap {
+                    width: 100%;
+                }
+
+                #edd-purchase-button {
+                    width: 100%;
+                    margin-left: 0;
+                }
+            }
         </style>
 		<?php
 	}
