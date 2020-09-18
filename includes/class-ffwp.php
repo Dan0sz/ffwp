@@ -24,7 +24,7 @@ class FFWP
         $this->set_non_required_state_field();
         $this->set_reusable_license();
 
-        add_action('plugins_loaded', [$this, 'enable_better_checkout']);
+        add_action('plugins_loaded', [$this, 'enable_better_checkout'], 100);
         add_action('init', [$this, 'add_changelog_shortcode']);
         add_action('init', [$this, 'add_child_pages_menu']);
     }
