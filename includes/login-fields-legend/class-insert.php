@@ -30,13 +30,13 @@ class FFWP_LoginFieldsLegend_Insert {
 	 *
 	 */
 	public function insert() {
-		?>
+	    if (!is_user_logged_in()): ?>
         <fieldset id="ffwp-account-form">
             <p>
 				<?= __( 'Have an account?', $this->plugin_text_domain ); ?> <a href="#" id="ffwp-account-modal"><?= __('Click here to login', $this->plugin_text_domain); ?></a>
             </p>
         </fieldset>
-		<?php
+		<?php endif;
 	}
 
 	public function add_stylesheet() {
