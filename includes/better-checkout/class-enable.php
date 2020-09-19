@@ -17,26 +17,31 @@ class FFWP_BetterCheckout_Enable {
 	 */
 	public function __construct() {
 		// @formatter:off
+        // Remove Login Form
+        remove_action( 'edd_purchase_form_login_fields', 'edd_get_login_fields' );
+
+        // Login Form
+        add_action('edd_checkout_form_top', 'edd_get_login_fields');
+
         // Remove default User Info Fields
         remove_action('edd_purchase_form_after_user_info', 'edd_user_info_fields');
         remove_action('edd_register_fields_before', 'edd_user_info_fields');
 
         // User Info Fields
-        add_action('edd_checkout_form_top', [ $this, 'set_user_info_fields' ]);
+        add_action('edd_checkout_form_top', [ $this, 'set_user_info_fields' ], 20);
         add_action('edd_register_fields_before', [ $this, 'set_user_info_fields' ]);
 
         // (Hard-core) Remove Jilt Consent
         $this->remove_jilt_consent_prompt();
 
         // Jilt Consent
-        add_action('edd_purchase_form_after_email', [$this, 'jilt_consent_prompt'], 5);
+        add_action('edd_purchase_form_after_email', [ $this, 'jilt_consent_prompt' ], 5);
 
         // Remove Payment Methods
         remove_action('edd_payment_mode_select', 'edd_payment_mode_select');
 
         // Payment Methods
         add_action('edd_payment_mode_select', [ $this, 'set_payment_methods' ]);
-
 
         /**
          * TODO: Remove and add better Credit Card Fields
@@ -472,6 +477,10 @@ class FFWP_BetterCheckout_Enable {
         </script>
 
         <style>
+            #edd_checkout_wrap #edd_discount_code {
+                margin-bottom: 10px;
+            }
+
             <?php
             /**
              * Payment Methods
