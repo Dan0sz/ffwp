@@ -102,3 +102,14 @@ Loosely based on [this tutorial](https://scottdeluzio.com/add-custom-field-to-ea
 ## Login Fields Legend and Description
 
 Adds a custom translatable legend and description to the login form in checkout.
+
+## Better Checkout
+
+Heavily customizes the otherwise rather boring checkout flow for Easy Digital Download's checkout.
+
+### Overview
+
+- Personal information is moved to the top,
+- Jilt's opt-in box is moved directly after the email address field,
+- Payment methods are shown in big buttons, spread among 2 columns,
+- Billing fields are split in two columns.
