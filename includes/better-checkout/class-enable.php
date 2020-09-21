@@ -224,6 +224,7 @@ class FFWP_BetterCheckout_Enable {
 						
 						echo '<label for="edd-gateway-' . esc_attr( $gateway_id ) . '" class="edd-gateway-option' . $checked_class . '" id="edd-gateway-option-' . esc_attr( $gateway_id ) . '">';
 						echo '<input type="radio" name="payment-mode" class="edd-gateway" id="edd-gateway-' . esc_attr( $gateway_id ) . '" value="' . esc_attr( $gateway_id ) . '"' . $checked . $nonce . '>' . esc_html( $label );
+						echo "<img alt='" . sprintf(__('Pay using %s'), $label) . "' class='payment-gateway $gateway_id' src='" . content_url("/uploads/payment/$gateway_id-logo.gif") . "' />";
 						echo '</label>';
 						
 						echo '</div>';
@@ -513,6 +514,11 @@ class FFWP_BetterCheckout_Enable {
                 margin-left: 36px;
             }
 
+            .payment-gateway {
+                height: 24px;
+                float: right;
+            }
+
             #edd_checkout_form_wrap #edd-payment-mode-wrap label {
                 display: block;
                 position: relative;
@@ -535,31 +541,7 @@ class FFWP_BetterCheckout_Enable {
                 margin-top: -5px;
                 padding-left: 3rem;
             }
-
-            .edd-gateway-option {
-                padding: 0 0 0 45px;
-            }
-
-            #edd-gateway-option-paypal:after {
-                background-image: url('https://ffwp.dev/wp-content/uploads/payment/paypal-logo.gif');
-            }
-
-            #edd-gateway-option-mollie_bancontact:after {
-                background-image: url('https://ffwp.dev/wp-content/uploads/payment/bancontact-logo.gif');
-            }
-
-            #edd-gateway-option-mollie_creditcard:after {
-                background-image: url('https://ffwp.dev/wp-content/uploads/payment/credit-card-logo.gif');
-            }
-
-            #edd-gateway-option-mollie_ideal:after {
-                background-image: url('https://ffwp.dev/wp-content/uploads/payment/ideal-logo.gif');
-            }
-
-            #edd-gateway-option-mollie_sofort:after {
-                background-image: url('https://ffwp.dev/wp-content/uploads/payment/sofort-logo.gif');
-            }
-
+            
             <?php
             /**
              * Personal Info and Billing Address
