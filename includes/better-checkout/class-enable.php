@@ -17,71 +17,70 @@ class FFWP_BetterCheckout_Enable {
 	 */
 	public function __construct() {
 		// @formatter:off
-        // Remove Login Form
-        remove_action( 'edd_purchase_form_login_fields', 'edd_get_login_fields' );
-
-        // Login Form
-        add_action('edd_checkout_form_top', 'edd_get_login_fields');
-
-        // Remove default User Info Fields
-        remove_action('edd_purchase_form_after_user_info', 'edd_user_info_fields');
-        remove_action('edd_register_fields_before', 'edd_user_info_fields');
-
-        // User Info Fields
-        add_action('edd_checkout_form_top', [ $this, 'set_user_info_fields' ], 20);
-        add_action('edd_register_fields_before', [ $this, 'set_user_info_fields' ]);
-
-        // (Hard-core) Remove Jilt Consent
-        $this->remove_jilt_consent_prompt();
-
-        // Jilt Consent
-        add_action('edd_purchase_form_after_email', [ $this, 'jilt_consent_prompt' ], 5);
-
-        // Remove Payment Methods
-        remove_action('edd_payment_mode_select', 'edd_payment_mode_select');
-
-        // Payment Methods
-        add_action('edd_payment_mode_select', [ $this, 'set_payment_methods' ]);
-
-        /**
-         * TODO: Remove and add better Credit Card Fields
-         */
-
-        // Remove default Billing Fields
-        remove_action('edd_after_cc_fields', 'edd_default_cc_address_fields');
-        remove_action('edd_purchase_form_after_cc_form', 'edd_checkout_tax_fields',999);
-
-        // Billing Fields
-        add_action('edd_after_cc_fields', [ $this, 'set_billing_fields' ]);
-        add_action('edd_purchase_form_after_cc_form', [ $this, 'maybe_set_billing_fields' ]);
-
-        // EU VAT Fields
-        add_filter('edd_vat_checkout_vat_field_html', [ $this, 'set_eu_vat_fields' ], 10, 3);
-
-        // Stylesheet
-        add_action('wp_footer', [ $this, 'add_inline_stylesheet' ]);
-        // @formatter:on
+		// Remove Login Form
+		remove_action( 'edd_purchase_form_login_fields', 'edd_get_login_fields' );
+		
+		// Login Form
+		add_action( 'edd_checkout_form_top', 'edd_get_login_fields' );
+		
+		// Remove default User Info Fields
+		remove_action( 'edd_purchase_form_after_user_info', 'edd_user_info_fields' );
+		remove_action( 'edd_register_fields_before', 'edd_user_info_fields' );
+		
+		// User Info Fields
+		add_action( 'edd_checkout_form_top', [ $this, 'set_user_info_fields' ], 20 );
+		add_action( 'edd_register_fields_before', [ $this, 'set_user_info_fields' ] );
+		
+		// (Hard-core) Remove Jilt Consent
+		$this->remove_jilt_consent_prompt();
+		
+		// Jilt Consent
+		add_action( 'edd_purchase_form_after_email', [ $this, 'jilt_consent_prompt' ], 5 );
+		
+		// Remove Payment Methods
+		remove_action( 'edd_payment_mode_select', 'edd_payment_mode_select' );
+		
+		// Payment Methods
+		add_action( 'edd_payment_mode_select', [ $this, 'set_payment_methods' ] );
+		
+		/**
+		 * TODO: Remove and add better Credit Card Fields
+		 */
+		
+		// Remove default Billing Fields
+		remove_action( 'edd_after_cc_fields', 'edd_default_cc_address_fields' );
+		remove_action( 'edd_purchase_form_after_cc_form', 'edd_checkout_tax_fields', 999 );
+		
+		// Billing Fields
+		add_action( 'edd_after_cc_fields', [ $this, 'set_billing_fields' ] );
+		add_action( 'edd_purchase_form_after_cc_form', [ $this, 'maybe_set_billing_fields' ] );
+		
+		// EU VAT Fields
+		add_filter( 'edd_vat_checkout_vat_field_html', [ $this, 'set_eu_vat_fields' ], 10, 3 );
+		
+		// Stylesheet
+		add_action( 'wp_footer', [ $this, 'add_inline_stylesheet' ] );
+		// @formatter:on
 	}
-
+	
 	/**
 	 * Because Jilt's instance adds the action, we can't remove it using remove_action().
 	 */
-	private function remove_jilt_consent_prompt()
-    {
-	    global $wp_filter;
-
-	    $edd_purchase_form_actions = $wp_filter['edd_purchase_form_before_submit'] ?? [];
-	    $callbacks                 = $edd_purchase_form_actions->callbacks[5] ?? [];
-
-	    foreach ($callbacks as $key => $callback) {
-            if (strpos($key, 'output_marketing_consent_prompt') !== false) {
-                unset($callbacks[$key]);
-            }
-	    }
-
-	    $wp_filter['edd_purchase_form_before_submit']->callbacks[5] = $callbacks;
-    }
-
+	private function remove_jilt_consent_prompt() {
+		global $wp_filter;
+		
+		$edd_purchase_form_actions = $wp_filter['edd_purchase_form_before_submit'] ?? [];
+		$callbacks                 = $edd_purchase_form_actions->callbacks[5] ?? [];
+		
+		foreach ( $callbacks as $key => $callback ) {
+			if ( strpos( $key, 'output_marketing_consent_prompt' ) !== false ) {
+				unset( $callbacks[ $key ] );
+			}
+		}
+		
+		$wp_filter['edd_purchase_form_before_submit']->callbacks[5] = $callbacks;
+	}
+	
 	/**
 	 *
 	 */
@@ -95,11 +94,10 @@ class FFWP_BetterCheckout_Enable {
 				'email'      => ''
 			)
 		);
-
+		
 		if ( is_user_logged_in() ) {
 			$user_data = get_userdata( get_current_user_id() );
 			foreach ( $customer as $key => $field ) {
-
 				if ( 'email' == $key && empty( $field ) ) {
 					$customer[ $key ] = $user_data->user_email;
 				} elseif ( empty( $field ) ) {
@@ -107,7 +105,7 @@ class FFWP_BetterCheckout_Enable {
 				}
 			}
 		}
-
+		
 		$customer = array_map( 'sanitize_text_field', $customer );
 		?>
         <fieldset id="edd_checkout_user_info">
@@ -119,7 +117,8 @@ class FFWP_BetterCheckout_Enable {
                         <span class="edd-required-indicator">*</span>
 					<?php } ?>
                 </label>
-                <input class="edd-input required" type="text" name="edd_first" placeholder="<?php esc_html_e( 'First Name', 'easy-digital-downloads' ); ?>" id="edd-first" value="<?php echo esc_attr( $customer['first_name'] ); ?>"<?php if ( edd_field_is_required( 'edd_first' ) ) {
+                <input class="edd-input required" type="text" name="edd_first" placeholder="<?php esc_html_e( 'First Name', 'easy-digital-downloads' ); ?>"
+                       id="edd-first" value="<?php echo esc_attr( $customer['first_name'] ); ?>"<?php if ( edd_field_is_required( 'edd_first' ) ) {
 					echo ' required ';
 				} ?> aria-describedby="edd-first-description"/>
             </p>
@@ -132,7 +131,8 @@ class FFWP_BetterCheckout_Enable {
                 </label>
                 <input class="edd-input<?php if ( edd_field_is_required( 'edd_last' ) ) {
 					echo ' required';
-				} ?>" type="text" name="edd_last" id="edd-last" placeholder="<?php esc_html_e( 'Last Name', 'easy-digital-downloads' ); ?>" value="<?php echo esc_attr( $customer['last_name'] ); ?>"<?php if ( edd_field_is_required( 'edd_last' ) ) {
+				} ?>" type="text" name="edd_last" id="edd-last" placeholder="<?php esc_html_e( 'Last Name', 'easy-digital-downloads' ); ?>"
+                       value="<?php echo esc_attr( $customer['last_name'] ); ?>"<?php if ( edd_field_is_required( 'edd_last' ) ) {
 					echo ' required ';
 				} ?> aria-describedby="edd-last-description"/>
             </p>
@@ -144,7 +144,9 @@ class FFWP_BetterCheckout_Enable {
                         <span class="edd-required-indicator">*</span>
 					<?php } ?>
                 </label>
-                <input class="edd-input required" type="email" name="edd_email" placeholder="<?php esc_html_e( 'Email address', 'easy-digital-downloads' ); ?>" id="edd-email" value="<?php echo esc_attr( $customer['email'] ); ?>" aria-describedby="edd-email-description"<?php if ( edd_field_is_required( 'edd_email' ) ) {
+                <input class="edd-input required" type="email" name="edd_email" placeholder="<?php esc_html_e( 'Email address', 'easy-digital-downloads' ); ?>"
+                       id="edd-email" value="<?php echo esc_attr( $customer['email'] ); ?>"
+                       aria-describedby="edd-email-description"<?php if ( edd_field_is_required( 'edd_email' ) ) {
 					echo ' required ';
 				} ?>/>
             </p>
@@ -154,7 +156,7 @@ class FFWP_BetterCheckout_Enable {
         </fieldset>
 		<?php
 	}
-
+	
 	/**
 	 * Shows the marketing consent opt-in checkbox.
 	 *
@@ -163,7 +165,6 @@ class FFWP_BetterCheckout_Enable {
 	 * @since 1.3.3
 	 */
 	public function jilt_consent_prompt() {
-
 		if ( edd_jilt()->get_integration()->ask_consent_at_checkout() ) {
 			$prompt = wp_kses_post( edd_jilt()->get_integration()->get_checkout_consent_prompt() );
 			?>
@@ -186,7 +187,7 @@ class FFWP_BetterCheckout_Enable {
 			<?php
 		}
 	}
-
+	
 	/**
 	 *
 	 */
@@ -204,34 +205,34 @@ class FFWP_BetterCheckout_Enable {
 				<?php do_action( 'edd_payment_mode_before_gateways_wrap' ); ?>
                 <div id="edd-payment-mode-wrap">
 					<?php
-
+					
 					do_action( 'edd_payment_mode_before_gateways' );
-
+					
 					$i = 0;
-
+					
 					foreach ( $gateways as $gateway_id => $gateway ) :
 						if ( $i % 2 == 0 ) {
 							echo '<div class="edd-gateway-column left">';
 						} else {
 							echo '<div class="edd-gateway-column right">';
 						}
-
+						
 						$label         = apply_filters( 'edd_gateway_checkout_label_' . $gateway_id, $gateway['checkout_label'] );
 						$checked       = checked( $gateway_id, $chosen_gateway, false );
 						$checked_class = $checked ? ' edd-gateway-option-selected' : '';
 						$nonce         = ' data-' . esc_attr( $gateway_id ) . '-nonce="' . wp_create_nonce( 'edd-gateway-selected-' . esc_attr( $gateway_id ) ) . '"';
-
+						
 						echo '<label for="edd-gateway-' . esc_attr( $gateway_id ) . '" class="edd-gateway-option' . $checked_class . '" id="edd-gateway-option-' . esc_attr( $gateway_id ) . '">';
 						echo '<input type="radio" name="payment-mode" class="edd-gateway" id="edd-gateway-' . esc_attr( $gateway_id ) . '" value="' . esc_attr( $gateway_id ) . '"' . $checked . $nonce . '>' . esc_html( $label );
 						echo '</label>';
-
+						
 						echo '</div>';
-
+						
 						$i ++;
 					endforeach;
-
+					
 					do_action( 'edd_payment_mode_after_gateways' );
-
+					
 					?>
                 </div>
 				<?php do_action( 'edd_payment_mode_after_gateways_wrap' ); ?>
@@ -245,10 +246,10 @@ class FFWP_BetterCheckout_Enable {
 		<?php endif; ?>
         </div>
         <div id="edd_purchase_form_wrap"></div><!-- the checkout fields are loaded into this-->
-
+		
 		<?php do_action( 'edd_payment_mode_bottom' );
 	}
-
+	
 	/**
 	 *
 	 */
@@ -257,35 +258,31 @@ class FFWP_BetterCheckout_Enable {
 		$customer  = EDD()->session->get( 'customer' );
 		$customer  = wp_parse_args(
 			$customer, array(
-				'address' => array(
-					'line1'   => '',
-					'line2'   => '',
-					'city'    => '',
-					'zip'     => '',
-					'state'   => '',
-					'country' => ''
-				)
-			)
+				         'address' => array(
+					         'line1'   => '',
+					         'line2'   => '',
+					         'city'    => '',
+					         'zip'     => '',
+					         'state'   => '',
+					         'country' => ''
+				         )
+			         )
 		);
-
+		
 		$customer['address'] = array_map( 'sanitize_text_field', $customer['address'] );
-
+		
 		if ( $logged_in ) {
-
 			$user_address = get_user_meta( get_current_user_id(), '_edd_user_address', true );
-
+			
 			foreach ( $customer['address'] as $key => $field ) {
-
 				if ( empty( $field ) && ! empty( $user_address[ $key ] ) ) {
 					$customer['address'][ $key ] = $user_address[ $key ];
 				} else {
 					$customer['address'][ $key ] = '';
 				}
-
 			}
-
 		}
-
+		
 		/**
 		 * Billing Address Details.
 		 *
@@ -298,7 +295,7 @@ class FFWP_BetterCheckout_Enable {
 		 *
 		 */
 		$customer['address'] = apply_filters( 'edd_checkout_billing_details_address', $customer['address'], $customer );
-
+		
 		ob_start(); ?>
         <fieldset id="edd_cc_address" class="cc-address">
 			<?php do_action( 'edd_cc_billing_top' ); ?>
@@ -322,9 +319,10 @@ class FFWP_BetterCheckout_Enable {
                         <span class="edd-required-indicator">*</span>
 					<?php } ?>
                 </label>
-                <input type="text" id="card_address_2" name="card_address_2" class="card-address-2 edd-input<?php if ( edd_field_is_required( 'card_address_2' ) ) {
-					echo ' required';
-				} ?>" value="<?php echo $customer['address']['line2']; ?>"<?php if ( edd_field_is_required( 'card_address_2' ) ) {
+                <input type="text" id="card_address_2" name="card_address_2"
+                       class="card-address-2 edd-input<?php if ( edd_field_is_required( 'card_address_2' ) ) {
+					       echo ' required';
+				       } ?>" value="<?php echo $customer['address']['line2']; ?>"<?php if ( edd_field_is_required( 'card_address_2' ) ) {
 					echo ' required ';
 				} ?>/>
             </p>
@@ -362,18 +360,19 @@ class FFWP_BetterCheckout_Enable {
 					<?php } ?>
                 </label>
                 <div class="ffwp-select">
-                    <select name="billing_country" id="billing_country" data-nonce="<?php echo wp_create_nonce( 'edd-country-field-nonce' ); ?>" class="billing_country edd-select<?php if ( edd_field_is_required( 'billing_country' ) ) {
-						echo ' required';
-					} ?>"<?php if ( edd_field_is_required( 'billing_country' ) ) {
+                    <select name="billing_country" id="billing_country" data-nonce="<?php echo wp_create_nonce( 'edd-country-field-nonce' ); ?>"
+                            class="billing_country edd-select<?php if ( edd_field_is_required( 'billing_country' ) ) {
+						        echo ' required';
+					        } ?>"<?php if ( edd_field_is_required( 'billing_country' ) ) {
 						echo ' required ';
 					} ?>>
 						<?php
 						$selected_country = edd_get_shop_country();
-
+						
 						if ( ! empty( $customer['address']['country'] ) && '*' !== $customer['address']['country'] ) {
 							$selected_country = $customer['address']['country'];
 						}
-
+						
 						$countries = edd_get_country_list();
 						foreach ( $countries as $country_code => $country ) {
 							echo '<option value="' . esc_attr( $country_code ) . '"' . selected( $country_code, $selected_country, false ) . '>' . $country . '</option>';
@@ -392,7 +391,7 @@ class FFWP_BetterCheckout_Enable {
 				<?php
 				$selected_state = edd_get_shop_state();
 				$states         = edd_get_shop_states( $selected_country );
-
+				
 				if ( ! empty( $customer['address']['state'] ) ) {
 					$selected_state = $customer['address']['state'];
 				}
@@ -410,7 +409,8 @@ class FFWP_BetterCheckout_Enable {
                     </div>
 				<?php else : ?>
 					<?php $customer_state = ! empty( $customer['address']['state'] ) ? $customer['address']['state'] : ''; ?>
-                    <input type="text" size="6" name="card_state" id="card_state" class="card_state edd-input" value="<?php echo esc_attr( $customer_state ); ?>"/>
+                    <input type="text" size="6" name="card_state" id="card_state" class="card_state edd-input"
+                           value="<?php echo esc_attr( $customer_state ); ?>"/>
 				<?php endif; ?>
             </div>
 			<?php do_action( 'edd_cc_billing_bottom' ); ?>
@@ -419,7 +419,7 @@ class FFWP_BetterCheckout_Enable {
 		<?php
 		echo ob_get_clean();
 	}
-
+	
 	/**
 	 *
 	 */
@@ -428,7 +428,7 @@ class FFWP_BetterCheckout_Enable {
 			$this->set_billing_fields();
 		}
 	}
-
+	
 	/**
 	 * @param $html
 	 * @param $details
@@ -439,29 +439,32 @@ class FFWP_BetterCheckout_Enable {
         <p id="edd-card-vat-wrap">
             <label for="edd-vat-number" class="edd-label"><?= __( 'VAT Number', 'easy-digital-downloads' ); ?></label>
             <span class="edd-vat-number-wrap">
-                <input type="text" name="vat_number" id="edd-vat-number" class="edd-input edd-vat-number-input" value="<?= $details->vat_number ?? ''; ?>" placeholder="e.g. GB123456789"/>
-                <input type="button" name="edd-vat-check" id="edd-vat-check-button" class="button edd-vat-check-button <?= $vat_reverse_charged ? 'ffwp-vat-valid' : ''; ?>" value="<?= $vat_reverse_charged ? __( 'Valid', 'easy-digital-downloads' ) : __( 'Validate', 'easy-digital-downloads' ); ?>"/>
+                <input type="text" name="vat_number" id="edd-vat-number" class="edd-input edd-vat-number-input" value="<?= $details->vat_number ?? ''; ?>"
+                       placeholder="e.g. GB123456789"/>
+                <input type="button" name="edd-vat-check" id="edd-vat-check-button"
+                       class="button edd-vat-check-button <?= $vat_reverse_charged ? 'ffwp-vat-valid' : ''; ?>"
+                       value="<?= $vat_reverse_charged ? __( 'Valid', 'easy-digital-downloads' ) : __( 'Validate', 'easy-digital-downloads' ); ?>"/>
             </span>
         </p>
 		<?php
 	}
-
+	
 	/**
 	 *
 	 */
 	public function add_inline_stylesheet() {
 		?>
         <script>
-            jQuery(document).ready(function ($) {
+            jQuery(document).ready(function($) {
                 var ffwp_checkout = {
-                    init: function () {
+                    init : function() {
                         $(document.body).on('edd_taxes_recalculated', this.addClass);
                     },
-
-                    addClass: function () {
+                    
+                    addClass : function() {
                         var $result_data = $('#edd-vat-check-result').data('valid');
                         var $validate_button = $('#edd-vat-check-button');
-
+                        
                         if ($result_data === 1) {
                             $validate_button.addClass('ffwp-vat-valid');
                             $validate_button.val('Valid');
@@ -471,7 +474,7 @@ class FFWP_BetterCheckout_Enable {
                         }
                     }
                 };
-
+                
                 ffwp_checkout.init();
             });
         </script>
@@ -538,23 +541,23 @@ class FFWP_BetterCheckout_Enable {
             }
 
             #edd-gateway-option-paypal:after {
-                background-image: url('/wp-content/plugins/easy-digital-downloads/templates/images/icons/paypal.png');
+                background-image: url('https://ffwp.dev/wp-content/uploads/payment/paypal-logo.gif');
             }
 
             #edd-gateway-option-mollie_bancontact:after {
-                background-image: url('/wp-content/plugins/edd-mollie-gateway/assets/images/bancontact.svg');
+                background-image: url('https://ffwp.dev/wp-content/uploads/payment/bancontact-logo.gif');
             }
 
             #edd-gateway-option-mollie_creditcard:after {
-                background-image: url('/wp-content/plugins/edd-mollie-gateway/assets/images/creditcard.svg');
+                background-image: url('https://ffwp.dev/wp-content/uploads/payment/credit-card-logo.gif');
             }
 
             #edd-gateway-option-mollie_ideal:after {
-                background-image: url('/wp-content/plugins/edd-mollie-gateway/assets/images/ideal.svg');
+                background-image: url('https://ffwp.dev/wp-content/uploads/payment/ideal-logo.gif');
             }
 
             #edd-gateway-option-mollie_sofort:after {
-                background-image: url('/wp-content/plugins/edd-mollie-gateway/assets/images/sofort.svg');
+                background-image: url('https://ffwp.dev/wp-content/uploads/payment/sofort-logo.gif');
             }
 
             <?php
