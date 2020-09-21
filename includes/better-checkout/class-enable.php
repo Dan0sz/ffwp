@@ -224,7 +224,7 @@ class FFWP_BetterCheckout_Enable {
 						
 						echo '<label for="edd-gateway-' . esc_attr( $gateway_id ) . '" class="edd-gateway-option' . $checked_class . '" id="edd-gateway-option-' . esc_attr( $gateway_id ) . '">';
 						echo '<input type="radio" name="payment-mode" class="edd-gateway" id="edd-gateway-' . esc_attr( $gateway_id ) . '" value="' . esc_attr( $gateway_id ) . '"' . $checked . $nonce . '>' . esc_html( $label );
-						echo "<img alt='" . sprintf(__('Pay using %s'), $label) . "' class='payment-gateway $gateway_id' src='" . content_url("/uploads/payment/$gateway_id-logo.gif") . "' />";
+						echo "<img alt='" . sprintf(__('Pay using %s'), $label) . "' class='payment-gateway $gateway_id' src='" . content_url("/uploads/payment/$gateway_id-logo.png") . "' />";
 						echo '</label>';
 						
 						echo '</div>';
