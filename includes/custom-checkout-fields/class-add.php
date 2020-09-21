@@ -2,7 +2,7 @@
 /**
  * @package   Dan0sz/custom-checkout-fields
  * @author    Daan van den Bergh
- *            https://woosh.dev
+ *            https://ffwp.dev
  *            https://daan.dev
  * @copyright © 2020 Daan van den Bergh
  * @license   BY-NC-ND-4.0
