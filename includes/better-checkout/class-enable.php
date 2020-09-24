@@ -201,7 +201,7 @@ class FFWP_BetterCheckout_Enable {
 			<?php if ( edd_is_ajax_disabled() ): ?>
             <form id="edd_payment_mode" action="<?php echo $page_URL; ?>" method="GET">
 				<?php endif; ?>
-                <legend><?php _e( 'Payment', 'easy-digital-downloads' ); ?></legend>
+                <legend><?php _e( 'Payment', 'easy-digital-downloads' ); ?><span class="ffwp-payment-secure"><svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 512 512'><path style="fill:#2ECC40;" d='M420,192H352V112a96,96,0,1,0-192,0v80H92a12,12,0,0,0-12,12V484a12,12,0,0,0,12,12H420a12,12,0,0,0,12-12V204A12,12,0,0,0,420,192Zm-106,0H198V111.25a58,58,0,1,1,116,0Z'/></svg><?= __('Secure', 'easy-digital-downloads'); ?></span></legend>
 				<?php do_action( 'edd_payment_mode_before_gateways_wrap' ); ?>
                 <div id="edd-payment-mode-wrap">
 					<?php
@@ -224,7 +224,7 @@ class FFWP_BetterCheckout_Enable {
 						
 						echo '<label for="edd-gateway-' . esc_attr( $gateway_id ) . '" class="edd-gateway-option' . $checked_class . '" id="edd-gateway-option-' . esc_attr( $gateway_id ) . '">';
 						echo '<input type="radio" name="payment-mode" class="edd-gateway" id="edd-gateway-' . esc_attr( $gateway_id ) . '" value="' . esc_attr( $gateway_id ) . '"' . $checked . $nonce . '>' . esc_html( $label );
-						echo "<img alt='" . sprintf(__('Pay using %s'), $label) . "' class='payment-gateway $gateway_id' src='" . content_url("/uploads/payment/$gateway_id-logo.png") . "' />";
+						echo "<img alt='" . sprintf(__('Pay using %s'), $label) . "' class='payment-gateway $gateway_id' src='" . FFWP_PLUGIN_URL . "assets/images/$gateway_id-logo.png' />";
 						echo '</label>';
 						
 						echo '</div>';
@@ -483,6 +483,16 @@ class FFWP_BetterCheckout_Enable {
         <style>
             #edd_checkout_wrap #edd_discount_code {
                 margin-bottom: 10px;
+            }
+
+            .ffwp-payment-secure {
+                float: right;
+                color: #2ECC40;
+            }
+
+            .ffwp-payment-secure svg {
+                margin-right: 5px;
+                vertical-align: -3px;
             }
 
             <?php
