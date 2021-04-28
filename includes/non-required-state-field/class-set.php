@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   FFWP/WooshNonRequiredStateField
  * @author    Daan van den Bergh
@@ -30,7 +31,7 @@ class FFWP_NonRequiredStateField_Set
     public function __construct()
     {
         add_filter('edd_purchase_form_required_fields', [$this, 'remove_state_from_required_fields']);
-        add_action('edd_cc_billing_bottom', [$this, 'insert_script']);
+        add_action('wp_footer', [$this, 'insert_script']);
     }
 
     /**
@@ -58,18 +59,16 @@ class FFWP_NonRequiredStateField_Set
      */
     public function insert_script()
     {
-        ?>
+?>
         <script>
-            jQuery(document).ready(function ($) {
+            jQuery(document).ready(function($) {
                 var ffwp = {
-                    $card_state_wrap: $('#edd-card-state-wrap'),
-                    $card_state_label: $('#edd-card-state-wrap label'),
                     required_countries: <?= json_encode($this->required_countries); ?>,
 
                     /**
                      * ALL SYSTEMS GO!
                      */
-                    init: function () {
+                    init: function() {
                         $(document.body).on('change', '#billing_country', this.set_loader);
                         $(document.body).on('edd_cart_billing_address_updated', this.is_required);
                         this.is_required();
@@ -78,28 +77,37 @@ class FFWP_NonRequiredStateField_Set
                     /**
                      * Set a loader to indicate that the state input is about to change.
                      */
-                    set_loader: function () {
-                        ffwp.$card_state_wrap.append('<span class="ffwp-loader edd-loading-ajax edd-loading"></span>');
-                        ffwp.$card_state_wrap.css({ opacity: 0.5 });
+                    set_loader: function() {
+                        var $card_state_wrap = $('#edd-card-state-wrap');
+
+                        $card_state_wrap.append('<span class="ffwp-loader edd-loading-ajax edd-loading"></span>');
+                        $card_state_wrap.css({
+                            opacity: 0.5
+                        });
                     },
 
                     /**
                      * Set or remove asterisk and remove loader.
                      */
-                    is_required: function () {
+                    is_required: function() {
                         var $billing_country = $('#billing_country').val();
                         var $required_indicator = $('#edd-card-state-wrap label .edd-required-indicator');
+                        var $card_state_wrap = $('#edd-card-state-wrap');
+                        var $card_state_label = $('#edd-card-state-wrap label');
+
 
                         if (ffwp.required_countries.includes($billing_country)) {
                             if ($required_indicator.length === 0) {
-                                ffwp.$card_state_label.append('<span class="edd-required-indicator">*</span>');
+                                $card_state_label.append('<span class="edd-required-indicator">*</span>');
                             }
                         } else {
                             $required_indicator.remove();
                         }
 
                         $('#edd-card-state-wrap .ffwp-loader').remove();
-                        ffwp.$card_state_wrap.css({ opacity: 1 });
+                        $card_state_wrap.css({
+                            opacity: 1
+                        });
                     }
                 };
 
@@ -120,6 +128,6 @@ class FFWP_NonRequiredStateField_Set
                 margin-right: auto;
             }
         </style>
-        <?php
+<?php
     }
 }
