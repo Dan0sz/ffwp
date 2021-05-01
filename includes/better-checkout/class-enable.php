@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   FFWP Better Checkout
  * @author    Daan van den Bergh
@@ -9,463 +10,223 @@
  *            http://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
-class FFWP_BetterCheckout_Enable {
-	/**
-	 * FFWP_BetterCheckout_Enable constructor.
-	 */
-	public function __construct() {
-		// @formatter:off
-		// Remove Login Form
-		remove_action( 'edd_purchase_form_login_fields', 'edd_get_login_fields' );
-		
-		// Login Form
-		add_action( 'edd_checkout_form_top', 'edd_get_login_fields' );
-		
-		// Remove default User Info Fields
-		remove_action( 'edd_purchase_form_after_user_info', 'edd_user_info_fields' );
-		remove_action( 'edd_register_fields_before', 'edd_user_info_fields' );
-		
-		// User Info Fields
-		add_action( 'edd_checkout_form_top', [ $this, 'set_user_info_fields' ], 20 );
-		add_action( 'edd_register_fields_before', [ $this, 'set_user_info_fields' ] );
-		
-		// (Hard-core) Remove Jilt Consent
-		$this->remove_jilt_consent_prompt();
-		
-		// Jilt Consent
-		add_action( 'edd_purchase_form_after_email', [ $this, 'jilt_consent_prompt' ], 5 );
-		
-		// Remove Payment Methods
-		remove_action( 'edd_payment_mode_select', 'edd_payment_mode_select' );
-		
-		// Payment Methods
-		add_action( 'edd_payment_mode_select', [ $this, 'set_payment_methods' ] );
-		
-		/**
-		 * TODO: Remove and add better Credit Card Fields
-		 */
-		
-		// Remove default Billing Fields
-		remove_action( 'edd_after_cc_fields', 'edd_default_cc_address_fields' );
-		remove_action( 'edd_purchase_form_after_cc_form', 'edd_checkout_tax_fields', 999 );
-		
-		// Billing Fields
-		add_action( 'edd_after_cc_fields', [ $this, 'set_billing_fields' ] );
-		add_action( 'edd_purchase_form_after_cc_form', [ $this, 'maybe_set_billing_fields' ] );
-		
-		// EU VAT Fields
-		add_filter( 'edd_vat_checkout_vat_field_html', [ $this, 'set_eu_vat_fields' ], 10, 3 );
-		
-		// Stylesheet
-		add_action( 'wp_footer', [ $this, 'add_inline_stylesheet' ] );
-		// @formatter:on
-	}
-	
-	/**
-	 * Because Jilt's instance adds the action, we can't remove it using remove_action().
-	 */
-	private function remove_jilt_consent_prompt() {
-		global $wp_filter;
-		
-		$edd_purchase_form_actions = $wp_filter['edd_purchase_form_before_submit'] ?? [];
-		$callbacks                 = $edd_purchase_form_actions->callbacks[5] ?? [];
-		
-		foreach ( $callbacks as $key => $callback ) {
-			if ( strpos( $key, 'output_marketing_consent_prompt' ) !== false ) {
-				unset( $callbacks[ $key ] );
-			}
-		}
-		
-		$wp_filter['edd_purchase_form_before_submit']->callbacks[5] = $callbacks;
-	}
-	
-	/**
-	 *
-	 */
-	public function set_user_info_fields() {
-		$customer = EDD()->session->get( 'customer' );
-		$customer = wp_parse_args(
-			$customer,
-			array(
-				'first_name' => '',
-				'last_name'  => '',
-				'email'      => ''
-			)
-		);
-		
-		if ( is_user_logged_in() ) {
-			$user_data = get_userdata( get_current_user_id() );
-			foreach ( $customer as $key => $field ) {
-				if ( 'email' == $key && empty( $field ) ) {
-					$customer[ $key ] = $user_data->user_email;
-				} elseif ( empty( $field ) ) {
-					$customer[ $key ] = $user_data->$key;
-				}
-			}
-		}
-		
-		$customer = array_map( 'sanitize_text_field', $customer );
-		?>
-        <fieldset id="edd_checkout_user_info">
-            <legend><?php echo apply_filters( 'edd_checkout_personal_info_text', esc_html__( 'Your details', 'easy-digital-downloads' ) ); ?></legend>
-            <p id="edd-first-name-wrap">
-                <label class="edd-label" for="edd-first">
-					<?php esc_html_e( 'First Name', 'easy-digital-downloads' ); ?>
-					<?php if ( edd_field_is_required( 'edd_first' ) ) { ?>
-                        <span class="edd-required-indicator">*</span>
-					<?php } ?>
-                </label>
-                <input class="edd-input required" type="text" name="edd_first" placeholder="<?php esc_html_e( 'First Name', 'easy-digital-downloads' ); ?>"
-                       id="edd-first" value="<?php echo esc_attr( $customer['first_name'] ); ?>"<?php if ( edd_field_is_required( 'edd_first' ) ) {
-					echo ' required ';
-				} ?> aria-describedby="edd-first-description"/>
-            </p>
-            <p id="edd-last-name-wrap">
-                <label class="edd-label" for="edd-last">
-					<?php esc_html_e( 'Last Name', 'easy-digital-downloads' ); ?>
-					<?php if ( edd_field_is_required( 'edd_last' ) ) { ?>
-                        <span class="edd-required-indicator">*</span>
-					<?php } ?>
-                </label>
-                <input class="edd-input<?php if ( edd_field_is_required( 'edd_last' ) ) {
-					echo ' required';
-				} ?>" type="text" name="edd_last" id="edd-last" placeholder="<?php esc_html_e( 'Last Name', 'easy-digital-downloads' ); ?>"
-                       value="<?php echo esc_attr( $customer['last_name'] ); ?>"<?php if ( edd_field_is_required( 'edd_last' ) ) {
-					echo ' required ';
-				} ?> aria-describedby="edd-last-description"/>
-            </p>
-			<?php do_action( 'edd_purchase_form_before_email' ); ?>
-            <p id="edd-email-wrap">
-                <label class="edd-label" for="edd-email">
-					<?php esc_html_e( 'Email Address', 'easy-digital-downloads' ); ?>
-					<?php if ( edd_field_is_required( 'edd_email' ) ) { ?>
-                        <span class="edd-required-indicator">*</span>
-					<?php } ?>
-                </label>
-                <input class="edd-input required" type="email" name="edd_email" placeholder="<?php esc_html_e( 'Email address', 'easy-digital-downloads' ); ?>"
-                       id="edd-email" value="<?php echo esc_attr( $customer['email'] ); ?>"
-                       aria-describedby="edd-email-description"<?php if ( edd_field_is_required( 'edd_email' ) ) {
-					echo ' required ';
-				} ?>/>
-            </p>
-			<?php do_action( 'edd_purchase_form_after_email' ); ?>
-			<?php do_action( 'edd_purchase_form_user_info' ); ?>
-			<?php do_action( 'edd_purchase_form_user_info_fields' ); ?>
-        </fieldset>
-		<?php
-	}
-	
-	/**
-	 * Shows the marketing consent opt-in checkbox.
-	 *
-	 * @internal
-	 *
-	 * @since 1.3.3
-	 */
-	public function jilt_consent_prompt() {
-		if ( edd_jilt()->get_integration()->ask_consent_at_checkout() ) {
-			$prompt = wp_kses_post( edd_jilt()->get_integration()->get_checkout_consent_prompt() );
-			?>
-            <div id="edd-jilt-marketing-consent-container">
-                <label for="edd-jilt-marketing-consent">
-                    <input
-                            type="checkbox"
-                            id="edd-jilt-marketing-consent"
-                            name="edd_jilt_marketing_consent"
-                            value="yes"
-						<?php checked( (bool) EDD_Jilt_Session::get_customer_marketing_consent() ); ?>
-                    /> <?php echo $prompt; ?>
-                </label>
-                <input
-                        type="hidden"
-                        name="edd_jilt_marketing_consent_prompt"
-                        value="<?php echo esc_attr( $prompt ); ?>"
-                />
-            </div>
-			<?php
-		}
-	}
-	
-	/**
-	 *
-	 */
-	public function set_payment_methods() {
-		$gateways       = edd_get_enabled_payment_gateways( true );
-		$page_URL       = edd_get_current_page_url();
-		$chosen_gateway = edd_get_chosen_gateway();
-		?>
-        <div id="edd_payment_mode_select_wrap">
-			<?php do_action( 'edd_payment_mode_top' ); ?>
-			<?php if ( edd_is_ajax_disabled() ): ?>
-            <form id="edd_payment_mode" action="<?php echo $page_URL; ?>" method="GET">
-				<?php endif; ?>
-                <legend><?php _e( 'Payment', 'easy-digital-downloads' ); ?><span class="ffwp-payment-secure"><svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 512 512'><path style="fill:#2ECC40;" d='M420,192H352V112a96,96,0,1,0-192,0v80H92a12,12,0,0,0-12,12V484a12,12,0,0,0,12,12H420a12,12,0,0,0,12-12V204A12,12,0,0,0,420,192Zm-106,0H198V111.25a58,58,0,1,1,116,0Z'/></svg><?= __('Secure', 'easy-digital-downloads'); ?></span></legend>
-				<?php do_action( 'edd_payment_mode_before_gateways_wrap' ); ?>
-                <div id="edd-payment-mode-wrap">
-					<?php
-					
-					do_action( 'edd_payment_mode_before_gateways' );
-					
-					$i = 0;
-					
-					foreach ( $gateways as $gateway_id => $gateway ) :
-						if ( $i % 2 == 0 ) {
-							echo '<div class="edd-gateway-column left">';
-						} else {
-							echo '<div class="edd-gateway-column right">';
-						}
-						
-						$label         = apply_filters( 'edd_gateway_checkout_label_' . $gateway_id, $gateway['checkout_label'] );
-						$checked       = checked( $gateway_id, $chosen_gateway, false );
-						$checked_class = $checked ? ' edd-gateway-option-selected' : '';
-						$nonce         = ' data-' . esc_attr( $gateway_id ) . '-nonce="' . wp_create_nonce( 'edd-gateway-selected-' . esc_attr( $gateway_id ) ) . '"';
-						
-						echo '<label for="edd-gateway-' . esc_attr( $gateway_id ) . '" class="edd-gateway-option' . $checked_class . '" id="edd-gateway-option-' . esc_attr( $gateway_id ) . '">';
-						echo '<input type="radio" name="payment-mode" class="edd-gateway" id="edd-gateway-' . esc_attr( $gateway_id ) . '" value="' . esc_attr( $gateway_id ) . '"' . $checked . $nonce . '>' . esc_html( $label );
-						echo "<img alt='" . sprintf(__('Pay using %s'), $label) . "' class='payment-gateway $gateway_id' src='" . FFWP_PLUGIN_URL . "assets/images/$gateway_id-logo.png' />";
-						echo '</label>';
-						
-						echo '</div>';
-						
-						$i ++;
-					endforeach;
-					
-					do_action( 'edd_payment_mode_after_gateways' );
-					
-					?>
+class FFWP_BetterCheckout_Enable
+{
+    /**
+     * List of translateable texts that should be rewritten.
+     * 
+     * Format: Rewritten text => Text to be translated.
+     */
+    const FFWP_BETTER_CHECKOUT_REWRITE_TEXT_FIELDS = [
+        'Your Details'                 => 'Personal Info',
+        'Street + House No.'           => 'Billing Address',
+        'Suite, Apt No., PO Box, etc.' => 'Billing Address Line 2 (optional)',
+        'Zip/Postal Code'              => 'Billing Zip / Postal Code',
+        'City'                         => 'Billing City',
+        'Country'                      => 'Billing Country',
+        'State/Province'               => 'Billing State / Province',
+        'Validate'                     => 'Check',
+        'Payment Method <span class="ffwpress-secure-lock"><i class="icon-lock"></i>Secure transaction</span>' => 'Select Payment Method'
+    ];
+
+    private $plugin_dir = '';
+
+    /**
+     * FFWP_BetterCheckout_Enable constructor.
+     */
+    public function __construct()
+    {
+        $this->plugin_dir = plugin_dir_path(__FILE__);
+
+        add_action('wp_head', [$this, 'replace_shortcode']);
+
+        // Add this plugin to the template paths.
+        add_filter('edd_template_paths', [$this, 'add_template_path']);
+
+        // Move error messages area
+        // remove_action('edd_purchase_form_before_submit', 'edd_print_errors');
+        // add_action('edd_before_purchase_form', 'edd_print_errors');
+        // remove_action('edd_ajax_checkout_errors', 'edd_print_errors');
+        // add_action('edd_before_purchase_form', 'edd_print_errors');
+        // remove_action('edd_after_cc_fields', 'edds_add_stripe_errors', 999);
+        // add_action('edd_before_purchase_form', 'edds_add_stripe_errors', 999);
+
+        // Modify Text Fields
+        add_filter('gettext_easy-digital-downloads', [$this, 'modify_text_fields'], 1, 3);
+        add_filter('gettext_edd-eu-vat', [$this, 'modify_text_fields'], 1, 3);
+
+        // Move Login Form
+        remove_action('edd_purchase_form_login_fields', 'edd_get_login_fields');
+        add_action('edd_before_purchase_form', 'edd_get_login_fields', -2);
+
+        // Move User Info (Email, First and Last Name)
+        remove_action('edd_purchase_form_after_user_info', 'edd_user_info_fields');
+        add_action('edd_checkout_form_top', 'edd_user_info_fields');
+
+        // Move Billing Details
+        remove_action('edd_after_cc_fields', 'edd_default_cc_address_fields');
+        remove_action('edd_purchase_form_after_cc_form', 'edd_checkout_tax_fields', 999);
+        add_action('edd_checkout_form_top', 'edd_default_cc_address_fields');
+
+        // Move Discount Form
+        remove_action('edd_checkout_form_top', 'edd_discount_field', -1);
+        add_action('edd_after_checkout_cart', 'edd_discount_field', -1);
+
+        // Stylesheet
+        add_action('wp_footer', [$this, 'add_inline_stylesheet']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts_and_styles']);
+    }
+
+    /**
+     * 
+     * @return void 
+     */
+    public function replace_shortcode()
+    {
+        remove_shortcode('download_checkout', 'edd_checkout_form_shortcode');
+        add_shortcode('download_checkout', [$this, 'edd_checkout_form']);
+    }
+
+    /**
+     * Add this plugin's edd_templates folder as a file path for template files.
+     * @see edd_get_theme_template_paths()
+     * 
+     * @param mixed $template_paths 
+     * @return mixed 
+     */
+    public function add_template_path($template_paths)
+    {
+        return [5 => $this->plugin_dir . 'edd_templates/'] + $template_paths;
+    }
+
+    /**
+     * Modifies lines for a few input fields.
+     * 
+     * @param mixed $translation 
+     * @param mixed $text 
+     * @param mixed $domain 
+     * @return mixed 
+     */
+    public function modify_text_fields($translation, $text, $domain)
+    {
+        if (in_array($text, self::FFWP_BETTER_CHECKOUT_REWRITE_TEXT_FIELDS)) {
+            return array_search($text, self::FFWP_BETTER_CHECKOUT_REWRITE_TEXT_FIELDS);
+        }
+
+        return $translation;
+    }
+
+    /**
+     * Get Checkout Form
+     *
+     * @see easy-digital-downloads/includes/checkout/template.php::edd_checkout_form()
+     * @return string
+     */
+    public function edd_checkout_form()
+    {
+        $payment_mode = edd_get_chosen_gateway();
+        $form_action  = esc_url(edd_get_checkout_uri('payment-mode=' . $payment_mode));
+
+        ob_start(); ?>
+        <div id="edd_checkout_wrap">
+            <?php if (edd_get_cart_contents() || edd_cart_has_fees()) : ?>
+                <div id="ffwpress-payment-details__wrapper">
+                    <?php do_action('edd_before_purchase_form'); ?>
                 </div>
-				<?php do_action( 'edd_payment_mode_after_gateways_wrap' ); ?>
-                <fieldset id="edd_payment_mode_submit" class="edd-no-js">
-                    <p id="edd-next-submit-wrap">
-						<?php echo edd_checkout_button_next(); ?>
-                    </p>
-                </fieldset>
-				<?php if ( edd_is_ajax_disabled() ): ?>
-            </form>
-		<?php endif; ?>
-        </div>
-        <div id="edd_purchase_form_wrap"></div><!-- the checkout fields are loaded into this-->
-		
-		<?php do_action( 'edd_payment_mode_bottom' );
-	}
-	
-	/**
-	 *
-	 */
-	public function set_billing_fields() {
-		$logged_in = is_user_logged_in();
-		$customer  = EDD()->session->get( 'customer' );
-		$customer  = wp_parse_args(
-			$customer, array(
-				         'address' => array(
-					         'line1'   => '',
-					         'line2'   => '',
-					         'city'    => '',
-					         'zip'     => '',
-					         'state'   => '',
-					         'country' => ''
-				         )
-			         )
-		);
-		
-		$customer['address'] = array_map( 'sanitize_text_field', $customer['address'] );
-		
-		if ( $logged_in ) {
-			$user_address = get_user_meta( get_current_user_id(), '_edd_user_address', true );
-			
-			foreach ( $customer['address'] as $key => $field ) {
-				if ( empty( $field ) && ! empty( $user_address[ $key ] ) ) {
-					$customer['address'][ $key ] = $user_address[ $key ];
-				} else {
-					$customer['address'][ $key ] = '';
-				}
-			}
-		}
-		
-		/**
-		 * Billing Address Details.
-		 *
-		 * Allows filtering the customer address details that will be pre-populated on the checkout form.
-		 *
-		 * @param array $address  The customer address.
-		 * @param array $customer The customer data from the session
-		 *
-		 * @since 2.8
-		 *
-		 */
-		$customer['address'] = apply_filters( 'edd_checkout_billing_details_address', $customer['address'], $customer );
-		
-		ob_start(); ?>
-        <fieldset id="edd_cc_address" class="cc-address">
-			<?php do_action( 'edd_cc_billing_top' ); ?>
-            <p id="edd-card-address-wrap">
-                <label for="card_address" class="edd-label">
-					<?php _e( 'Street + House No.', 'easy-digital-downloads' ); ?>
-					<?php if ( edd_field_is_required( 'card_address' ) ) { ?>
-                        <span class="edd-required-indicator">*</span>
-					<?php } ?>
-                </label>
-                <input type="text" id="card_address" name="card_address" class="card-address edd-input<?php if ( edd_field_is_required( 'card_address' ) ) {
-					echo ' required';
-				} ?>" value="<?php echo $customer['address']['line1']; ?>"<?php if ( edd_field_is_required( 'card_address' ) ) {
-					echo ' required ';
-				} ?>/>
-            </p>
-            <p id="edd-card-address-2-wrap">
-                <label for="card_address_2" class="edd-label">
-					<?php _e( 'Suite, Apt no., PO box, etc. (optional)', 'easy-digital-downloads' ); ?>
-					<?php if ( edd_field_is_required( 'card_address_2' ) ) { ?>
-                        <span class="edd-required-indicator">*</span>
-					<?php } ?>
-                </label>
-                <input type="text" id="card_address_2" name="card_address_2"
-                       class="card-address-2 edd-input<?php if ( edd_field_is_required( 'card_address_2' ) ) {
-					       echo ' required';
-				       } ?>" value="<?php echo $customer['address']['line2']; ?>"<?php if ( edd_field_is_required( 'card_address_2' ) ) {
-					echo ' required ';
-				} ?>/>
-            </p>
-            <p id="edd-card-zip-wrap">
-                <label for="card_zip" class="edd-label">
-					<?php _e( 'Zip/Postal Code', 'easy-digital-downloads' ); ?>
-					<?php if ( edd_field_is_required( 'card_zip' ) ) { ?>
-                        <span class="edd-required-indicator">*</span>
-					<?php } ?>
-                </label>
-                <input type="text" size="4" id="card_zip" name="card_zip" class="card-zip edd-input<?php if ( edd_field_is_required( 'card_zip' ) ) {
-					echo ' required';
-				} ?>" value="<?php echo $customer['address']['zip']; ?>"<?php if ( edd_field_is_required( 'card_zip' ) ) {
-					echo ' required ';
-				} ?>/>
-            </p>
-            <p id="edd-card-city-wrap">
-                <label for="card_city" class="edd-label">
-					<?php _e( 'City', 'easy-digital-downloads' ); ?>
-					<?php if ( edd_field_is_required( 'card_city' ) ) { ?>
-                        <span class="edd-required-indicator">*</span>
-					<?php } ?>
-                </label>
-                <input type="text" id="card_city" name="card_city" class="card-city edd-input<?php if ( edd_field_is_required( 'card_city' ) ) {
-					echo ' required';
-				} ?>" value="<?php echo $customer['address']['city']; ?>"<?php if ( edd_field_is_required( 'card_city' ) ) {
-					echo ' required ';
-				} ?>/>
-            </p>
-            <div id="edd-card-country-wrap">
-                <label for="billing_country" class="edd-label">
-					<?php _e( 'Country', 'easy-digital-downloads' ); ?>
-					<?php if ( edd_field_is_required( 'billing_country' ) ) { ?>
-                        <span class="edd-required-indicator">*</span>
-					<?php } ?>
-                </label>
-                <div class="ffwp-select">
-                    <select name="billing_country" id="billing_country" data-nonce="<?php echo wp_create_nonce( 'edd-country-field-nonce' ); ?>"
-                            class="billing_country edd-select<?php if ( edd_field_is_required( 'billing_country' ) ) {
-						        echo ' required';
-					        } ?>"<?php if ( edd_field_is_required( 'billing_country' ) ) {
-						echo ' required ';
-					} ?>>
-						<?php
-						$selected_country = edd_get_shop_country();
-						
-						if ( ! empty( $customer['address']['country'] ) && '*' !== $customer['address']['country'] ) {
-							$selected_country = $customer['address']['country'];
-						}
-						
-						$countries = edd_get_country_list();
-						foreach ( $countries as $country_code => $country ) {
-							echo '<option value="' . esc_attr( $country_code ) . '"' . selected( $country_code, $selected_country, false ) . '>' . $country . '</option>';
-						}
-						?>
-                    </select>
-                </div>
-            </div>
-            <div id="edd-card-state-wrap">
-                <label for="card_state" class="edd-label">
-					<?php _e( 'State/Province', 'easy-digital-downloads' ); ?>
-					<?php if ( edd_field_is_required( 'card_state' ) ) { ?>
-                        <span class="edd-required-indicator">*</span>
-					<?php } ?>
-                </label>
-				<?php
-				$selected_state = edd_get_shop_state();
-				$states         = edd_get_shop_states( $selected_country );
-				
-				if ( ! empty( $customer['address']['state'] ) ) {
-					$selected_state = $customer['address']['state'];
-				}
-				if ( ! empty( $states ) ) : ?>
-                    <div class="ffwp-select">
-                        <select name="card_state" id="card_state" class="card_state edd-select<?php if ( edd_field_is_required( 'card_state' ) ) {
-							echo ' required';
-						} ?>">
-							<?php
-							foreach ( $states as $state_code => $state ) {
-								echo '<option value="' . $state_code . '"' . selected( $state_code, $selected_state, false ) . '>' . $state . '</option>';
-							}
-							?>
-                        </select>
+                <div id="ffwpress-cart__wrapper"></div>
+                <div id="ffwpress-payment-details__wrapper">
+                    <div id="edd_checkout_form_wrap" class="edd_clearfix">
+                        <form id="edd_purchase_form" class="edd_form" action="<?php echo $form_action; ?>" method="POST">
+                            <?php
+                            /**
+                             * Hooks in at the top of the checkout form
+                             *
+                             * @since 1.0
+                             */
+                            do_action('edd_checkout_form_top');
+
+                            if (edd_is_ajax_disabled() && !empty($_REQUEST['payment-mode'])) {
+                                do_action('edd_purchase_form');
+                            } elseif (edd_show_gateways()) {
+                                do_action('edd_payment_mode_select');
+                            } else {
+                                do_action('edd_purchase_form');
+                            }
+
+                            /**
+                             * Hooks in at the bottom of the checkout form
+                             *
+                             * @since 1.0
+                             */
+                            do_action('edd_checkout_form_bottom')
+                            ?>
+                            <input type="submit" class="edd-apply-discount edd-submit blue button hidden" value="Apply" />
+                        </form>
+                        <?php do_action('edd_after_purchase_form'); ?>
                     </div>
-				<?php else : ?>
-					<?php $customer_state = ! empty( $customer['address']['state'] ) ? $customer['address']['state'] : ''; ?>
-                    <input type="text" size="6" name="card_state" id="card_state" class="card_state edd-input"
-                           value="<?php echo esc_attr( $customer_state ); ?>"/>
-				<?php endif; ?>
-            </div>
-			<?php do_action( 'edd_cc_billing_bottom' ); ?>
-			<?php wp_nonce_field( 'edd-checkout-address-fields', 'edd-checkout-address-fields-nonce', false, true ); ?>
-        </fieldset>
-		<?php
-		echo ob_get_clean();
-	}
-	
-	/**
-	 *
-	 */
-	public function maybe_set_billing_fields() {
-		if ( edd_cart_needs_tax_address_fields() && edd_get_cart_total() ) {
-			$this->set_billing_fields();
-		}
-	}
-	
-	/**
-	 * @param $html
-	 * @param $details
-	 * @param $vat_reverse_charged
-	 */
-	public function set_eu_vat_fields( $html, $details, $vat_reverse_charged ) {
-		?>
-        <p id="edd-card-vat-wrap">
-            <label for="edd-vat-number" class="edd-label"><?= __( 'VAT Number', 'easy-digital-downloads' ); ?></label>
-            <span class="edd-vat-number-wrap">
-                <input type="text" name="vat_number" id="edd-vat-number" class="edd-input edd-vat-number-input" value="<?= $details->vat_number ?? ''; ?>"
-                       placeholder="e.g. GB123456789"/>
-                <input type="button" name="edd-vat-check" id="edd-vat-check-button"
-                       class="button edd-vat-check-button <?= $vat_reverse_charged ? 'ffwp-vat-valid' : ''; ?>"
-                       value="<?= $vat_reverse_charged ? __( 'Valid', 'easy-digital-downloads' ) : __( 'Validate', 'easy-digital-downloads' ); ?>"/>
-            </span>
-        </p>
-		<?php
-	}
-	
-	/**
-	 *
-	 */
-	public function add_inline_stylesheet() {
-		?>
+                    <!--end #edd_checkout_form_wrap-->
+                </div>
+                <div id="ffwpress-cart__wrapper">
+                    <fieldset id="ffwpress_checkout_shopping_cart">
+                        <legend><?= __('Your Shopping Cart', 'easy-digital-downloads'); ?></legend>
+                        <?php edd_checkout_cart(); ?>
+                    </fieldset>
+                </div>
+            <?php
+            else :
+                /**
+                 * Fires off when there is nothing in the cart
+                 *
+                 * @since 1.0
+                 */
+                do_action('edd_cart_empty');
+            endif; ?>
+        </div>
+        <!--end #edd_checkout_wrap-->
+    <?php
+        return ob_get_clean();
+    }
+
+    public function enqueue_scripts_and_styles()
+    {
+        if (!edd_is_checkout()) {
+            return;
+        }
+
+        wp_enqueue_style('ffwpress-icons', FFWP_PLUGIN_URL . 'assets/css/ffwpress-icons.css');
+    }
+
+    /**
+     *
+     */
+    public function add_inline_stylesheet()
+    {
+        if (!edd_is_checkout()) {
+            return;
+        }
+    ?>
         <script>
             jQuery(document).ready(function($) {
                 var ffwp_checkout = {
-                    init : function() {
+                    init: function() {
                         $(document.body).on('edd_taxes_recalculated', this.addClass);
+
+                        /**
+                         * Since the discount form is moved outside the form, we're triggering a click on 
+                         * a hidden input field inside the form.
+                         */
+                        $('#ffwpress_checkout_shopping_cart .edd-apply-discount').on('click', function() {
+                            $('#edd_checkout_form_wrap .edd-apply-discount').click()
+                        });
+
                     },
-                    
-                    addClass : function() {
+
+                    addClass: function() {
                         var $result_data = $('#edd-vat-check-result').data('valid');
                         var $validate_button = $('#edd-vat-check-button');
-                        
+
                         if ($result_data === 1) {
                             $validate_button.addClass('ffwp-vat-valid');
                             $validate_button.val('Valid');
@@ -475,91 +236,98 @@ class FFWP_BetterCheckout_Enable {
                         }
                     }
                 };
-                
+
                 ffwp_checkout.init();
             });
         </script>
 
         <style>
-            #edd_checkout_wrap #edd_discount_code {
-                margin-bottom: 10px;
+            <?php
+            /**
+             * General
+             */
+            ?>.edd-checkout.ast-separate-container article.ast-article-single {
+                padding: 0;
             }
 
-            .ffwp-payment-secure {
-                float: right;
-                color: #2ECC40;
+            .edd-checkout #edd_checkout_wrap {
+                max-width: 1200px;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                margin: 0;
             }
 
-            .ffwp-payment-secure svg {
-                margin-right: 5px;
-                vertical-align: -3px;
+            #edd_checkout_form_wrap fieldset {
+                border: 0;
+            }
+
+            #ffwpress-payment-details__wrapper {
+                background-color: transparent;
+                padding: 0;
+                width: 66%;
+            }
+
+            #ffwpress-cart__wrapper {
+                width: 34%;
+                background: #0daadb;
+                padding: 15px 30px 30px;
+            }
+
+            #edd_purchase_form {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
             }
 
             <?php
             /**
-             * Payment Methods
+             * Notification area
              */
-             ?>
-            #edd-payment-mode-wrap {
-                overflow: hidden;
-                width: 100%;
-                margin-bottom: 10px;
+            ?>.edd-alert {
+                margin: 0 30px;
+                padding: 10px 20px;
             }
 
-            .edd-gateway-column {
-                float: left;
-                width: 48%;
-                padding: 20px 25px 15px;
-                margin-bottom: 10px;
-                border: 1px solid #ddd;
+            #edd_checkout_wrap p.edd_error {
+                padding: 0;
+            }
+
+            #edd_checkout_wrap fieldset#edd_sl_renewal_fields {
+                border: 0;
+                background: #0daadb;
+                color: white;
                 border-radius: 3px;
+                margin: 20px 30px 10px;
+                padding: 10px 20px 5px;
             }
 
-            .edd-gateway-column.left {
-                clear: left;
+            #edd_sl_renewal_fields p {
+                padding-left: 0;
             }
 
-            .edd-gateway-column.right {
-                clear: right;
-                margin-left: 36px;
+            #edd_checkout_wrap fieldset#edd_sl_renewal_fields a {
+                color: white;
+                text-decoration: underline;
             }
 
-            .payment-gateway {
-                height: 24px;
-                float: right;
+            .edd-sl-renewal-actions {
+                margin: 15px 0 0;
             }
 
-            #edd_checkout_form_wrap #edd-payment-mode-wrap label {
-                display: block;
-                position: relative;
+            #edd_sl_renewal_fields .edd-submit {
+                background-color: #2ECC40;
             }
 
-            #edd_checkout_form_wrap #edd-payment-mode-wrap label:after {
-                position: absolute;
-                left: 0;
-                top: -1px;
-                background-size: 36px;
-                width: 36px;
-                height: 27px;
-                content: '';
-                display: inline-block;
-            }
-
-            .edd-gateway {
-                height: 1.4rem;
-                width: 1.4rem;
-                margin-top: -5px;
-                padding-left: 3rem;
-            }
-            
             <?php
             /**
              * Personal Info and Billing Address
              */
-            ?>
-            #edd_cc_address {
-                padding-top: 10px !important;
-                padding-bottom: 10px !important;
+            ?>#ffwpress-payment-details__wrapper fieldset legend,
+            #ffwpress-cart__wrapper fieldset legend {
+                color: #0daadb;
+                background-color: transparent;
+                border-bottom: 0;
             }
 
             #edd-first-name-wrap,
@@ -570,7 +338,6 @@ class FFWP_BetterCheckout_Enable {
             #edd-card-city-wrap,
             #edd-card-state-wrap,
             #edd-card-country-wrap,
-            #edd-vat-number,
             #edd_final_total_wrap {
                 width: 48%;
                 display: inline-block;
@@ -582,70 +349,113 @@ class FFWP_BetterCheckout_Enable {
             .edd-select {
                 border-radius: 3px !important;
                 padding: 15px 20px !important;
-            }
-
-            #billing_country {
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                padding-right: 3rem !important;
-            }
-
-            #edd_checkout_wrap #edd-card-state-wrap {
-                padding-bottom: 0;
-            }
-
-            .ffwp-select {
-                position: relative;
-            }
-
-            .ffwp-select:after {
-                font-family: 'Astra';
-                content: "\e900";
-                position: absolute;
-                right: 0;
-                top: 0;
-                pointer-events: none;
-                height: 100%;
-                background-color: #dae1e6;
-                display: -webkit-box;
-                display: flex;
-                -webkit-box-pack: center;
-                justify-content: center;
-                -webkit-box-align: center;
-                align-items: center;
-                width: 3rem;
-                z-index: -1;
+                width: 100%;
             }
 
             <?php
             /**
              * EU VAT
              */
-            ?>
+            ?>.edd-vat-number-wrap {
+                width: 48%;
+            }
+
+            #edd-vat-number {
+                width: 100%;
+            }
+
             #edd-card-vat-wrap label {
                 display: block;
-            }
-
-            #edd-vat-check-button {
-                font-size: 1.4rem;
-            }
-
-            #edd-vat-check-button {
-                font-size: 1.15rem;
-                padding: 15px 30px;
-                margin-left: 30px;
             }
 
             #edd-vat-check-button.ffwp-vat-valid {
                 background-color: #2ECC40;
             }
 
+
+            <?php
+            /**
+             * Payment Details
+             */
+            ?>#edd_checkout_form_wrap .edd-description,
+            #edd_cc_address legend,
+            #edd_cc_fields legend,
+            #edd_sl_renewal_fields legend,
+            #edd_secure_site_wrapper {
+                display: none;
+            }
+
+            #edd_payment_mode_select_wrap {
+                width: 100%;
+            }
+
+            #edd_payment_mode_select .ffwpress-secure-lock {
+                float: right;
+                font-weight: 400;
+                color: #2ECC40;
+            }
+
+            fieldset#edd_checkout_user_info {
+                margin: 0;
+                width: 100%;
+            }
+
+            #edd_checkout_wrap #edd_discount_code {
+                margin-bottom: 10px;
+            }
+
+
+            <?php
+            /**
+             * Payment Method
+             */
+            ?>#edd_checkout_form_wrap #edd-payment-mode-wrap label {
+                margin-right: 29px;
+            }
+
+            #edd_checkout_form_wrap #edd-payment-mode-wrap label:last-child {
+                margin-right: 0;
+            }
+
+            .edd-gateway-option {
+                position: relative;
+                width: 48%;
+                padding: 15px 0 15px 15px;
+                border: 1px #ddd solid;
+                border-radius: 3px;
+            }
+
+            .edd-gateway-option:after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                right: 15px;
+                transform: translate(0, -50%);
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+                height: 50%;
+            }
+
+            #edd-gateway-option-stripe:after {
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/stripe-logo.png'; ?>');
+                width: 143px;
+            }
+
+            #edd-gateway-option-paypal:after {
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/paypal-logo.png'; ?>');
+                width: 131px;
+            }
+
+            .edd-gateway-option-selected {
+                border: 1px #0daadb solid;
+            }
+
             <?php
             /**
              * Terms & Conditions
              */
-            ?>
-            #edd_terms_agreement {
+            ?>#edd_terms_agreement {
                 padding: 15px 0 10px !important;
             }
 
@@ -657,59 +467,113 @@ class FFWP_BetterCheckout_Enable {
 
             <?php
             /**
-             * Totals & Purchase
+             * Shopping Cart
              */
-            ?>
-            #edd_final_total_wrap {
-                font-size: 1.4rem;
+            ?>#ffwpress-cart__wrapper fieldset legend {
+                color: white;
+                padding: 0;
+            }
+
+            #edd_checkout_wrap fieldset#ffwpress_checkout_shopping_cart>div {
+                padding: 0;
+            }
+
+            table#edd_checkout_cart,
+            td,
+            tr,
+            th {
+                color: white;
+                border: 0;
+            }
+
+            #edd_checkout_cart td,
+            #edd_checkout_cart th {
+                padding: 10px 0;
+            }
+
+            #edd_checkout_wrap .edd_cart_remove_item_btn {
+                color: white;
+                margin-left: 0;
+                font-size: .75em;
+            }
+
+            td.edd_cart_item_price,
+            th.edd_cart_tax,
+            th.edd_cart_subtotal {
+                text-align: right;
+            }
+
+            .edd_cart_footer_row .edd_cart_total {
+                border-top: 1px white solid;
+            }
+
+            <?php
+            /**
+             * Discount Code
+             */
+            ?>#edd_checkout_wrap #edd_discount_code {
+                border: 0;
+                color: white;
+            }
+
+            .edd_discount_link {
+                color: white;
+                text-decoration: underline;
+            }
+
+            <?php
+            /**
+             * Complete Order
+             */
+            ?>#edd_checkout_form_wrap #edd_final_total_wrap {
+                width: 100%;
+                text-align: center;
+                font-size: 1.25rem;
+                border: 0;
             }
 
             #edd-purchase-button {
-                width: 48%;
-                font-size: 1.4rem;
+                background-color: #2ECC40;
+                width: 92.5%;
+                font-size: 1.5rem;
                 padding: 20px;
-                margin-left: 30px;
+                margin: 0 30px;
             }
 
-            @media only screen and (max-width: 768px) {
-                .edd-gateway-column {
-                    width: 47.29%;
-                }
-
-                #edd_final_total_wrap {
-                    width: 46.88%;
-                }
+            #ffwpress_checkout_shopping_cart .edd-submit {
+                background-color: #2ECC40;
             }
+
+            .edd-apply-discount.hidden {
+                display: none;
+            }
+
+            #edd-discount-error-wrap {
+                display: block;
+            }
+
+            #edd-discount-error-wrap.edd-alert {
+                margin: 15px 0;
+            }
+
 
             @media only screen and (max-width: 480px) {
-                #edd-first-name-wrap, #edd-last-name-wrap, #edd-card-address-wrap, #edd-card-address-2-wrap, #edd-card-zip-wrap, #edd-card-city-wrap, #edd-card-state-wrap, #edd-card-country-wrap, #edd-vat-number {
+
+                #edd-first-name-wrap,
+                #edd-last-name-wrap,
+                #edd-card-address-wrap,
+                #edd-card-address-2-wrap,
+                #edd-card-zip-wrap,
+                #edd-card-city-wrap,
+                #edd-card-state-wrap,
+                #edd-card-country-wrap,
+                #edd-vat-number {
                     width: 91%;
                 }
 
-                #edd_checkout_cart td, #edd_checkout_cart th {
+                #edd_checkout_cart td,
+                #edd_checkout_cart th {
                     padding: 10px 25px;
-                }
-
-                .edd-gateway-column {
-                    width: 100%;
-                }
-
-                .edd-gateway-column.right {
-                    margin-left: 0;
-                }
-
-                #edd-card-vat-wrap #edd-vat-number {
-                    width: 100%;
-                }
-
-                #edd-vat-check-button {
-                    padding: 15px 30px;
-                    margin-left: 0;
-                    margin-top: 15px;
-                }
-
-                #edd_final_total_wrap {
-                    width: 100%;
                 }
 
                 #edd-purchase-button {
@@ -718,6 +582,6 @@ class FFWP_BetterCheckout_Enable {
                 }
             }
         </style>
-		<?php
-	}
+<?php
+    }
 }
