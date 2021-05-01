@@ -59,7 +59,7 @@ class FFWP_BetterCheckout_Enable
 
         // Move Login Form
         remove_action('edd_purchase_form_login_fields', 'edd_get_login_fields');
-        add_action('edd_before_purchase_form', 'edd_get_login_fields', -2);
+        add_action('edd_checkout_form_top', 'edd_get_login_fields', -2);
 
         // Move User Info (Email, First and Last Name)
         remove_action('edd_purchase_form_after_user_info', 'edd_user_info_fields');
