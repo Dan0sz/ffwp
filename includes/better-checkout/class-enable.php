@@ -195,11 +195,12 @@ class FFWP_BetterCheckout_Enable
 
     public function enqueue_scripts_and_styles()
     {
+        wp_enqueue_style('ffwpress-icons', FFWP_PLUGIN_URL . 'assets/css/ffwpress-icons.css');
+
         if (!edd_is_checkout()) {
             return;
         }
 
-        wp_enqueue_style('ffwpress-icons', FFWP_PLUGIN_URL . 'assets/css/ffwpress-icons.css');
         wp_enqueue_script('ffwpress-better-checkout', $this->plugin_url . 'assets/js/better-checkout.js', ['jquery', 'edd-checkout-global'], self::FFWP_BETTER_CHECKOUT_STATIC_VERSION, true);
         wp_enqueue_style('ffwpress-better-checkout', $this->plugin_url . 'assets/css/better-checkout.css', ['astra-child-theme-css', 'edd-blocks', 'edd-eu-vat', 'edd-sl-styles'], self::FFWP_BETTER_CHECKOUT_STATIC_VERSION);
         wp_add_inline_style('ffwpress-better-checkout', $this->add_inline_stylesheet());
