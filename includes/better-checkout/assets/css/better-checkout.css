@@ -5,6 +5,13 @@
  * @url https://ffw.press
  */
 
+#content {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: #e6e6e6;
+    background-position: top -75px left 0;
+}
+
 .edd-checkout.ast-separate-container article.ast-article-single {
     padding: 0;
 }
@@ -335,11 +342,21 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal {
 }
 
 @media only screen and (max-width: 480px) {
+    #ffwpress-payment-details__wrapper, #ffwpress-cart__wrapper {
+        width: 100%;
+    }
     #edd-first-name-wrap, #edd-last-name-wrap, #edd-card-address-wrap, #edd-card-address-2-wrap, #edd-card-zip-wrap, #edd-card-city-wrap, #edd-card-state-wrap, #edd-card-country-wrap, #edd-vat-number {
-        width: 91%;
+        width: 100%;
+        padding-right: 30px !important;
     }
     #edd_checkout_cart td, #edd_checkout_cart th {
         padding: 10px 25px;
+    }
+    .edd-vat-number-wrap {
+        width: 100%;
+    }
+    .edd-gateway-option {
+        width: 100%;
     }
     #edd-purchase-button {
         width: 100%;

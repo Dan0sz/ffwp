@@ -233,6 +233,10 @@ class FFWP_BetterCheckout_Enable
         ob_start();
     ?>
         <style>
+            #content {
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/ffw-waves-grayscale.png'; ?>');
+            }
+
             #edd-gateway-option-stripe:after {
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/stripe-logo.png'; ?>');
                 width: 143px;
