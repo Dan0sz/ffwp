@@ -25,6 +25,14 @@
     margin: 0;
 }
 
+.edd-checkout #edd_checkout_wrap input[type="submit"] {
+    background-color: #2ECC40;
+}
+
+.edd-checkout #edd_checkout_wrap input[type="submit"]:hover {
+    background-color: #3D9970;
+}
+
 #edd_checkout_wrap a, #edd_checkout_wrap input {
     cursor: pointer;
 }
@@ -77,17 +85,17 @@
     padding-left: 0;
 }
 
+#edd_sl_renewal_fields .edd-sl-renewal-form-fields {
+    padding: 0;
+}
+
 #edd_checkout_wrap fieldset#edd_sl_renewal_fields a {
     color: white;
     text-decoration: underline;
 }
 
 .edd-sl-renewal-actions {
-    margin: 15px 0 0;
-}
-
-#edd_sl_renewal_fields .edd-submit {
-    background-color: #2ECC40;
+    margin: 15px 0 10px;
 }
 
 /**
@@ -318,15 +326,10 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal {
 }
 
 #edd-purchase-button {
-    background-color: #2ECC40;
     width: 92.5%;
     font-size: 1.5rem;
     padding: 20px;
     margin: 0 30px;
-}
-
-#ffwpress_checkout_shopping_cart .edd-submit {
-    background-color: #2ECC40;
 }
 
 .edd-apply-discount.hidden {
