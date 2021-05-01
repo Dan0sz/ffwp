@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   FFWP Login Fields Legend
  * @author    Daan van den Bergh
@@ -9,44 +10,53 @@
  *            http://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
-class FFWP_LoginFieldsLegend_Insert {
-	/** @var string $plugin_text_domain */
-	private $plugin_text_domain = 'ffwp';
+class FFWP_LoginFieldsLegend_Insert
+{
+    /** @var string $plugin_text_domain */
+    private $plugin_text_domain = 'ffwp';
 
-	/**
-	 * FFWP_LoginFieldsLegend_Insert constructor.
-	 */
-	public function __construct() {
-		// @formatter:off
-        add_action('edd_checkout_form_top', [$this, 'insert']);
+    /**
+     * FFWP_LoginFieldsLegend_Insert constructor.
+     */
+    public function __construct()
+    {
+        add_action('edd_before_purchase_form', [$this, 'insert'], -2);
         add_action('wp_footer', [$this, 'add_stylesheet']);
         add_action('wp_footer', [$this, 'add_script']);
-        // @formatter:on
-	}
+    }
 
-	/**
-	 *
-	 */
-	public function insert() {
-	    if (!is_user_logged_in()): ?>
-        <fieldset id="ffwp-account-form">
-            <p>
-				<?= __( 'Have an account?', $this->plugin_text_domain ); ?> <a href="#" id="ffwp-account-modal"><?= __('Click here to login', $this->plugin_text_domain); ?></a>
-            </p>
-        </fieldset>
-		<?php endif;
-	}
+    /**
+     *
+     */
+    public function insert()
+    {
+        if (!is_user_logged_in()) : ?>
+            <fieldset id="ffwp-account-form">
+                <p>
+                    <a href="#" id="ffwp-account-modal"><i class="icon-user"></i><?= __('Login to your account', $this->plugin_text_domain); ?></a>
+                </p>
+            </fieldset>
+        <?php endif;
+    }
 
-	public function add_stylesheet() {
-		?>
+    public function add_stylesheet()
+    {
+        ?>
         <style>
+            #ffwp-account-form {
+                width: 100%;
+                text-align: right;
+            }
+
             #ffwp-account-form p {
                 padding-top: 10px !important;
-                padding-bottom: 5px !important;
+                padding-bottom: 0 !important;
                 padding-left: 30px;
                 padding-right: 30px;
+                margin-bottom: 0 !important;
+                margin-top: 5px;
             }
 
             #edd_login_fields {
@@ -76,36 +86,40 @@ class FFWP_LoginFieldsLegend_Insert {
                 cursor: pointer;
             }
         </style>
-		<?php
-	}
+    <?php
+    }
 
-	public function add_script()
+    public function add_script()
     {
-        ?>
+    ?>
         <script>
-            jQuery(document).ready(function ($) {
+            jQuery(document).ready(function($) {
                 var account_modal = {
                     $login_fields: $('#edd_login_fields'),
 
-                    init: function () {
+                    init: function() {
                         account_modal.$login_fields.append('<div class="close">×</div>');
 
                         $('#ffwp-account-modal').on('click', this.open_modal);
                         $('#edd_login_fields .close').on('click', this.close);
                     },
 
-                    open_modal: function (e) {
-                        account_modal.$login_fields.css({ display: 'initial' });
+                    open_modal: function(e) {
+                        account_modal.$login_fields.css({
+                            display: 'initial'
+                        });
                     },
 
-                    close: function (e) {
-                        account_modal.$login_fields.css({ display: 'none' });
+                    close: function(e) {
+                        account_modal.$login_fields.css({
+                            display: 'none'
+                        });
                     }
                 }
 
                 account_modal.init();
             });
         </script>
-        <?php
+<?php
     }
 }
