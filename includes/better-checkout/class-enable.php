@@ -358,6 +358,7 @@ class FFWP_BetterCheckout_Enable
              */
             ?>.edd-vat-number-wrap {
                 width: 48%;
+                position: relative;
             }
 
             #edd-vat-number {
@@ -370,6 +371,12 @@ class FFWP_BetterCheckout_Enable
 
             #edd-vat-check-button.ffwp-vat-valid {
                 background-color: #2ECC40;
+            }
+
+            #edd-card-vat-wrap .edd-loading-ajax.edd-loading {
+                position: absolute;
+                top: 15%;
+                left: 100%;
             }
 
 
