@@ -193,21 +193,40 @@ class FFWP_BetterCheckout_Enable
         return ob_get_clean();
     }
 
+    /**
+     * Checks if debugging is enabled for local machines.
+     * 
+     * @return string .min | ''
+     */
+    public function get_script_suffix()
+    {
+        return defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+    }
+
+    /**
+     * Enqueue scripts and styles.
+     * 
+     * @return void 
+     */
     public function enqueue_scripts_and_styles()
     {
-        wp_enqueue_style('ffwpress-icons', FFWP_PLUGIN_URL . 'assets/css/ffwpress-icons.css');
+        $suffix = $this->get_script_suffix();
+
+        wp_enqueue_style('ffwpress-icons', FFWP_PLUGIN_URL . "assets/css/ffwpress-icons$suffix.css");
 
         if (!edd_is_checkout()) {
             return;
         }
 
-        wp_enqueue_script('ffwpress-better-checkout', $this->plugin_url . 'assets/js/better-checkout.js', ['jquery', 'edd-checkout-global'], self::FFWP_BETTER_CHECKOUT_STATIC_VERSION, true);
-        wp_enqueue_style('ffwpress-better-checkout', $this->plugin_url . 'assets/css/better-checkout.css', ['astra-child-theme-css', 'edd-blocks', 'edd-eu-vat', 'edd-sl-styles'], self::FFWP_BETTER_CHECKOUT_STATIC_VERSION);
+        wp_enqueue_script('ffwpress-better-checkout', $this->plugin_url . "assets/js/better-checkout$suffix.js", ['jquery', 'edd-checkout-global'], self::FFWP_BETTER_CHECKOUT_STATIC_VERSION, true);
+        wp_enqueue_style('ffwpress-better-checkout', $this->plugin_url . "assets/css/better-checkout$suffix.css", ['astra-child-theme-css', 'edd-blocks', 'edd-eu-vat', 'edd-sl-styles'], self::FFWP_BETTER_CHECKOUT_STATIC_VERSION);
         wp_add_inline_style('ffwpress-better-checkout', $this->add_inline_stylesheet());
     }
 
     /**
-     *
+     * Dynamically load the URLs for the payment method logo's into an inline stylesheet.
+     * 
+     * I'm adding (and removing) the <style> block on purpose, so VS Code properly recognizes the code and formats it.
      */
     public function add_inline_stylesheet()
     {
