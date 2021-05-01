@@ -40,7 +40,8 @@
     padding: 10px 20px;
 }
 
-#edd_checkout_wrap p.edd_error {
+#edd_checkout_wrap p.edd_error,
+#edd_checkout_wrap .edd-alert-info p {
     padding: 0;
 }
 

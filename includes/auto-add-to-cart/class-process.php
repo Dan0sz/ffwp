@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   FFWP/Auto Add To Cart
  * @author    Daan van den Bergh
@@ -28,7 +29,7 @@ class FFWP_AutoAddToCart_Process
     private $quantity = 1;
 
     /** @var array $related_items */
-    private $related_items = [ '4027', '3940' ];
+    private $related_items = ['4027', '3940'];
 
     /** @var bool $add_to_cart */
     private $add_to_cart = false;
@@ -52,7 +53,7 @@ class FFWP_AutoAddToCart_Process
         add_action('edd_pre_add_to_cart', [$this, 'maybe_add_to_cart'], 10, 1);
         add_filter('edd_pre_add_to_cart_contents', [$this, 'add_item_to_cart'], 10, 1);
         add_action('edd_post_remove_from_cart', [$this, 'prevent_removal'], 10, 2);
-        add_action('edd_before_checkout_cart', [$this, 'add_notice']);
+        add_action('edd_before_purchase_form', [$this, 'add_notice']);
     }
 
     /**
@@ -131,7 +132,7 @@ class FFWP_AutoAddToCart_Process
             return;
         }
 
-        echo '<div class="edd-alert edd-alert-info">';
+        echo '<div class="ffwp-notice edd-alert edd-alert-info">';
         echo '<p><em>' . sprintf(__('%s has been added to your cart, because it is required to activate and manage licenses for FFWP products.', $this->plugin_text_domain), $this->item_name) . '</em></p>';
         echo '</div>';
     }
