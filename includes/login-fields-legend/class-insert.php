@@ -43,6 +43,9 @@ class FFWP_LoginFieldsLegend_Insert
 
     public function add_stylesheet()
     {
+        if (!edd_is_checkout()) {
+            return;
+        }
         ?>
         <style>
             #ffwp-account-form {
@@ -91,6 +94,9 @@ class FFWP_LoginFieldsLegend_Insert
 
     public function add_script()
     {
+        if (!edd_is_checkout()) {
+            return;
+        }
     ?>
         <script>
             jQuery(document).ready(function($) {
