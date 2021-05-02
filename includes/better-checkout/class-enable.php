@@ -63,7 +63,7 @@ class FFWP_BetterCheckout_Enable
         // Move Billing Details
         remove_action('edd_after_cc_fields', 'edd_default_cc_address_fields');
         remove_action('edd_purchase_form_after_cc_form', 'edd_checkout_tax_fields', 999);
-        add_action('edd_checkout_form_top', 'edd_default_cc_address_fields');
+        add_action('edd_checkout_form_top', 'edd_checkout_tax_fields', 999);
 
         // Move Discount Form
         remove_action('edd_checkout_form_top', 'edd_discount_field', -1);
