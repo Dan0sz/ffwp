@@ -14,8 +14,6 @@ defined('ABSPATH') || exit;
 
 class FFWP_BetterCheckout_Enable
 {
-    const FFWP_BETTER_CHECKOUT_STATIC_VERSION = '1.0.0';
-
     /**
      * List of translateable texts that should be rewritten.
      * 
@@ -212,8 +210,8 @@ class FFWP_BetterCheckout_Enable
             return;
         }
 
-        wp_enqueue_script('ffwpress-better-checkout', $this->plugin_url . "assets/js/better-checkout$suffix.js", ['jquery', 'edd-checkout-global'], self::FFWP_BETTER_CHECKOUT_STATIC_VERSION, true);
-        wp_enqueue_style('ffwpress-better-checkout', $this->plugin_url . "assets/css/better-checkout$suffix.css", ['astra-child-theme-css', 'edd-blocks', 'edd-eu-vat', 'edd-sl-styles'], self::FFWP_BETTER_CHECKOUT_STATIC_VERSION);
+        wp_enqueue_script('ffwpress-better-checkout', $this->plugin_url . "assets/js/better-checkout$suffix.js", ['jquery', 'edd-checkout-global'], FFWP_STATIC_VERSION, true);
+        wp_enqueue_style('ffwpress-better-checkout', $this->plugin_url . "assets/css/better-checkout$suffix.css", ['astra-child-theme-css', 'edd-blocks', 'edd-eu-vat', 'edd-sl-styles'], FFWP_STATIC_VERSION);
         wp_add_inline_style('ffwpress-better-checkout', $this->add_inline_stylesheet());
     }
 
