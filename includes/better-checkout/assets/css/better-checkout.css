@@ -7,9 +7,9 @@
 
 #content {
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: 100%;
     background-color: #e6e6e6;
-    background-position: top -75px left 0;
+    background-position: top center;
 }
 
 .edd-checkout.ast-separate-container article.ast-article-single {
