@@ -256,6 +256,10 @@ fieldset#edd_checkout_user_info {
     padding: 0;
 }
 
+#ffwpress-cart__wrapper .hide-on-desktop {
+    display: none;
+}
+
 #edd_checkout_wrap fieldset#ffwpress_checkout_shopping_cart>div {
     padding: 0;
 }
@@ -344,9 +348,21 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal {
     margin: 15px 0;
 }
 
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 768px) {
     #ffwpress-payment-details__wrapper, #ffwpress-cart__wrapper {
         width: 100%;
+    }
+    #ffwpress-cart__wrapper.cart-wrapper-mobile {
+        margin: 10px 30px 0;
+        padding: 15px;
+        text-align: center;
+    }
+    #ffwpress-cart__wrapper .ffwpress-cart-link {
+        color: white;
+        text-decoration: underline;
+    }
+    #ffwpress-cart__wrapper .hide-on-desktop {
+        display: block;
     }
     #edd-first-name-wrap, #edd-last-name-wrap, #edd-card-address-wrap, #edd-card-address-2-wrap, #edd-card-zip-wrap, #edd-card-city-wrap, #edd-card-state-wrap, #edd-card-country-wrap, #edd-vat-number {
         width: 100%;

@@ -50,14 +50,6 @@ class FFWP_BetterCheckout_Enable
         // Add this plugin to the template paths.
         add_filter('edd_template_paths', [$this, 'add_template_path']);
 
-        // Move error messages area
-        // remove_action('edd_purchase_form_before_submit', 'edd_print_errors');
-        // add_action('edd_before_purchase_form', 'edd_print_errors');
-        // remove_action('edd_ajax_checkout_errors', 'edd_print_errors');
-        // add_action('edd_before_purchase_form', 'edd_print_errors');
-        // remove_action('edd_after_cc_fields', 'edds_add_stripe_errors', 999);
-        // add_action('edd_before_purchase_form', 'edds_add_stripe_errors', 999);
-
         // Modify Text Fields
         add_filter('gettext_easy-digital-downloads', [$this, 'modify_text_fields'], 1, 3);
         add_filter('gettext_edd-eu-vat', [$this, 'modify_text_fields'], 1, 3);
@@ -139,7 +131,9 @@ class FFWP_BetterCheckout_Enable
                 <div id="ffwpress-payment-details__wrapper">
                     <?php do_action('edd_before_purchase_form'); ?>
                 </div>
-                <div id="ffwpress-cart__wrapper"></div>
+                <div id="ffwpress-cart__wrapper" class="cart-wrapper-mobile">
+                    <a href="#edd_checkout_cart_form" class="ffwpress-cart-link hide-on-desktop"><?= __('View Shopping Cart'); ?></a>
+                </div>
                 <div id="ffwpress-payment-details__wrapper">
                     <div id="edd_checkout_form_wrap" class="edd_clearfix">
                         <form id="edd_purchase_form" class="edd_form" action="<?php echo $form_action; ?>" method="POST">
