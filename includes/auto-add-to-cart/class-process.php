@@ -29,7 +29,7 @@ class FFWP_AutoAddToCart_Process
     private $quantity = 1;
 
     /** @var array $related_items */
-    private $related_items = ['4027', '3940'];
+    private $related_items = ['4027', '3940', '8887'];
 
     /** @var bool $add_to_cart */
     private $add_to_cart = false;
