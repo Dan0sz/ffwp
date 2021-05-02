@@ -126,7 +126,7 @@ class FFWP_BetterCheckout_Enable
         ob_start(); ?>
         <div id="edd_checkout_wrap">
             <?php if (edd_get_cart_contents() || edd_cart_has_fees()) : ?>
-                <div id="ffwpress-payment-details__wrapper">
+                <div id="ffwpress-payment-details__wrapper" class="notification-area">
                     <?php do_action('edd_before_purchase_form'); ?>
                 </div>
                 <div id="ffwpress-cart__wrapper" class="cart-wrapper-mobile">

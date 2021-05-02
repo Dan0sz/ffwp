@@ -43,8 +43,12 @@
 
 #ffwpress-payment-details__wrapper {
     background-color: transparent;
-    padding: 20px 0 0;
+    padding: 0;
     width: 66%;
+}
+
+#ffwpress-payment-details__wrapper.notification-area {
+    padding-top: 20px;
 }
 
 #ffwpress-cart__wrapper {
