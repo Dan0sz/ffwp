@@ -54,7 +54,7 @@ class FFWP_LoginFieldsLegend_Insert
             }
 
             #ffwp-account-form p {
-                padding-top: 0 im !important;
+                padding-top: 0 !important;
                 padding-bottom: 0 !important;
                 padding-left: 30px;
                 padding-right: 30px;
