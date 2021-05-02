@@ -33,7 +33,7 @@
     background-color: #3D9970;
 }
 
-#edd_checkout_wrap a, #edd_checkout_wrap input {
+#edd_checkout_wrap a, #edd_checkout_wrap input[type="submit"] {
     cursor: pointer;
 }
 
