@@ -334,6 +334,13 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal {
     border-top: 1px white solid;
 }
 
+/* Fix for Software Licensing when renewed or upgraded */
+
+.edd-sl-upgrade-details .edd-sl-upgrade-key {
+    font-style: italic;
+    word-break: break-all;
+}
+
 /**
 * Discount Code
 */
