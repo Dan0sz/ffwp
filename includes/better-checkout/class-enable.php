@@ -28,8 +28,11 @@ class FFWP_BetterCheckout_Enable
         'Country'                      => 'Billing Country',
         'State/Province'               => 'Billing State / Province',
         'Validate'                     => 'Check',
-        'Payment Method <span class="ffwpress-secure-lock"><i class="icon-lock"></i>Secure transaction</span>' => 'Select Payment Method'
+        'Payment <span class="ffwpress-secure-lock"><i class="icon-lock"></i>Safe & Secure</span>' => 'Select Payment Method',
+        'Name on Card'                 => 'Name on the Card'
     ];
+
+    const FFWP_BETTER_CHECKOUT_PLACEHOLDERS = [];
 
     private $plugin_dir = '';
 
@@ -51,6 +54,7 @@ class FFWP_BetterCheckout_Enable
         // Modify Text Fields
         add_filter('gettext_easy-digital-downloads', [$this, 'modify_text_fields'], 1, 3);
         add_filter('gettext_edd-eu-vat', [$this, 'modify_text_fields'], 1, 3);
+        add_filter('gettext_edds', [$this, 'modify_text_fields'], 1, 3);
 
         // Move Login Form
         remove_action('edd_purchase_form_login_fields', 'edd_get_login_fields');
@@ -64,6 +68,12 @@ class FFWP_BetterCheckout_Enable
         remove_action('edd_after_cc_fields', 'edd_default_cc_address_fields');
         remove_action('edd_purchase_form_after_cc_form', 'edd_checkout_tax_fields', 999);
         add_action('edd_checkout_form_top', 'edd_checkout_tax_fields', 999);
+
+        // Overwrite Stripe Credit Card template.
+        if (function_exists('edd_stripe_new_card_form')) {
+            remove_action('edd_stripe_new_card_form', 'edd_stripe_new_card_form');
+            add_action('edd_stripe_new_card_form', [$this, 'stripe_new_card_form']);
+        }
 
         // Move Discount Form
         remove_action('edd_checkout_form_top', 'edd_discount_field', -1);
@@ -186,13 +196,92 @@ class FFWP_BetterCheckout_Enable
     }
 
     /**
-     * Checks if debugging is enabled for local machines.
-     * 
-     * @return string .min | ''
+     * Display the markup for the Stripe new card form. This template override moves the Name field below the Card Number field.
+     *
+     * @since 2.6
+     * @return void
      */
-    public function get_script_suffix()
+    public function stripe_new_card_form()
     {
-        return defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+        if (edd_stripe()->rate_limiting->has_hit_card_error_limit()) {
+            edd_set_error('edd_stripe_error_limit', __('Adding new payment methods is currently unavailable.', 'edds'));
+            edd_print_errors();
+            return;
+        }
+
+        $split = edd_get_option('stripe_split_payment_fields', false);
+    ?>
+        <div id="edd-card-wrap">
+            <label for="edd-card-element" class="edd-label">
+                <?php
+                if ('1' === $split) :
+                    esc_html_e('Credit Card Number', 'edds');
+                else :
+                    esc_html_e('Credit Card', 'edds');
+                endif;
+                ?>
+                <span class="edd-required-indicator">*</span>
+            </label>
+
+            <div id="edd-stripe-card-element-wrapper">
+                <?php if ('1' === $split) : ?>
+                    <span class="card-type"></span>
+                <?php endif; ?>
+
+                <div id="edd-stripe-card-element" class="edd-stripe-card-element"></div>
+            </div>
+
+            <p class="edds-field-spacer-shim"></p><!-- Extra spacing -->
+        </div>
+
+        <?php if ('1' === $split) : ?>
+
+            <div id="edd-card-details-wrap">
+                <p class="edds-field-spacer-shim"></p><!-- Extra spacing -->
+
+                <div id="edd-card-exp-wrap">
+                    <label for="edd-card-exp-element" class="edd-label">
+                        <?php esc_html_e('Expiration', 'edds'); ?>
+                        <span class="edd-required-indicator">*</span>
+                    </label>
+
+                    <div id="edd-stripe-card-exp-element" class="edd-stripe-card-exp-element"></div>
+                </div>
+
+                <div id="edd-card-cvv-wrap">
+                    <label for="edd-card-exp-element" class="edd-label">
+                        <?php esc_html_e('CVC', 'edds'); ?>
+                        <span class="edd-required-indicator">*</span>
+                    </label>
+
+                    <div id="edd-stripe-card-cvc-element" class="edd-stripe-card-cvc-element"></div>
+                </div>
+            </div>
+
+        <?php endif; ?>
+
+        <p id="edd-card-name-wrap">
+            <label for="card_name" class="edd-label">
+                <?php esc_html_e('Name on the Card', 'edds'); ?>
+                <span class="edd-required-indicator">*</span>
+            </label>
+            <span class="edd-description"><?php esc_html_e('The name printed on the front of your credit card.', 'edds'); ?></span>
+            <input type="text" name="card_name" id="card_name" class="card-name edd-input required" placeholder="<?php esc_attr_e('Card name', 'edds'); ?>" autocomplete="cc-name" />
+        </p>
+
+        <div id="edd-stripe-card-errors" role="alert"></div>
+
+    <?php
+        /**
+         * Allow output of extra content before the credit card expiration field.
+         *
+         * This content no longer appears before the credit card expiration field
+         * with the introduction of Stripe Elements.
+         *
+         * @deprecated 2.7
+         * @since unknown
+         */
+        do_action('edd_before_cc_expiration');
     }
 
     /**
@@ -216,6 +305,16 @@ class FFWP_BetterCheckout_Enable
     }
 
     /**
+     * Checks if debugging is enabled for local machines.
+     * 
+     * @return string .min | ''
+     */
+    public function get_script_suffix()
+    {
+        return defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+    }
+
+    /**
      * Dynamically load the URLs for the payment method logo's into an inline stylesheet.
      * 
      * I'm adding (and removing) the <style> block on purpose, so VS Code properly recognizes the code and formats it.
@@ -229,9 +328,14 @@ class FFWP_BetterCheckout_Enable
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/ffw-waves-grayscale.png'; ?>');
             }
 
+            #edd_payment_mode_select .ffwpress-secure-lock:after {
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/powered-by-stripe.png'; ?>');
+                width: 151.5px;
+            }
+
             #edd-gateway-option-stripe:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/stripe-logo.png'; ?>');
-                width: 143px;
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/credit-card-logo.png'; ?>');
+                width: 200.5px;
             }
 
             #edd-gateway-option-paypal:after {

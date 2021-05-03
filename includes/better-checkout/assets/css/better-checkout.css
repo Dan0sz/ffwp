@@ -114,6 +114,29 @@
 }
 
 /**
+ * Makes the placeholders disappear: POOF!
+ * Cleaner solution than a template override.
+ */
+
+::-webkit-input-placeholder {
+    color: transparent;
+}
+
+:-moz-placeholder {
+    /* Firefox 18- */
+    color: transparent;
+}
+
+::-moz-placeholder {
+    /* Firefox 19+ */
+    color: transparent;
+}
+
+:-ms-input-placeholder {
+    color: transparent;
+}
+
+/**
 * Personal Info and Billing Address
 */
 
@@ -179,6 +202,20 @@
     float: right;
     font-weight: 400;
     color: #2ECC40;
+    position: relative;
+    padding-right: 161.5px;
+}
+
+#edd_payment_mode_select .ffwpress-secure-lock:after {
+    content: '';
+    height: 100%;
+    margin-left: 10px;
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
 fieldset#edd_checkout_user_info {
