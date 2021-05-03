@@ -391,6 +391,15 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal {
     margin: 15px 0;
 }
 
+@media only screen and (max-width: 480px) {
+    #edd_payment_mode_select .ffwpress-secure-lock {
+        padding-right: 0;
+    }
+    #edd_payment_mode_select .ffwpress-secure-lock:after {
+        background-image: none !important;
+    }
+}
+
 @media only screen and (max-width: 768px) {
     #ffwpress-payment-details__wrapper, #ffwpress-cart__wrapper {
         width: 100%;
