@@ -3,8 +3,8 @@
 /**
  * Plugin Name: Easy Digital Downloads - FFWP Modifications
  * Description: Custom additions to EDD for Fast FW Press.
- * Version: 2.0.8
- * Author: Daan (from FFW.Press)
+ * Version: 2.1.0
+ * Author: Daan from FFW.Press
  * Author URI: https://ffw.press
  * Text Domain: ffwp
  * GitHub Plugin URI: https://github.com/Dan0sz/ffwp
@@ -16,7 +16,7 @@
 define('FFWP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('FFWP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('FFWP_PLUGIN_FILE', __FILE__);
-define('FFWP_STATIC_VERSION', '2.0.8');
+define('FFWP_STATIC_VERSION', '2.1.0');
 
 /**
  * Takes care of loading classes on demand.
