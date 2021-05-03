@@ -278,7 +278,9 @@ table#edd_checkout_cart, td, tr, th {
 }
 
 #edd_checkout_cart td, #edd_checkout_cart th {
-    padding: 10px 0;
+    padding: 10px 5px;
+    min-width: 58px;
+    vertical-align: middle;
 }
 
 #edd_checkout_wrap .edd_cart_remove_item_btn {
