@@ -109,7 +109,9 @@ Heavily customizes the otherwise rather boring checkout flow for Easy Digital Do
 
 ### Overview
 
-- Personal information is moved to the top,
-- Jilt's opt-in box is moved directly after the email address field,
-- Payment methods are shown in big buttons, spread among 2 columns,
-- Billing fields are split in two columns.
+- Personal details and billing information is moved to the top,
+- A separate right column for the shopping cart,
+- Loading animations when e.g. tax fields are refreshed,
+- Discount form is moved below shopping cart,
+- Renew license (when Software License add-on is used) is moved to the top of the screen, along with the login form, which is hidden under a popup,
+- Payment methods are shown in big buttons, spread among 2 columns, along with logos.
