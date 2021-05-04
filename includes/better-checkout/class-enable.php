@@ -20,16 +20,17 @@ class FFWP_BetterCheckout_Enable
      * Format: Rewritten text => Text to be translated.
      */
     const FFWP_BETTER_CHECKOUT_REWRITE_TEXT_FIELDS = [
-        'Your Details'                 => 'Personal Info',
-        'Street + House No.'           => 'Billing Address',
-        'Suite, Apt No., PO Box, etc.' => 'Billing Address Line 2 (optional)',
-        'Zip/Postal Code'              => 'Billing Zip / Postal Code',
-        'City'                         => 'Billing City',
-        'Country'                      => 'Billing Country',
-        'State/Province'               => 'Billing State / Province',
-        'Validate'                     => 'Check',
+        'City'         => 'Billing City',
+        'Country'      => 'Billing Country',
+        'Name on Card' => 'Name on the Card',
         'Payment <span class="ffwpress-secure-lock"><i class="icon-lock"></i>Safe & Secure</span>' => 'Select Payment Method',
-        'Name on Card'                 => 'Name on the Card'
+        '+ 21&#37 VAT for EU residents' => 'Excluding %1$s&#37; tax',
+        'State/Province'                => 'Billing State / Province',
+        'Street + House No.'            => 'Billing Address',
+        'Suite, Apt No., PO Box, etc.'  => 'Billing Address Line 2 (optional)',
+        'Validate'                      => 'Check',
+        'Your Details'                  => 'Personal Info',
+        'Zip/Postal Code'               => 'Billing Zip / Postal Code'
     ];
 
     const FFWP_BETTER_CHECKOUT_PLACEHOLDERS = [];
@@ -74,6 +75,12 @@ class FFWP_BetterCheckout_Enable
             remove_action('edd_stripe_new_card_form', 'edd_stripe_new_card_form');
             add_action('edd_stripe_new_card_form', [$this, 'stripe_new_card_form']);
         }
+
+        /**
+         * When Taxes > 'Display Tax Rate' is enabled in EDD's settings, remove the mention for each
+         * shopping cart item, because it seems excessive.
+         */
+        add_filter('edd_cart_item_tax_description', '__return_empty_string');
 
         // Move Discount Form
         remove_action('edd_checkout_form_top', 'edd_discount_field', -1);
@@ -294,6 +301,7 @@ class FFWP_BetterCheckout_Enable
         $suffix = $this->get_script_suffix();
 
         wp_enqueue_style('ffwpress-icons', FFWP_PLUGIN_URL . "assets/css/ffwpress-icons$suffix.css");
+        wp_enqueue_style('ffwpress', FFWP_PLUGIN_URL . "assets/css/ffwpress$suffix.css");
 
         if (!edd_is_checkout()) {
             return;

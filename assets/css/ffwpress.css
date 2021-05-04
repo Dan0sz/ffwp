@@ -1,0 +1,9 @@
+/**
+ * General site-wide CSS modifications
+ */
+
+.edd_purchase_tax_rate {
+    display: block;
+    font-size: .8em;
+    font-style: italic;
+}
