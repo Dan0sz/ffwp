@@ -22,9 +22,10 @@ class FFWP_BetterCheckout_Enable
     const FFWP_BETTER_CHECKOUT_REWRITE_TEXT_FIELDS = [
         'City'         => 'Billing City',
         'Country'      => 'Billing Country',
-        'Name on Card' => 'Name on the Card',
+        'Enter a valid VAT number to reverse charge EU VAT.' => 'Enter the VAT number of your company.',
+        'Name on Card'                                       => 'Name on the Card',
         'Payment <span class="ffwpress-secure-lock"><i class="icon-lock"></i>Safe & Secure</span>' => 'Select Payment Method',
-        '+ 21&#37 VAT for EU residents' => 'Excluding %1$s&#37; tax',
+        '<strong>+ 21&#37 VAT</strong> for EU residents' => 'Excluding %1$s&#37; tax',
         'State/Province'                => 'Billing State / Province',
         'Street + House No.'            => 'Billing Address',
         'Suite, Apt No., PO Box, etc.'  => 'Billing Address Line 2 (optional)',
@@ -32,8 +33,6 @@ class FFWP_BetterCheckout_Enable
         'Your Details'                  => 'Personal Info',
         'Zip/Postal Code'               => 'Billing Zip / Postal Code'
     ];
-
-    const FFWP_BETTER_CHECKOUT_PLACEHOLDERS = [];
 
     private $plugin_dir = '';
 

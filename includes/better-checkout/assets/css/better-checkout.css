@@ -160,33 +160,6 @@
 }
 
 /**
-* EU VAT
-*/
-
-.edd-vat-number-wrap {
-    width: 48%;
-    position: relative;
-}
-
-#edd-vat-number {
-    width: 100%;
-}
-
-#edd-card-vat-wrap label {
-    display: block;
-}
-
-#edd-vat-check-button.ffwp-vat-valid {
-    background-color: #2ECC40;
-}
-
-#edd-card-vat-wrap .edd-loading-ajax.edd-loading {
-    position: absolute;
-    top: 15%;
-    left: 100%;
-}
-
-/**
 * Payment Details
 */
 
@@ -258,6 +231,37 @@ fieldset#edd_checkout_user_info {
 
 .edd-gateway-option-selected {
     border: 1px #0daadb solid;
+}
+
+/**
+* EU VAT
+*/
+
+.edd-vat-number-wrap {
+    width: 48%;
+    position: relative;
+}
+
+#edd-vat-number {
+    width: 100%;
+}
+
+#edd-card-vat-wrap label, #edd-card-vat-wrap .edd-description {
+    display: inline-block;
+}
+
+#edd-card-vat-wrap .edd-description {
+    font-size: .75em;
+}
+
+#edd-vat-check-button.ffwp-vat-valid {
+    background-color: #2ECC40;
+}
+
+#edd-card-vat-wrap .edd-loading-ajax.edd-loading {
+    position: absolute;
+    top: 15%;
+    left: 100%;
 }
 
 /**
