@@ -202,7 +202,7 @@ fieldset#edd_checkout_user_info {
 }
 
 #edd_checkout_form_wrap #edd-payment-mode-wrap label {
-    margin-right: 29px;
+    margin-right: 10px;
 }
 
 #edd_checkout_form_wrap #edd-payment-mode-wrap label:last-child {
@@ -211,11 +211,17 @@ fieldset#edd_checkout_user_info {
 
 .edd-gateway-option {
     position: relative;
-    width: 48%;
+    width: 30.136%;
     padding: 15px 0 15px 15px;
     border: 1px #ddd solid;
     border-radius: 3px;
     cursor: pointer;
+}
+
+/** Credit Card payment methods has more logos, that's why we give it a little more space */
+
+#edd-gateway-option-mollie_creditcard {
+    width: 37%;
 }
 
 .edd-gateway-option:after {

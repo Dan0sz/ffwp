@@ -345,9 +345,14 @@ class FFWP_BetterCheckout_Enable
                 width: 122px;
             }
 
+            #edd-gateway-option-mollie_ideal:after {
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/ideal-logo.png'; ?>');
+                width: 40px;
+            }
+
             #edd-gateway-option-mollie_paypal:after {
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/paypal-logo.png'; ?>');
-                width: 131px;
+                width: 40px;
             }
         </style>
 <?php
