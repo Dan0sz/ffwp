@@ -16,6 +16,10 @@
     padding: 0;
 }
 
+.edd-checkout legend, .edd-checkout label, .edd-checkout #edd_final_total_wrap strong, table tfoot, #edd-purchase-button {
+    font-family: 'Jost';
+}
+
 .edd-checkout #edd_checkout_wrap {
     max-width: 1200px !important;
     /** Overwrite inline styles */
