@@ -340,12 +340,12 @@ class FFWP_BetterCheckout_Enable
                 width: 238px;
             }
 
-            #edd-gateway-option-stripe:after {
+            #edd-gateway-option-mollie_creditcard:after {
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/credit-card-logo.png'; ?>');
-                width: 200.5px;
+                width: 122px;
             }
 
-            #edd-gateway-option-paypal:after {
+            #edd-gateway-option-mollie_paypal:after {
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/paypal-logo.png'; ?>');
                 width: 131px;
             }
