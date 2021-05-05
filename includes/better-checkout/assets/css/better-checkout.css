@@ -171,20 +171,17 @@
     width: 100%;
 }
 
-#edd_payment_mode_select .ffwpress-secure-lock {
-    float: right;
-    font-weight: 400;
-    color: #2ECC40;
+#edd_payment_mode_select legend {
     position: relative;
-    padding-right: 161.5px;
 }
 
-#edd_payment_mode_select .ffwpress-secure-lock:after {
+#edd_payment_mode_select legend:after {
     content: '';
     height: 100%;
-    margin-left: 10px;
+    margin-right: 30px;
     position: absolute;
     top: 50%;
+    right: 0;
     transform: translate(0, -50%);
     background-repeat: no-repeat;
     background-position: center;

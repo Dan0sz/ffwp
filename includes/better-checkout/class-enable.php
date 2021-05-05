@@ -24,7 +24,7 @@ class FFWP_BetterCheckout_Enable
         'Country'      => 'Billing Country',
         'Enter a valid VAT number to reverse charge EU VAT.' => 'Enter the VAT number of your company.',
         'Name on Card'                                       => 'Name on the Card',
-        'Payment <span class="ffwpress-secure-lock"><i class="icon-lock"></i>Safe & Secure</span>' => 'Select Payment Method',
+        'Payment'                                            => 'Select Payment Method',
         '<strong>+ 21&#37 VAT</strong> for EU residents' => 'Excluding %1$s&#37; tax',
         'State/Province'                => 'Billing State / Province',
         'Street + House No.'            => 'Billing Address',
@@ -335,9 +335,9 @@ class FFWP_BetterCheckout_Enable
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/ffw-waves-grayscale.png'; ?>');
             }
 
-            #edd_payment_mode_select .ffwpress-secure-lock:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/powered-by-stripe.png'; ?>');
-                width: 151.5px;
+            #edd_payment_mode_select legend:after {
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/powered-by-mollie.jpg'; ?>');
+                width: 238px;
             }
 
             #edd-gateway-option-stripe:after {
