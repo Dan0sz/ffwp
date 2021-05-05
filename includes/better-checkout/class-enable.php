@@ -25,13 +25,13 @@ class FFWP_BetterCheckout_Enable
         'Enter a valid VAT number to reverse charge EU VAT.' => 'Enter the VAT number of your company.',
         'Name on Card'                                       => 'Name on the Card',
         'Payment'                                            => 'Select Payment Method',
-        'Shown prices are <strong>excl. 21&#37 VAT</strong> for EU residents' => 'Excluding %1$s&#37; tax',
-        'State/Province'                => 'Billing State / Province',
-        'Street + House No.'            => 'Billing Address',
-        'Suite, Apt No., PO Box, etc.'  => 'Billing Address Line 2 (optional)',
-        'Validate'                      => 'Check',
-        'Your Details'                  => 'Personal Info',
-        'Zip/Postal Code'               => 'Billing Zip / Postal Code'
+        ''                             => 'Excluding %1$s&#37; tax',
+        'State/Province'               => 'Billing State / Province',
+        'Street + House No.'           => 'Billing Address',
+        'Suite, Apt No., PO Box, etc.' => 'Billing Address Line 2 (optional)',
+        'Validate'                     => 'Check',
+        'Your Details'                 => 'Personal Info',
+        'Zip/Postal Code'              => 'Billing Zip / Postal Code'
     ];
 
     private $plugin_dir = '';
@@ -69,17 +69,12 @@ class FFWP_BetterCheckout_Enable
         remove_action('edd_purchase_form_after_cc_form', 'edd_checkout_tax_fields', 999);
         add_action('edd_checkout_form_top', 'edd_checkout_tax_fields', 999);
 
-        // Overwrite Stripe Credit Card template.
-        if (function_exists('edd_stripe_new_card_form')) {
-            remove_action('edd_stripe_new_card_form', 'edd_stripe_new_card_form');
-            add_action('edd_stripe_new_card_form', [$this, 'stripe_new_card_form']);
-        }
-
         /**
          * When Taxes > 'Display Tax Rate' is enabled in EDD's settings, remove the mention for each
          * shopping cart item, because it seems excessive.
          */
         add_filter('edd_cart_item_tax_description', '__return_empty_string');
+        add_action('edd_purchase_link_top', [$this, 'add_tax_notice'], 999);
 
         // Move Discount Form
         remove_action('edd_checkout_form_top', 'edd_discount_field', -1);
@@ -202,92 +197,17 @@ class FFWP_BetterCheckout_Enable
     }
 
     /**
-     * Display the markup for the Stripe new card form. This template override moves the Name field below the Card Number field.
-     *
-     * @since 2.6
-     * @return void
+     * Insert custom VAT notice above 'Add to cart' button
+     * 
+     * @return void 
      */
-    public function stripe_new_card_form()
+    public function add_tax_notice()
     {
-        if (edd_stripe()->rate_limiting->has_hit_card_error_limit()) {
-            edd_set_error('edd_stripe_error_limit', __('Adding new payment methods is currently unavailable.', 'edds'));
-            edd_print_errors();
-            return;
-        }
-
-        $split = edd_get_option('stripe_split_payment_fields', false);
     ?>
-        <div id="edd-card-wrap">
-            <label for="edd-card-element" class="edd-label">
-                <?php
-                if ('1' === $split) :
-                    esc_html_e('Credit Card Number', 'edds');
-                else :
-                    esc_html_e('Credit Card', 'edds');
-                endif;
-                ?>
-                <span class="edd-required-indicator">*</span>
-            </label>
-
-            <div id="edd-stripe-card-element-wrapper">
-                <?php if ('1' === $split) : ?>
-                    <span class="card-type"></span>
-                <?php endif; ?>
-
-                <div id="edd-stripe-card-element" class="edd-stripe-card-element"></div>
-            </div>
-
-            <p class="edds-field-spacer-shim"></p><!-- Extra spacing -->
-        </div>
-
-        <?php if ('1' === $split) : ?>
-
-            <div id="edd-card-details-wrap">
-                <p class="edds-field-spacer-shim"></p><!-- Extra spacing -->
-
-                <div id="edd-card-exp-wrap">
-                    <label for="edd-card-exp-element" class="edd-label">
-                        <?php esc_html_e('Expiration', 'edds'); ?>
-                        <span class="edd-required-indicator">*</span>
-                    </label>
-
-                    <div id="edd-stripe-card-exp-element" class="edd-stripe-card-exp-element"></div>
-                </div>
-
-                <div id="edd-card-cvv-wrap">
-                    <label for="edd-card-exp-element" class="edd-label">
-                        <?php esc_html_e('CVC', 'edds'); ?>
-                        <span class="edd-required-indicator">*</span>
-                    </label>
-
-                    <div id="edd-stripe-card-cvc-element" class="edd-stripe-card-cvc-element"></div>
-                </div>
-            </div>
-
-        <?php endif; ?>
-
-        <p id="edd-card-name-wrap">
-            <label for="card_name" class="edd-label">
-                <?php esc_html_e('Name on the Card', 'edds'); ?>
-                <span class="edd-required-indicator">*</span>
-            </label>
-            <span class="edd-description"><?php esc_html_e('The name printed on the front of your credit card.', 'edds'); ?></span>
-            <input type="text" name="card_name" id="card_name" class="card-name edd-input required" placeholder="<?php esc_attr_e('Card name', 'edds'); ?>" autocomplete="cc-name" />
-        </p>
-
-        <div id="edd-stripe-card-errors" role="alert"></div>
-
+        <span class="edd_purchase_tax_rate">
+            <?= __('<strong>+ 21% VAT</strong> for EU residents', 'ffwp'); ?>
+        </span>
     <?php
-        /**
-         * Allow output of extra content before the credit card expiration field.
-         *
-         * This content no longer appears before the credit card expiration field
-         * with the introduction of Stripe Elements.
-         *
-         * @deprecated 2.7
-         * @since unknown
-         */
-        do_action('edd_before_cc_expiration');
     }
 
     /**
