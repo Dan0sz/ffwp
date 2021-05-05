@@ -25,7 +25,7 @@ class FFWP_BetterCheckout_Enable
         'Enter a valid VAT number to reverse charge EU VAT.' => 'Enter the VAT number of your company.',
         'Name on Card'                                       => 'Name on the Card',
         'Payment'                                            => 'Select Payment Method',
-        '<strong>+ 21&#37 VAT</strong> for EU residents' => 'Excluding %1$s&#37; tax',
+        'Shown prices are <strong>excl. 21&#37 VAT</strong> for EU residents' => 'Excluding %1$s&#37; tax',
         'State/Province'                => 'Billing State / Province',
         'Street + House No.'            => 'Billing Address',
         'Suite, Apt No., PO Box, etc.'  => 'Billing Address Line 2 (optional)',
