@@ -341,17 +341,17 @@ class FFWP_BetterCheckout_Enable
             }
 
             #edd-gateway-option-mollie_creditcard:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/credit-card-logo.png'; ?>');
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/mollie-credit-cards-logo.png'; ?>');
                 width: 122px;
             }
 
             #edd-gateway-option-mollie_ideal:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/ideal-logo.png'; ?>');
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/mollie-ideal-logo.png'; ?>');
                 width: 40px;
             }
 
             #edd-gateway-option-mollie_paypal:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/paypal-logo.png'; ?>');
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/mollie-paypal-logo.png'; ?>');
                 width: 40px;
             }
         </style>
