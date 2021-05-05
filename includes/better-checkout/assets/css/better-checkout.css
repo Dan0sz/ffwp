@@ -444,7 +444,16 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal {
     .edd-vat-number-wrap {
         width: 100%;
     }
-    .edd-gateway-option {
+    #edd_payment_mode_select legend::after {
+        width: 159px !important;
+    }
+    #edd_checkout_form_wrap #edd-payment-mode-wrap label {
+        margin-top: 10px;
+    }
+    #edd_checkout_form_wrap #edd-payment-mode-wrap label:first-child {
+        margin-top: 0;
+    }
+    .edd-gateway-option, #edd-gateway-option-mollie_creditcard {
         width: 100%;
     }
     #edd-purchase-button {
