@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   FFWP
  * @author    Daan van den Bergh
@@ -26,6 +27,7 @@ class FFWP
 
         add_action('plugins_loaded', [$this, 'enable_better_checkout'], 100);
         add_action('init', [$this, 'add_changelog_shortcode']);
+        add_action('init', [$this, 'add_current_plugin_version_shortcode']);
         add_action('init', [$this, 'add_child_pages_menu']);
     }
 
@@ -83,6 +85,14 @@ class FFWP
     public function add_changelog_shortcode()
     {
         return new FFWP_ChangelogShortcode_Add();
+    }
+
+    /**
+     * @return FFWP_CurrentPluginVersion_Shortcode 
+     */
+    public function add_current_plugin_version_shortcode()
+    {
+        return new FFWP_CurrentPluginVersion_Shortcode();
     }
 
     /**

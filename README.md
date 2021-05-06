@@ -73,6 +73,16 @@ As a last fallback it will try to get child pages based on the `base` parameter.
 
 That's it!
 
+## Current Plugin Version Shortcode
+
+It does what the title says, it adds a shortcode which outputs the latest version of a defined plugin.
+
+The code is copied directly from [here](https://hawpmedia.com/how-to-get-easy-digital-downloads-product-version-number-with-shortcode/).
+
+### Usage 
+
+Insert shorcode `[edd_product_version id="post_id_here"]` to display the version number of a defined product.
+
 ## Non-required Card State Field
 
 Dynamically detect if State should be a required field, based on the selected Country.
