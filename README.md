@@ -73,15 +73,14 @@ As a last fallback it will try to get child pages based on the `base` parameter.
 
 That's it!
 
-## Current Plugin Version Shortcode
+## Download Information Shortcodes
 
-It does what the title says, it adds a shortcode which outputs the latest version of a defined plugin.
-
-The code is copied directly from [here](https://hawpmedia.com/how-to-get-easy-digital-downloads-product-version-number-with-shortcode/).
+It does what the title says, it adds two shortcodes which output additional information of a defined plugin.
 
 ### Usage 
 
-Insert shorcode `[edd_product_version id="post_id_here"]` to display the version number of a defined product.
+Shortcode `[edd_dl_version id="post_id"]` displays the version number of a defined product. "id" defaults to the current post.
+Shortcode `[edd_dl_last_updated id="post_id" format="date_format"]` displays the date last modified of the post. "id" defaults to the current post. "format" defaults to the `date_format` option in WordPress' settings.
 
 ## Non-required Card State Field
 

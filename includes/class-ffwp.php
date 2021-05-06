@@ -27,7 +27,7 @@ class FFWP
 
         add_action('plugins_loaded', [$this, 'enable_better_checkout'], 100);
         add_action('init', [$this, 'add_changelog_shortcode']);
-        add_action('init', [$this, 'add_current_plugin_version_shortcode']);
+        add_action('init', [$this, 'add_download_info_shortcodes']);
         add_action('init', [$this, 'add_child_pages_menu']);
     }
 
@@ -88,11 +88,11 @@ class FFWP
     }
 
     /**
-     * @return FFWP_CurrentPluginVersion_Shortcode 
+     * @return FFWP_DownloadInfo_Shortcodes 
      */
-    public function add_current_plugin_version_shortcode()
+    public function add_download_info_shortcodes()
     {
-        return new FFWP_CurrentPluginVersion_Shortcode();
+        return new FFWP_DownloadInfo_Shortcodes();
     }
 
     /**
