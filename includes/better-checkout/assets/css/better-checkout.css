@@ -12,6 +12,10 @@
     background-position: top center;
 }
 
+.edd-checkout .ast-separate-container {
+    background-color: #e6e6e6;
+}
+
 .edd-checkout.ast-separate-container article.ast-article-single {
     padding: 0;
 }
