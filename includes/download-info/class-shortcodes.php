@@ -51,6 +51,15 @@ class FFWP_DownloadInfo_Shortcodes
             'format' => get_option('date_format')
         ], $attributes);
 
-        return get_the_modified_date($attributes['format'], $attributes['id']);
+        $readme_url = get_post_meta($attributes['id'], '_edd_readme_location', true) ?? '';
+        $headers    = get_headers($readme_url);
+
+        foreach ($headers as $header) {
+            if (strpos($header, 'Last-Modified') !== false) {
+                $timestamp = strtotime(str_replace('Last-Modified: ', '', $header));
+
+                return gmdate($attributes['format'], $timestamp);
+            }
+        }
     }
 }
