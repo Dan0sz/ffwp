@@ -4,6 +4,8 @@
  * @author Daan van den Bergh
  * @url    https://ffw.press
  */
+var edd_global_vars;
+
 jQuery(document).ready(function ($) {
     var ffwp_checkout = {
         init: function () {
@@ -20,9 +22,10 @@ jQuery(document).ready(function ($) {
             /**
              * Events after which the shopping cart is refreshed.
              */
-            $(document.body).on('edd_cart_billing_address_updated', this.set_loader_cart);
-            $(document.body).on('edd_eu_vat:before_vat_check', this.set_loader_cart);
+            $(document.body).on('edd_cart_billing_address_updated, edd_gateway_loaded, edd_eu_vat:before_vat_check', this.set_loader_cart);
             $('.edd-apply-discount').on('click', this.set_loader_cart);
+
+            $(document.body).on('edd_gateway_loaded', this.maybe_remove_recurring_notice);
         },
 
         add_class: function () {
@@ -45,6 +48,31 @@ jQuery(document).ready(function ($) {
             $cart.css({
                 opacity: 0.5
             });
+        },
+
+        maybe_remove_recurring_notice: function () {
+            var edd_gateway = $("input[name='edd-gateway']").val();
+
+            var $this = $(this), postData = {
+                action: 'ffwp_maybe_remove_recurring_notice',
+                gateway: edd_gateway
+            };
+
+            $.ajax({
+                type: "POST",
+                data: postData,
+                dataType: "json",
+                url: edd_global_vars.ajaxurl,
+                success: function (response) {
+                    $('#edd_checkout_cart').replaceWith(response.html);
+                    $('.edd_cart_amount').html(response.total);
+                }
+            }).fail(function (data) {
+                if (window.console && window.console.log) {
+                }
+            });
+
+            return false;
         }
     };
 
