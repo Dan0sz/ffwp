@@ -38,6 +38,8 @@ class FFWP_BetterCheckout_Enable
 
     private $plugin_url = '';
 
+    private $gateways = [];
+
     /**
      * FFWP_BetterCheckout_Enable constructor.
      */
@@ -82,6 +84,8 @@ class FFWP_BetterCheckout_Enable
 
         // Stylesheet
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts_and_styles']);
+
+        add_filter('edd_enabled_payment_gateways', [$this, 'force_gateways'], 10000, 1);
     }
 
     /**
@@ -227,7 +231,7 @@ class FFWP_BetterCheckout_Enable
         }
 
         wp_enqueue_script('ffwpress-better-checkout', $this->plugin_url . "assets/js/better-checkout$suffix.js", ['jquery', 'edd-checkout-global'], FFWP_STATIC_VERSION, true);
-        wp_enqueue_style('ffwpress-better-checkout', $this->plugin_url . "assets/css/better-checkout$suffix.css", ['astra-child-theme-css', 'edd-blocks', 'edd-eu-vat', 'edd-sl-styles'], FFWP_STATIC_VERSION);
+        wp_enqueue_style('ffwpress-better-checkout', $this->plugin_url . "assets/css/better-checkout$suffix.css", ['astra-child-theme-css'], FFWP_STATIC_VERSION);
         wp_add_inline_style('ffwpress-better-checkout', $this->add_inline_stylesheet());
     }
 
@@ -277,5 +281,22 @@ class FFWP_BetterCheckout_Enable
         </style>
 <?php
         return str_replace(['<style>', '</style>'], '', ob_get_clean());
+    }
+
+    /**
+     * Somewhere all payment methods are lost. This functions forces them back.
+     * 
+     * @param mixed $gateways 
+     * @return mixed 
+     */
+    public function force_gateways($gateways)
+    {
+        if (count($gateways) <= 1) {
+            return $this->gateways;
+        }
+
+        $this->gateways = $gateways;
+
+        return $gateways;
     }
 }
