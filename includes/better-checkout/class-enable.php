@@ -71,6 +71,7 @@ class FFWP_BetterCheckout_Enable
         remove_action('edd_purchase_form_after_cc_form', 'edd_checkout_tax_fields', 999);
         add_action('edd_checkout_form_top', 'edd_checkout_tax_fields', 999);
 
+        add_action('edd_purchase_form_before_submit', [$this, 'show_paypal_notice'], -1);
         /**
          * When Taxes > 'Display Tax Rate' is enabled in EDD's settings, remove the mention for each
          * shopping cart item, because it seems excessive.
@@ -196,8 +197,26 @@ class FFWP_BetterCheckout_Enable
             endif; ?>
         </div>
         <!--end #edd_checkout_wrap-->
-    <?php
+        <?php
         return ob_get_clean();
+    }
+
+    /**
+     * 
+     */
+    public function show_paypal_notice()
+    {
+        $selected_gateway = edd_get_chosen_gateway();
+
+        if ($selected_gateway == 'mollie_paypal') : ?>
+            <fieldset id="paypal-notice">
+                <div class="paypal-notice">
+                    <label>
+                        <?= __('Licenses purchased with PayPal are not automatically billed and renewed. You will be notified by e-mail shortly before your license expires. Choose a different payment method to enable automatic renewal.', $this->plugin_text_domain); ?>
+                    </label>
+                </div>
+            </fieldset>
+        <?php endif;
     }
 
     /**
@@ -207,7 +226,7 @@ class FFWP_BetterCheckout_Enable
      */
     public function add_tax_notice()
     {
-    ?>
+        ?>
         <span class="edd_purchase_tax_rate">
             <?= __('<strong>+ 21% VAT</strong> for EU residents', 'ffwp'); ?>
         </span>
