@@ -244,6 +244,10 @@ fieldset#edd_checkout_user_info {
     border: 1px #0daadb solid;
 }
 
+.edd-gateway-option input.edd-gateway {
+    vertical-align: 0;
+}
+
 /**
 * EU VAT
 */

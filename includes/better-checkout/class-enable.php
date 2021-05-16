@@ -315,7 +315,12 @@ class FFWP_BetterCheckout_Enable
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/ffw-waves-grayscale.png'; ?>');
             }
 
-            #edd_payment_mode_select legend:after {
+            <?php if (count($this->gateways) == 2) : ?>#edd-gateway-option-mollie_creditcard,
+            #edd-gateway-option-mollie_ideal {
+                width: 49.319%;
+            }
+
+            <?php endif; ?>#edd_payment_mode_select legend:after {
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/powered-by-mollie.jpg'; ?>');
                 width: 238px;
             }
