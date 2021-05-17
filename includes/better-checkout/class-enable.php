@@ -90,6 +90,7 @@ class FFWP_BetterCheckout_Enable
         // Stylesheet
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts_and_styles']);
 
+        // Force available gateways
         add_filter('edd_enabled_payment_gateways', [$this, 'force_gateways'], 10000, 1);
     }
 
@@ -216,7 +217,7 @@ class FFWP_BetterCheckout_Enable
             <fieldset id="paypal-notice">
                 <div class="paypal-notice">
                     <label>
-                        <?= __('Licenses purchased with PayPal are not automatically billed and renewed. You will be notified by e-mail shortly before your license expires. Choose a different payment method to enable automatic renewal.', $this->plugin_text_domain); ?>
+                        <?= __('Licenses purchased with PayPal are not automatically billed and renewed. Your license can be renewed anytime from within your account area. You will be timely notified by email before your license expires.', $this->plugin_text_domain); ?>
                     </label>
                 </div>
             </fieldset>
