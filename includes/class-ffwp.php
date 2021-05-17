@@ -105,6 +105,10 @@ class FFWP
         return new FFWP_ChildPagesMenu_Add();
     }
 
+    /**
+     * @param array $countries 
+     * @return array 
+     */
     public function change_gb_to_zero_vat($countries)
     {
         $countries['GB'] = 0;
