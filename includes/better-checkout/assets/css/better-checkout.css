@@ -149,7 +149,7 @@
 */
 
 #edd_checkout_user_info legend:after {
-    content: 'VAT is recalculated when the requested information is entered below.';
+    content: 'VAT will be recalculated when you have entered your details below.';
     font-family: Helvetica, Verdana, Arial, sans-serif;
     font-size: .6em;
     font-style: italic;
