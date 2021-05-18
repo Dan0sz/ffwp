@@ -31,6 +31,19 @@ class FFWP
         add_action('init', [$this, 'add_child_pages_menu']);
         add_filter('edd_eu_vat_uk_hide_checkout_input', '__return_true');
         add_filter('edd_vat_current_eu_vat_rates', [$this, 'change_gb_to_zero_vat']);
+        add_filter('wpseo_title', [$this, 'add_shortcode_support']);
+    }
+
+    /**
+     * Adds shortcode support to Yoast SEO
+     * 
+     * @param mixed $title 
+     * @return string 
+     */
+    public function add_shortcode_support($title)
+    {
+        $title = do_shortcode($title);
+        return $title;
     }
 
     /**
