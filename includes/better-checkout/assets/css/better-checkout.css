@@ -148,6 +148,17 @@
 * Personal Info and Billing Address
 */
 
+#edd_checkout_user_info legend:after {
+    content: 'VAT is recalculated when the requested information is entered below.';
+    font-family: Helvetica, Verdana, Arial, sans-serif;
+    font-size: .6em;
+    font-style: italic;
+    font-weight: 400;
+    color: #3a3a3a;
+    margin-left: 10px;
+    opacity: .7;
+}
+
 #ffwpress-payment-details__wrapper fieldset legend, #ffwpress-cart__wrapper fieldset legend {
     color: #0daadb;
     background-color: transparent;
