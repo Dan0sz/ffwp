@@ -30,7 +30,6 @@ class FFWP_BetterCheckout_Enable
         'Street + House No.'           => 'Billing Address',
         'Suite, Apt No., PO Box, etc.' => 'Billing Address Line 2 (optional)',
         'Validate'                     => 'Check',
-        'Your Details'                 => 'Personal Info',
         'Zip/Postal Code'              => 'Billing Zip / Postal Code'
     ];
 
@@ -54,6 +53,9 @@ class FFWP_BetterCheckout_Enable
         add_filter('edd_template_paths', [$this, 'add_template_path']);
 
         // Modify Text Fields
+        add_filter('edd_checkout_personal_info_text', function () {
+            return __('Your Details', $this->plugin_text_domain);
+        });
         add_filter('gettext_easy-digital-downloads', [$this, 'modify_text_fields'], 1, 3);
         add_filter('gettext_edd-eu-vat', [$this, 'modify_text_fields'], 1, 3);
         add_filter('gettext_edds', [$this, 'modify_text_fields'], 1, 3);
@@ -81,11 +83,13 @@ class FFWP_BetterCheckout_Enable
          * shopping cart item, because it seems excessive.
          */
         add_filter('edd_cart_item_tax_description', '__return_empty_string');
-        add_action('edd_purchase_link_top', [$this, 'add_tax_notice'], 999);
 
         // Move Discount Form
         remove_action('edd_checkout_form_top', 'edd_discount_field', -1);
         add_action('edd_after_checkout_cart', 'edd_discount_field', -1);
+
+        // Modify required fields
+        add_filter('edd_purchase_form_required_fields', [$this, 'add_required_fields']);
 
         // Stylesheet
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts_and_styles']);
@@ -178,6 +182,10 @@ class FFWP_BetterCheckout_Enable
                              * @since 1.0
                              */
                             do_action('edd_checkout_form_bottom')
+
+                            /**
+                             * This hidden emulates clicks on the 'Apply Discount' button outside the form.
+                             */
                             ?>
                             <input type="submit" class="edd-apply-discount edd-submit blue button hidden" value="Apply" />
                         </form>
@@ -269,6 +277,26 @@ class FFWP_BetterCheckout_Enable
             <?= __('<strong>+ 21% VAT</strong> for EU residents', 'ffwp'); ?>
         </span>
     <?php
+    }
+
+    /**
+     * Add Last Name and Street + House No. as required field, because it's dumb not to ask that.
+     * 
+     * @param mixed $required_fields 
+     * @return mixed 
+     */
+    public function add_required_fields($required_fields)
+    {
+        $required_fields['edd_last'] = [
+            'error_id' => 'invalid_last_name',
+            'error_message' => 'Please enter your last name'
+        ];
+        $required_fields['card_address'] = [
+            'error_id' => 'invalid_card_address',
+            'error_message' => 'Please enter your Street + House no.'
+        ];
+
+        return $required_fields;
     }
 
     /**
