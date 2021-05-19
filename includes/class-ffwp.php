@@ -19,7 +19,6 @@ class FFWP
      */
     public function __construct()
     {
-        $this->process_auto_add_to_cart();
         $this->add_custom_checkout_fields();
         $this->insert_login_fields_legend();
         $this->set_non_required_state_field();
@@ -44,14 +43,6 @@ class FFWP
     {
         $title = do_shortcode($title);
         return $title;
-    }
-
-    /**
-     * @return FFWP_AutoAddToCart_Process
-     */
-    private function process_auto_add_to_cart()
-    {
-        return new FFWP_AutoAddToCart_Process();
     }
 
     /**
