@@ -30,19 +30,25 @@ class FFWP
         add_action('init', [$this, 'add_child_pages_menu']);
         add_filter('edd_eu_vat_uk_hide_checkout_input', '__return_true');
         add_filter('edd_vat_current_eu_vat_rates', [$this, 'change_gb_to_zero_vat']);
+
+        // Yoast
         add_filter('wpseo_title', [$this, 'add_shortcode_support']);
+
+        // Rankmath
+        add_filter('rank_math/frontend/title', [$this, 'add_shortcode_support']);
+        add_filter('rank_math/frontend/description', [$this, 'add_shortcode_support']);
     }
 
     /**
      * Adds shortcode support to Yoast SEO
      * 
-     * @param mixed $title 
+     * @param mixed $content 
      * @return string 
      */
-    public function add_shortcode_support($title)
+    public function add_shortcode_support($content)
     {
-        $title = do_shortcode($title);
-        return $title;
+        $content = do_shortcode($content);
+        return $content;
     }
 
     /**
