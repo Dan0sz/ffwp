@@ -291,14 +291,16 @@ class FFWP_BetterCheckout_Enable
      */
     public function add_required_fields($required_fields)
     {
-        $required_fields['edd_last'] = [
-            'error_id' => 'invalid_last_name',
-            'error_message' => 'Please enter your last name'
-        ];
-        $required_fields['card_address'] = [
-            'error_id' => 'invalid_card_address',
-            'error_message' => 'Please enter your Street + House no.'
-        ];
+        if (edd_cart_needs_tax_address_fields() && edd_get_cart_total()) {
+            $required_fields['edd_last'] = [
+                'error_id' => 'invalid_last_name',
+                'error_message' => 'Please enter your last name'
+            ];
+            $required_fields['card_address'] = [
+                'error_id' => 'invalid_card_address',
+                'error_message' => 'Please enter your Street + House no.'
+            ];
+        }
 
         return $required_fields;
     }
