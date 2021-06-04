@@ -39,6 +39,8 @@ class FFWP_BetterCheckout_Enable
 
     private $gateways = [];
 
+    private $plugin_text_domain = 'ffwp';
+
     /**
      * FFWP_BetterCheckout_Enable constructor.
      */
