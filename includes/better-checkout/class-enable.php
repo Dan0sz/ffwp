@@ -348,10 +348,6 @@ class FFWP_BetterCheckout_Enable
         ob_start();
     ?>
         <style>
-            #content {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/ffw-waves-grayscale.png'; ?>');
-            }
-
             <?php if (count($this->gateways) == 2) : ?>#edd-gateway-option-mollie_creditcard,
             #edd-gateway-option-mollie_ideal {
                 width: 49.319%;
