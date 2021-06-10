@@ -182,8 +182,13 @@ class FFWP_ProductDetailsWidget_Modify
             var changelogLink = document.getElementById('ffw-changelog-link');
             var changelogClose = document.getElementById('ffw-changelog-close');
 
-            changelogLink.addEventListener('click', toggleChangelog);
-            changelogClose.addEventListener('click', toggleChangelog);
+            if (changelogLink !== null) {
+                changelogLink.addEventListener('click', toggleChangelog);
+            }
+
+            if (changelogClose !== null) {
+                changelogClose.addEventListener('click', toggleChangelog);
+            }
 
             function toggleChangelog() {
                 var changelog = document.getElementById('ffw-changelog-popup');
