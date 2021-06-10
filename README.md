@@ -96,6 +96,16 @@ Install.
 
 Enjoy!
 
+## Modify Product Details Widget
+
+Modifies EDD's product details widget by adding a Last Updated and Current Version line, where a click on the version number opens the changelog in a lightbox.
+
+### Usage
+
+Install.
+
+Enjoy!
+
 ## Custom Checkout Fields
 
 Adds custom Project Information fields to its checkout, purchase confirmation, order confirmation email and payment details screens when defined items are purchased. This includes validation, etc.
