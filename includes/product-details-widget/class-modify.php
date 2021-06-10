@@ -16,6 +16,10 @@ class FFWP_ProductDetailsWidget_Modify
     /** @var Downloads_As_Service $das */
     private $das;
 
+    /** @var string $changelog */
+    private $changelog;
+
+    /** @var string $plugin_text_domain */
     private $plugin_text_domain = 'ffwp';
 
     /**
@@ -38,8 +42,24 @@ class FFWP_ProductDetailsWidget_Modify
     private function init()
     {
         add_filter('widget_title', [$this, 'modify_widget_title'], 10, 3);
+
+        // Begin table
+        add_action('edd_product_details_widget_before_categories_and_tags', function () {
+            echo '<table class="ffw-download-details"><tbody>';
+        }, 9);
+
+        // Table content
         add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_current_version'], 10, 2);
-        add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_date_last_updated'], 11, 2);
+        add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_changelog_link'], 11, 2);
+        add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_date_last_updated'], 12, 2);
+
+        // End table
+        add_action('edd_product_details_widget_before_categories_and_tags', function () {
+            echo '</tbody></table>';
+        }, 12);
+
+        add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_changelog_popup'], 13);
+
         add_action('wp_footer', [$this, 'add_inline_script']);
     }
 
@@ -69,17 +89,28 @@ class FFWP_ProductDetailsWidget_Modify
     public function add_current_version($instance, $download_id)
     {
         $current_version = get_post_meta($download_id, '_edd_sl_version', true) ?? '';
-        $changelog       = get_post_meta($download_id, '_edd_sl_changelog', true) ?? '';
-        if ($current_version && $changelog) : ?>
-            <div class="edd-ffw-current-version"><?= sprintf(__('Current version: <a href="#" id="ffw-changelog-link">%s</a>', $this->plugin_text_domain), $current_version); ?></div>
-            <div style="display: none;" id="ffw-changelog-popup">
-                <div class="ffw-changelog-popup-inner">
-                    <a href="#" id="ffw-changelog-close"><?= '⮿ ' . __('close', $this->plugin_text_domain); ?></a>
-                    <div class="ffw-changelog-wrapper">
-                        <?= $changelog; ?>
-                    </div>
-                </div>
-            </div>
+        if ($current_version) : ?>
+            <tr>
+                <td><?= __('Current version', $this->plugin_text_domain); ?></td>
+                <td><span itemscope itemtype="https://schema.org/version"><?= sprintf(__('%s', $this->plugin_text_domain), $current_version); ?></span></td>
+            </tr>
+        <?php endif;
+    }
+
+    /**
+     * @param mixed $instance 
+     * @param mixed $download_id 
+     * @return void 
+     */
+    public function add_changelog_link($instance, $download_id)
+    {
+        $this->changelog = get_post_meta($download_id, '_edd_sl_changelog', true) ?? '';
+
+        if ($this->changelog) : ?>
+            <tr>
+                <td><?= __('Changelog', $this->plugin_text_domain); ?></td>
+                <td><?= __('<a href="#" id="ffw-changelog-link">View</a>', $this->plugin_text_domain); ?></td>
+            </tr>
         <?php endif;
     }
 
@@ -111,13 +142,34 @@ class FFWP_ProductDetailsWidget_Modify
             if (strpos($header, 'Last-Modified') !== false) {
                 $timestamp = strtotime(str_replace('Last-Modified: ', '', $header));
 
-                $last_updated = gmdate(get_option('date_format'), $timestamp);
+                $last_updated = gmdate('Y-m-d', $timestamp);
             }
         }
 
         if ($last_updated) : ?>
-            <div class="edd-ffw-last-updated"><?= sprintf(__('Last updated: %s'), $last_updated); ?></div>
+            <tr>
+                <td><?= __('Last updated:', $this->plugin_text_domain); ?></td>
+                <td><span itemscope itemtype="https://schema.org/dateModified"><?= sprintf(__('%s'), $last_updated); ?></span></td>
+            </tr>
         <?php endif;
+    }
+
+    /**
+     * 
+     * @return void 
+     */
+    public function add_changelog_popup()
+    {
+        ?>
+        <div style="display: none;" id="ffw-changelog-popup">
+            <div class="ffw-changelog-popup-inner">
+                <a href="#" id="ffw-changelog-close"><?= '⮿ ' . __('close', $this->plugin_text_domain); ?></a>
+                <div class="ffw-changelog-wrapper">
+                    <?= $this->changelog; ?>
+                </div>
+            </div>
+        </div>
+    <?php
     }
 
     /**
@@ -125,7 +177,7 @@ class FFWP_ProductDetailsWidget_Modify
      */
     public function add_inline_script()
     {
-        ?>
+    ?>
         <script>
             var changelogLink = document.getElementById('ffw-changelog-link');
             var changelogClose = document.getElementById('ffw-changelog-close');

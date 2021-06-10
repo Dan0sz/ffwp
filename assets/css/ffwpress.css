@@ -14,6 +14,15 @@
     margin-top: 5px;
 }
 
+.ffw-download-details {
+    margin-top: 1.15em;
+    margin-bottom: 0;
+}
+
+.ffw-download-details td {
+    padding: 5px 10px;
+}
+
 #ffw-changelog-popup {
     position: fixed;
     top: 50%;
