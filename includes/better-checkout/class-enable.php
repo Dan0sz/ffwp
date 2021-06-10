@@ -317,7 +317,7 @@ class FFWP_BetterCheckout_Enable
         $suffix = $this->get_script_suffix();
 
         wp_enqueue_style('ffwpress-icons', FFWP_PLUGIN_URL . "assets/css/ffwpress-icons$suffix.css");
-        wp_enqueue_style('ffwpress', FFWP_PLUGIN_URL . "assets/css/ffwpress$suffix.css", ['astra-child-theme-css', 'edd-blocks', 'edd-eu-vat', 'edd-sl-styles'], FFWP_STATIC_VERSION);
+        wp_enqueue_style('ffwpress', FFWP_PLUGIN_URL . "assets/css/ffwpress$suffix.css", ['astra-child-theme-css'], FFWP_STATIC_VERSION);
 
         if (!edd_is_checkout()) {
             return;
