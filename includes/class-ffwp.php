@@ -20,6 +20,7 @@ class FFWP
     public function __construct()
     {
         $this->add_custom_checkout_fields();
+        $this->modify_product_details_widget();
         $this->insert_login_fields_legend();
         $this->set_non_required_state_field();
         $this->set_reusable_license();
@@ -73,6 +74,14 @@ class FFWP
     private function add_custom_checkout_fields()
     {
         return new FFWP_CustomCheckoutFields_Add();
+    }
+
+    /**
+     * @return FFWP_ProductDetailsWidget_Modify 
+     */
+    private function modify_product_details_widget()
+    {
+        return new FFWP_ProductDetailsWidget_Modify();
     }
 
     /**
