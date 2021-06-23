@@ -54,6 +54,8 @@ class FFWP_BetterCheckout_Enable
         // Add this plugin to the template paths.
         add_filter('edd_template_paths', [$this, 'add_template_path']);
 
+        add_action('edd_purchase_link_top', [$this, 'add_vat_notice']);
+
         // Modify Text Fields
         add_filter('edd_checkout_personal_info_text', function () {
             return __('Your Details', $this->plugin_text_domain);
@@ -276,11 +278,11 @@ class FFWP_BetterCheckout_Enable
      * 
      * @return void 
      */
-    public function add_tax_notice()
+    public function add_vat_notice()
     {
         ?>
         <span class="edd_purchase_tax_rate">
-            <?= __('<strong>+ 21% VAT</strong> for EU residents', 'ffwp'); ?>
+            <?= __('<strong>+ VAT</strong> for EU residents', 'ffwp'); ?>
         </span>
     <?php
     }
