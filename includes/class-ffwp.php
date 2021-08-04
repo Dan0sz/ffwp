@@ -14,6 +14,8 @@ defined('ABSPATH') || exit;
 
 class FFWP
 {
+    private $login_url = 'https://ffw.press/account/';
+
     /**
      * FFWP constructor.
      */
@@ -128,13 +130,11 @@ class FFWP
     }
 
     /**
-     * @param mixed $login_url 
-     * @param mixed $redirect 
      * @return FFWP_LoginUrl_Change 
      */
-    public function change_login_url($login_url)
+    public function change_login_url()
     {
-        return new FFWP_LoginUrl_Change($login_url);
+        return $this->login_url;
     }
 
     /**
