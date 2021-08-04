@@ -29,6 +29,9 @@ class FFWP
         add_action('init', [$this, 'add_changelog_shortcode']);
         add_action('init', [$this, 'add_download_info_shortcodes']);
         add_action('init', [$this, 'add_child_pages_menu']);
+        add_filter('login_url', [$this, 'change_login_url']);
+
+        // EDD EU VAT
         add_filter('edd_eu_vat_uk_hide_checkout_input', '__return_true');
         add_filter('edd_vat_current_eu_vat_rates', [$this, 'change_gb_to_zero_vat']);
 
@@ -122,6 +125,16 @@ class FFWP
     public function add_child_pages_menu()
     {
         return new FFWP_ChildPagesMenu_Add();
+    }
+
+    /**
+     * @param mixed $login_url 
+     * @param mixed $redirect 
+     * @return FFWP_LoginUrl_Change 
+     */
+    public function change_login_url($login_url)
+    {
+        return new FFWP_LoginUrl_Change($login_url);
     }
 
     /**
