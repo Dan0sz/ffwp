@@ -51,7 +51,7 @@ class FFWP_SoftwareLicensing_Emails
                     $price_name = " - " . edd_get_price_option_name($license->download_id, $license->price_id);
                 }
 
-                $keys_output .=  $license->get_download()->get_name() . $price_name . ", <strong>license key</strong>: " . $license->key . "\n\r";
+                $keys_output .=  $license->get_download()->get_name() . $price_name . ", license key: <em>" . $license->key . "</em>\n\r";
             }
         }
 
