@@ -31,6 +31,9 @@ class FFWP
         add_action('init', [$this, 'add_child_pages_menu']);
         add_filter('login_url', [$this, 'change_login_url']);
 
+        // Software Licensing (runs at priority 100)
+        add_action('edd_add_email_tags', [$this, 'add_email_tag'], 101);
+
         // EDD EU VAT
         add_filter('edd_eu_vat_uk_hide_checkout_input', '__return_true');
         add_filter('edd_vat_current_eu_vat_rates', [$this, 'change_gb_to_zero_vat']);
@@ -133,6 +136,16 @@ class FFWP
     public function change_login_url()
     {
         return home_url('account');
+    }
+
+    /**
+     * Add the new email tag.
+     * 
+     * @return void 
+     */
+    public function add_email_tag()
+    {
+        new FFWP_SoftwareLicensing_Emails();
     }
 
     /**
