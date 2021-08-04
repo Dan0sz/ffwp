@@ -54,7 +54,7 @@ jQuery(document).ready(function ($) {
         maybe_remove_recurring_notice: function () {
             var edd_gateway = $("input[name='edd-gateway']").val();
 
-            var $this = $(this), postData = {
+            var postData = {
                 action: 'ffwp_maybe_remove_recurring_notice',
                 gateway: edd_gateway
             };
