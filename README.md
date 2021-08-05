@@ -98,7 +98,7 @@ Enjoy!
 
 ## Modify Product Details Widget
 
-Modifies EDD's product details widget by adding a Last Updated and Current Version line, where a click on the version number opens the changelog in a lightbox.
+Modifies EDD's product details widget by adding a Last Updated and Current Version line, where a click on the version number opens the changelog in a lightbox. 
 
 ### Usage
 
@@ -124,7 +124,7 @@ Adds a custom translatable legend and description to the login form in checkout.
 
 ## Better Checkout
 
-Heavily customizes the otherwise rather boring checkout flow for Easy Digital Download's checkout.
+Heavily customizes the otherwise rather boring checkout flow for Easy Digital Download's checkout. With only 1 (!) template override!
 
 ### Overview
 
@@ -134,3 +134,4 @@ Heavily customizes the otherwise rather boring checkout flow for Easy Digital Do
 - Discount form is moved below shopping cart,
 - Renew license (when Software License add-on is used) is moved to the top of the screen, along with the login form, which is hidden under a popup,
 - Payment methods are shown in big buttons, spread among 2 columns, along with logos.
+- Specific information for a payment method is shown upon selection.
