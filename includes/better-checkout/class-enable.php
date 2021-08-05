@@ -231,9 +231,19 @@ class FFWP_BetterCheckout_Enable
 
         if ($selected_gateway == 'mollie_paypal') : ?>
             <fieldset id="paypal-notice">
-                <div class="paypal-notice">
+                <div class="payment-method-additional-info paypal">
                     <label>
-                        <?= __('Licenses purchased with PayPal are not anually billed and renewed. Your license can be renewed anytime from within your account area. You will be timely notified by email before your license expires.', $this->plugin_text_domain); ?>
+                        <?= __('Licenses purchased with <strong>PayPal</strong> are <u>not</u> anually billed and renewed. Your license can be renewed anytime from within your account area. You will be timely notified by email before your license expires.', $this->plugin_text_domain); ?>
+                    </label>
+                </div>
+            </fieldset>
+        <?php endif;
+
+        if ($selected_gateway == 'mollie_ideal') : ?>
+            <fieldset id="ideal-notice">
+                <div class="payment-method-additional-info ideal">
+                    <label>
+                        <?= __('Your initial payment is processed using <strong>iDEAL</strong>. Recurring payments (if any) are processed with <strong>SEPA Direct Debit</strong> and will appear on your statement as a charge from <strong>FFW.Press via Mollie</strong> (IBAN: <strong>NL79DEUT7025543679</strong>)', $this->plugin_text_domain); ?>
                     </label>
                 </div>
             </fieldset>
