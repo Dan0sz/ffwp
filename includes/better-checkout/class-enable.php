@@ -351,7 +351,7 @@ class FFWP_BetterCheckout_Enable
     ?>
         <style>
             #edd_payment_mode_select legend:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/powered-by-mollie.jpg'; ?>');
+                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/powered-by-mollie.jpg?v=' . FFWP_STATIC_VERSION; ?>');
                 width: 238px;
             }
 
