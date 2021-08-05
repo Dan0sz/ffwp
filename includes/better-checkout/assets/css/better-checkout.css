@@ -207,6 +207,10 @@
     background-size: contain;
 }
 
+#edd_checkout_wrap fieldset>div#edd-payment-mode-wrap {
+    padding-right: 27px;
+}
+
 fieldset#edd_checkout_user_info {
     margin: 0;
     width: 100%;
@@ -217,7 +221,7 @@ fieldset#edd_checkout_user_info {
 }
 
 #edd_checkout_form_wrap #edd-payment-mode-wrap label {
-    margin-right: 10px;
+    margin-right: 35px;
 }
 
 #edd_checkout_form_wrap #edd-payment-mode-wrap label:last-child {
@@ -226,18 +230,22 @@ fieldset#edd_checkout_user_info {
 
 .edd-gateway-option {
     position: relative;
-    width: 30.136%;
+    width: 47.7%;
     padding: 15px 0 15px 15px;
     border: 1px #ddd solid;
     border-radius: 3px;
     cursor: pointer;
 }
 
+#edd-gateway-option-mollie_paypal {
+    width: 47.3%;
+}
+
 /** Credit Card payment methods has more logos, that's why we give it a little more space */
 
-#edd-gateway-option-mollie_creditcard {
+/** #edd-gateway-option-mollie_creditcard {
     width: 37%;
-}
+} */
 
 .edd-gateway-option:after {
     content: '';

@@ -233,7 +233,7 @@ class FFWP_BetterCheckout_Enable
             <fieldset id="paypal-notice">
                 <div class="paypal-notice">
                     <label>
-                        <?= __('Licenses purchased with PayPal are not automatically billed and renewed. Your license can be renewed anytime from within your account area. You will be timely notified by email before your license expires.', $this->plugin_text_domain); ?>
+                        <?= __('Licenses purchased with PayPal are not anually billed and renewed. Your license can be renewed anytime from within your account area. You will be timely notified by email before your license expires.', $this->plugin_text_domain); ?>
                     </label>
                 </div>
             </fieldset>
@@ -350,12 +350,7 @@ class FFWP_BetterCheckout_Enable
         ob_start();
     ?>
         <style>
-            <?php if (count($this->gateways) == 2) : ?>#edd-gateway-option-mollie_creditcard,
-            #edd-gateway-option-mollie_ideal {
-                width: 49.319%;
-            }
-
-            <?php endif; ?>#edd_payment_mode_select legend:after {
+            #edd_payment_mode_select legend:after {
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/powered-by-mollie.jpg'; ?>');
                 width: 238px;
             }
