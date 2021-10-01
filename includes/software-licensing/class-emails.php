@@ -2,7 +2,7 @@
 defined('ABSPATH') || exit;
 
 /**
- * @package   FFWP Login Fields Legend
+ * @package   FFWP Software Licensing
  * @author    Daan van den Bergh
  *            https://ffwp.dev
  *            https://daan.dev

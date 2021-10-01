@@ -33,6 +33,8 @@ class FFWP
 
         // Software Licensing (runs at priority 100)
         add_action('edd_add_email_tags', [$this, 'add_email_tag'], 101);
+        add_action('edd_payment_receipt_after', [$this, 'modify_templates']);
+        add_action('edd_order_receipt_after', [$this, 'modify_templates']);
 
         // EDD EU VAT
         add_filter('edd_eu_vat_uk_hide_checkout_input', '__return_true');
@@ -146,6 +148,18 @@ class FFWP
     public function add_email_tag()
     {
         new FFWP_SoftwareLicensing_Emails();
+    }
+
+    /**
+     * Modify templates for Software License
+     * 
+     * @see edd-software-licensing/includes/templates.php
+     * 
+     * @return void 
+     */
+    public function modify_templates()
+    {
+        new FFWP_SoftwareLicensing_Templates();
     }
 
     /**
