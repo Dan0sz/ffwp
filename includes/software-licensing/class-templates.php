@@ -42,8 +42,8 @@ class FFWP_SoftwareLicensing_Templates
     {
         foreach ($licenses as &$license) {
             if ($license->license_key == self::FFWP_LICENSE_KEY || $license->license_key == 'WOOSH_LICENSE_MANAGER') {
-                $license->license_key = '';
-                $license->key         = '';
+                $license->license_key = '(none)';
+                $license->key         = '(none)';
             }
         }
         return $licenses;
