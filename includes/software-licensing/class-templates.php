@@ -41,7 +41,7 @@ class FFWP_SoftwareLicensing_Templates
     public function modify_license_key($licenses)
     {
         foreach ($licenses as &$license) {
-            if ($license->license_key == self::FFWP_LICENSE_KEY) {
+            if ($license->license_key == self::FFWP_LICENSE_KEY || $license->license_key == 'WOOSH_LICENSE_MANAGER') {
                 $license->license_key = '';
                 $license->key         = '';
             }
