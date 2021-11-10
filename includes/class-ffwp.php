@@ -31,6 +31,9 @@ class FFWP
         add_action('init', [$this, 'add_child_pages_menu']);
         add_filter('login_url', [$this, 'change_login_url']);
 
+        // Astra Theme
+        add_filter('astra_featured_image_enabled', [$this, 'disable_featured_image_on_downloads']);
+
         // Software Licensing (runs at priority 100)
         add_action('edd_add_email_tags', [$this, 'add_email_tag'], 101);
         add_action('edd_payment_receipt_after', [$this, 'modify_templates']);
@@ -138,6 +141,21 @@ class FFWP
     public function change_login_url()
     {
         return home_url('account');
+    }
+
+    /**
+     * Disable Featured Images on EDD pages.
+     * 
+     * @param mixed $featured_image 
+     * @return mixed 
+     */
+    public function disable_featured_image_on_downloads($featured_image)
+    {
+        if (!astra_is_edd_page()) {
+            return $featured_image;
+        }
+
+        return '';
     }
 
     /**
