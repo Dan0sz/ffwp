@@ -23,12 +23,10 @@ class FFWP
         $this->modify_product_details_widget();
         $this->insert_login_fields_legend();
         $this->set_non_required_state_field();
-        $this->set_reusable_license();
 
         add_action('plugins_loaded', [$this, 'enable_better_checkout'], 100);
         add_action('init', [$this, 'add_changelog_shortcode']);
         add_action('init', [$this, 'add_download_info_shortcodes']);
-        add_action('init', [$this, 'add_child_pages_menu']);
         add_filter('login_url', [$this, 'change_login_url']);
 
         // Astra Theme
@@ -36,8 +34,6 @@ class FFWP
 
         // Software Licensing (runs at priority 100)
         add_action('edd_add_email_tags', [$this, 'add_email_tag'], 101);
-        add_action('edd_payment_receipt_after', [$this, 'modify_templates']);
-        add_action('edd_order_receipt_after', [$this, 'modify_templates']);
 
         // EDD EU VAT
         add_filter('edd_eu_vat_uk_hide_checkout_input', '__return_true');
@@ -69,14 +65,6 @@ class FFWP
     public function enable_better_checkout()
     {
         return new FFWP_BetterCheckout_Enable();
-    }
-
-    /**
-     * @return FFWP_ReusableLicense_Set
-     */
-    private function set_reusable_license()
-    {
-        return new FFWP_ReusableLicense_Set();
     }
 
     /**
@@ -128,14 +116,6 @@ class FFWP
     }
 
     /**
-     * @return FFWP_ChildPagesMenu_Add
-     */
-    public function add_child_pages_menu()
-    {
-        return new FFWP_ChildPagesMenu_Add();
-    }
-
-    /**
      * @return FFWP_LoginUrl_Change 
      */
     public function change_login_url()
@@ -166,18 +146,6 @@ class FFWP
     public function add_email_tag()
     {
         new FFWP_SoftwareLicensing_Emails();
-    }
-
-    /**
-     * Modify templates for Software License
-     * 
-     * @see edd-software-licensing/includes/templates.php
-     * 
-     * @return void 
-     */
-    public function modify_templates()
-    {
-        new FFWP_SoftwareLicensing_Templates();
     }
 
     /**
