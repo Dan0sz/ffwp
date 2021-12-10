@@ -135,8 +135,17 @@ class FFWP_ProductDetailsWidget_Modify
     public function add_date_last_updated($instance, $download_id)
     {
         $readme_url   = get_post_meta($download_id, '_edd_readme_location', true) ?? '';
+
+        if (!$readme_url) {
+            return;
+        }
+
         $headers      = get_headers($readme_url);
         $last_updated = '';
+
+        if (empty($headers)) {
+            return;
+        }
 
         foreach ($headers as $header) {
             if (strpos($header, 'Last-Modified') !== false) {
