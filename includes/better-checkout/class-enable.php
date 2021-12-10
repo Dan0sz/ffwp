@@ -265,22 +265,7 @@ class FFWP_BetterCheckout_Enable
             add_filter('edd_recurring_cart_item_notice', '__return_empty_string');
         }
 
-        ob_start();
-
-        edd_checkout_cart();
-
-        $cart = ob_get_contents();
-
-        ob_end_clean();
-
-        $response = array(
-            'html'  => $cart,
-            'total' => html_entity_decode(edd_cart_total(false), ENT_COMPAT, 'UTF-8'),
-        );
-
-        echo json_encode($response);
-
-        edd_die();
+        edd_ajax_recalculate_taxes();
     }
 
     /**

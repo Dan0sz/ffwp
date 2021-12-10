@@ -16,7 +16,7 @@
 define('FFWP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('FFWP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('FFWP_PLUGIN_FILE', __FILE__);
-define('FFWP_STATIC_VERSION', '2.8.3');
+define('FFWP_STATIC_VERSION', '2.9.1');
 
 /**
  * Takes care of loading classes on demand.

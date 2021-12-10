@@ -56,7 +56,10 @@ jQuery(document).ready(function ($) {
 
             var postData = {
                 action: 'ffwp_maybe_remove_recurring_notice',
-                gateway: edd_gateway
+                gateway: edd_gateway,
+                billing_country: $('#billing_country').val(),
+                state: $('#card_state').val(),
+                nonce: $('#edd-checkout-address-fields-nonce').val()
             };
 
             $.ajax({
