@@ -22,8 +22,9 @@ jQuery(document).ready(function ($) {
             /**
              * Events after which the shopping cart is refreshed.
              */
-            $(document.body).on('edd_cart_billing_address_updated, edd_eu_vat:before_vat_check, edd_gateway_loaded', this.set_loader_cart);
-            $(document).on('change', 'select#edd-gateway, input.edd-gateway', this.set_loader_cart);
+            $(document).on('edd_cart_billing_address_updated, edd_gateway_loaded', this.set_loader_cart);
+            $(document).on('edd_eu_vat:before_vat_check', this.set_loader_cart);
+            $('#billing_country, select#edd-gateway, input.edd-gateway').on('change', this.set_loader_cart);
             $('.edd-apply-discount').on('click', this.set_loader_cart);
 
             $(document.body).on('edd_gateway_loaded', this.maybe_remove_recurring_notice);
