@@ -34,6 +34,7 @@ class FFWP
 
         // Software Licensing (runs at priority 100)
         add_action('edd_add_email_tags', [$this, 'add_email_tag'], 101);
+        add_filter('edd_sl_url_subdomains', [$this, 'add_local_urls']);
 
         // EDD EU VAT
         add_filter('edd_eu_vat_uk_hide_checkout_input', '__return_true');
@@ -146,6 +147,24 @@ class FFWP
     public function add_email_tag()
     {
         new FFWP_SoftwareLicensing_Emails();
+    }
+
+    /**
+     * Modify the list of subdomains to mark as local/staging.
+     *
+     * @param mixed $subdomains 
+     * @return string[] 
+     */
+    public function add_local_urls($subdomains)
+    {
+        return array_merge(
+            [
+                'test.',
+                '*.servebolt.cloud',
+                '*.kinsta.cloud'
+            ],
+            $subdomains
+        );
     }
 
     /**
