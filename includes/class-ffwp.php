@@ -24,6 +24,7 @@ class FFWP
         $this->insert_login_fields_legend();
         $this->set_non_required_state_field();
 
+        add_action('plugins_loaded', [$this, 'enable_better_blog']);
         add_action('plugins_loaded', [$this, 'enable_better_checkout'], 100);
         add_action('init', [$this, 'add_changelog_shortcode']);
         add_action('init', [$this, 'add_download_info_shortcodes']);
@@ -58,6 +59,14 @@ class FFWP
     {
         $content = do_shortcode($content);
         return $content;
+    }
+
+    /**
+     * @return void 
+     */
+    public function enable_better_blog()
+    {
+        new FFWP_BetterBlog_Enable();
     }
 
     /**
