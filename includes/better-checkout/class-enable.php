@@ -259,7 +259,7 @@ class FFWP_BetterCheckout_Enable
             edd_die();
         }
 
-        $gateway = $_REQUEST['gateway'];
+        $gateway = $_REQUEST['gateway'] ?? '';
 
         if ($gateway == 'mollie_paypal') {
             add_filter('edd_recurring_cart_item_notice', '__return_empty_string');
