@@ -59,6 +59,9 @@ class FFWP_NonRequiredStateField_Set
      */
     public function insert_script()
     {
+        if (!edd_is_checkout()) {
+            return;
+        }
 ?>
         <script>
             jQuery(document).ready(function($) {
