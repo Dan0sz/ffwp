@@ -186,6 +186,9 @@ class FFWP_ProductDetailsWidget_Modify
      */
     public function add_inline_script()
     {
+        if (get_post_type() !== 'download') {
+            return;
+        }
     ?>
         <script>
             var changelogLink = document.getElementById('ffw-changelog-link');
