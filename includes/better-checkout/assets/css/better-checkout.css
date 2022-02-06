@@ -326,7 +326,7 @@ fieldset#edd_checkout_user_info {
     margin-bottom: 0 !important;
 }
 
-#edd_agree_to_terms, #edd_mailchimp {
+#edd_agree_to_terms, #edd_mailchimp_signup {
     height: 1.2rem;
     width: 1.2rem;
 }
