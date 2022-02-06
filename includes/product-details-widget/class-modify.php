@@ -41,7 +41,7 @@ class FFWP_ProductDetailsWidget_Modify
      */
     private function init()
     {
-        add_filter('widget_title', [$this, 'modify_widget_title'], 10, 3);
+        add_filter('widget_title', [$this, 'modify_widget_title'], 10);
 
         // Begin table
         add_action('edd_product_details_widget_before_categories_and_tags', function () {
@@ -66,7 +66,7 @@ class FFWP_ProductDetailsWidget_Modify
     /**
      * Modifies widget title when download is a service.
      */
-    public function modify_widget_title($title, $instance, $widget_id)
+    public function modify_widget_title($title)
     {
         if ($title != 'Choose Your License') {
             return $title;
