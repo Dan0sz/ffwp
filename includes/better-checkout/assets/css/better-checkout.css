@@ -323,9 +323,10 @@ fieldset#edd_checkout_user_info {
 
 #edd_terms_agreement {
     padding: 15px 0 10px !important;
+    margin-bottom: 0 !important;
 }
 
-#edd-jilt-marketing-consent, #edd_agree_to_terms {
+#edd_agree_to_terms, #edd_mailchimp {
     height: 1.2rem;
     width: 1.2rem;
 }
@@ -444,6 +445,7 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal {
     #edd_payment_mode_select .ffwpress-secure-lock {
         padding-right: 0;
     }
+
     #edd_payment_mode_select .ffwpress-secure-lock:after {
         background-image: none !important;
     }
@@ -453,40 +455,51 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal {
     #ffwpress-payment-details__wrapper, #ffwpress-cart__wrapper {
         width: 100%;
     }
+
     #ffwpress-cart__wrapper.cart-wrapper-mobile {
         margin: 10px 30px 0;
         padding: 15px;
         text-align: center;
     }
+
     #ffwpress-cart__wrapper .ffwpress-cart-link {
         color: white;
         text-decoration: underline;
     }
+
     #ffwpress-cart__wrapper .hide-on-desktop {
         display: block;
     }
+
     #edd-first-name-wrap, #edd-last-name-wrap, #edd-card-address-wrap, #edd-card-address-2-wrap, #edd-card-zip-wrap, #edd-card-city-wrap, #edd-card-state-wrap, #edd-card-country-wrap, #edd-vat-number {
         width: 100%;
         padding-right: 30px !important;
     }
+
     #edd_checkout_cart td, #edd_checkout_cart th {
         padding: 10px 25px;
     }
+
     .edd-vat-number-wrap {
         width: 100%;
     }
+
     #edd_payment_mode_select legend::after {
         width: 159px !important;
     }
+
     #edd_checkout_form_wrap #edd-payment-mode-wrap label {
         margin-top: 10px;
     }
+
     #edd_checkout_form_wrap #edd-payment-mode-wrap label:first-child {
         margin-top: 0;
     }
+
     .edd-gateway-option, #edd-gateway-option-mollie_creditcard {
         width: 100%;
     }
+
     #edd-purchase-button {
         width: 100%;
         margin-left: 0;
