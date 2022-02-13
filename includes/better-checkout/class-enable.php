@@ -20,6 +20,7 @@ class FFWP_BetterCheckout_Enable
      * Format: Rewritten text => Text to be translated.
      */
     const FFWP_BETTER_CHECKOUT_REWRITE_TEXT_FIELDS = [
+        'An account associated with this email address has already been registered. Please login to complete your purchase.' => 'You must be logged in to purchase a subscription',
         'City'         => 'Billing City',
         'Country'      => 'Billing Country',
         'Enter a valid VAT number to reverse charge EU VAT.' => 'Enter the VAT number of your company.',
@@ -63,6 +64,7 @@ class FFWP_BetterCheckout_Enable
         add_filter('gettext_easy-digital-downloads', [$this, 'modify_text_fields'], 1, 3);
         add_filter('gettext_edd-eu-vat', [$this, 'modify_text_fields'], 1, 3);
         add_filter('gettext_edds', [$this, 'modify_text_fields'], 1, 3);
+        add_filter('gettext_edd-recurring', [$this, 'modify_text_fields'], 1, 3);
 
         // Move Login Form
         remove_action('edd_purchase_form_login_fields', 'edd_get_login_fields');
