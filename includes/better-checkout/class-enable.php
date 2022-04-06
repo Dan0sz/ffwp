@@ -379,7 +379,7 @@ class FFWP_BetterCheckout_Enable
      */
     public function force_gateways($gateways)
     {
-        if (count($gateways) <= 1 && count($this->gateways) > 0) {
+        if (count($gateways) != count($this->gateways) && count($this->gateways) > 0) {
             return $this->gateways;
         }
 
