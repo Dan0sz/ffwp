@@ -159,7 +159,7 @@ class FFWP_ProductDetailsWidget_Modify
         }
 
         $formatted = "<span class='edd-former-price'>$formatted</span> ";
-        $amount    = $amount + $current_amount['signup_discount'];
+        $amount    = (float) $amount + (float) $current_amount['signup_discount'];
         $formatted .= edd_currency_filter(number_format($amount, $decimals, $decimal_sep, $thousands_sep));
 
         return str_replace(',00', ',-', $formatted) . '<small>/' . $current_amount['period'] . '*</small>';
