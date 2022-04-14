@@ -130,7 +130,7 @@ class FFWP_ProductDetailsWidget_Modify
         /**
          * Replace ',00' with ',-'.
          */
-        $formatted = str_replace(',00', ',-', $formatted);
+        $formatted = str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted);
 
         if (!$this->recurring_amounts) {
             return $formatted;
@@ -162,7 +162,7 @@ class FFWP_ProductDetailsWidget_Modify
         $amount    = (float) $amount + (float) $current_amount['signup_discount'];
         $formatted .= edd_currency_filter(number_format($amount, $decimals, $decimal_sep, $thousands_sep));
 
-        return str_replace(',00', ',-', $formatted) . '<small>/' . $current_amount['period'] . '*</small>';
+        return str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted) . '<small>/' . $current_amount['period'] . '*</small>';
     }
 
     /**
