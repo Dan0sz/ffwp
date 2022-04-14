@@ -33,6 +33,15 @@
     margin: 0;
 }
 
+#edd_checkout_wrap #edd_checkout_cart_wrap p {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.entry-content p {
+    margin-bottom: 0;
+}
+
 .edd-checkout #edd_checkout_wrap input[type="submit"] {
     background-color: #2ECC40;
 }
