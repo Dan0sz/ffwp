@@ -56,8 +56,6 @@ class FFWP_BetterCheckout_Enable
         // Add this plugin to the template paths.
         add_filter('edd_template_paths', [$this, 'add_template_path']);
 
-        add_action('edd_purchase_link_top', [$this, 'add_vat_notice']);
-
         // Modify Text Fields
         add_filter('edd_checkout_personal_info_text', function () {
             return __('Your Details', $this->plugin_text_domain);
@@ -272,20 +270,6 @@ class FFWP_BetterCheckout_Enable
     }
 
     /**
-     * Insert custom VAT notice above 'Add to cart' button
-     * 
-     * @return void 
-     */
-    public function add_vat_notice()
-    {
-        ?>
-        <span class="edd_purchase_tax_rate">
-            <?= __('<strong>+ VAT</strong> for EU residents', 'ffwp'); ?>
-        </span>
-    <?php
-    }
-
-    /**
      * Add Last Name and Street + House No. as required field, because it's dumb not to ask that.
      * 
      * @param mixed $required_fields 
@@ -346,7 +330,7 @@ class FFWP_BetterCheckout_Enable
     public function add_inline_stylesheet()
     {
         ob_start();
-    ?>
+        ?>
         <style>
             #edd_payment_mode_select legend:after {
                 background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/powered-by-mollie.jpg?v=' . FFWP_STATIC_VERSION; ?>');

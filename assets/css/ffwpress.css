@@ -1,15 +1,6 @@
 /**
  * General site-wide CSS modifications
  */
-
-.edd_purchase_tax_rate {
-    display: block;
-    font-size: .8em;
-    font-style: italic;
-    margin: 1em 0 0;
-    text-align: center;
-}
-
 .single-download .edd_download_purchase_form .edd_purchase_submit_wrapper {
     margin-top: 5px;
 }
