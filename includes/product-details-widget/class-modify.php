@@ -154,7 +154,7 @@ class FFWP_ProductDetailsWidget_Modify
          * This isn't a discount, it's a fee. So, we're not going to show it up front.
          * We're still going to add the renewal period though.
          */
-        if ($current_amount['signup_discount'] >= 0) {
+        if ((float) $current_amount['signup_discount'] >= 0) {
             return $formatted . '<small>/' . $current_amount['period'] . '*</small>';
         }
 
