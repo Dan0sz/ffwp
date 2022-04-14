@@ -68,14 +68,13 @@ global $post; ?>
 
 					<?php do_action('edd_cart_fee_rows_before', $fee_id, $fee); ?>
 
-					<td class="edd_cart_fee_label"><?php echo esc_html($fee['label']); ?></td>
+					<td <?php echo (!empty($fee['type']) && $fee['type'] == 'item') ? '' : 'colspan="2"'; ?> class="edd_cart_fee_label"><?php echo esc_html($fee['label']); ?></td>
 					<td class="edd_cart_fee_amount"><?php echo esc_html(edd_currency_filter(edd_format_amount($fee['amount']))); ?></td>
-					<td>
-						<?php if (!empty($fee['type']) && 'item' == $fee['type']) : ?>
+					<?php if (!empty($fee['type']) && 'item' == $fee['type']) : ?>
+						<td>
 							<a href="<?php echo esc_url(edd_remove_cart_fee_url($fee_id)); ?>"><?php _e('Remove', 'easy-digital-downloads'); ?></a>
-						<?php endif; ?>
-
-					</td>
+						</td>
+					<?php endif; ?>
 
 					<?php do_action('edd_cart_fee_rows_after', $fee_id, $fee); ?>
 

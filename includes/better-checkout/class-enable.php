@@ -52,6 +52,7 @@ class FFWP_BetterCheckout_Enable
         $this->plugin_url = plugin_dir_url(__FILE__);
 
         add_action('wp_head', [$this, 'replace_shortcode']);
+        add_filter('edd_fees_get_fees', [$this, 'reword_negative_fee']);
 
         // Add this plugin to the template paths.
         add_filter('edd_template_paths', [$this, 'add_template_path']);
@@ -118,6 +119,30 @@ class FFWP_BetterCheckout_Enable
     }
 
     /**
+     * Don't speak of a 'fee' if it's negative fee, i.e. a discount.
+     * 
+     * @param mixed $fees 
+     * 
+     * @return mixed 
+     */
+    public function reword_negative_fee($fees)
+    {
+        if (empty($fees)) {
+            return $fees;
+        }
+
+        foreach ($fees as &$fee) {
+            if ((float) $fee['amount'] >= 0) {
+                continue;
+            }
+
+            $fee['label'] = __('One-time Discount', $this->plugin_text_domain);
+        }
+
+        return $fees;
+    }
+
+    /**
      * Add this plugin's edd_templates folder as a file path for template files.
      * @see edd_get_theme_template_paths()
      * 
@@ -164,7 +189,7 @@ class FFWP_BetterCheckout_Enable
                     <?php do_action('edd_before_purchase_form'); ?>
                 </div>
                 <div id="ffwpress-cart__wrapper" class="cart-wrapper-mobile">
-                    <a href="#edd_checkout_cart_form" class="ffwpress-cart-link hide-on-desktop"><?= __('View Shopping Cart'); ?></a>
+                    <a href="#edd_checkout_cart_form" class="ffwpress-cart-link hide-on-desktop"><?= __('View Shopping Cart', $this->plugin_text_domain); ?></a>
                 </div>
                 <div id="ffwpress-payment-details__wrapper">
                     <div id="edd_checkout_form_wrap" class="edd_clearfix">
