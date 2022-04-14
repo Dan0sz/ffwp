@@ -52,7 +52,6 @@ class FFWP_BetterCheckout_Enable
         $this->plugin_url = plugin_dir_url(__FILE__);
 
         add_action('wp_head', [$this, 'replace_shortcode']);
-        add_filter('edd_fees_get_fees', [$this, 'reword_negative_fee']);
 
         // Add this plugin to the template paths.
         add_filter('edd_template_paths', [$this, 'add_template_path']);
@@ -83,6 +82,10 @@ class FFWP_BetterCheckout_Enable
         remove_action('edd_purchase_form_after_cc_form', 'edd_checkout_tax_fields', 999);
         add_action('edd_checkout_form_top', 'edd_checkout_tax_fields', 999);
 
+        // Move Discount Form
+        remove_action('edd_checkout_form_top', 'edd_discount_field', -1);
+        add_action('edd_after_checkout_cart', 'edd_discount_field', -1);
+
         // Handle PayPal notices in checkout
         add_action('edd_purchase_form_before_submit', [$this, 'show_paypal_notice'], -1);
         add_action('wp_ajax_ffwp_maybe_remove_recurring_notice', array($this, 'maybe_remove_recurring_notice'));
@@ -94,9 +97,15 @@ class FFWP_BetterCheckout_Enable
          */
         add_filter('edd_cart_item_tax_description', '__return_empty_string');
 
-        // Move Discount Form
-        remove_action('edd_checkout_form_top', 'edd_discount_field', -1);
-        add_action('edd_after_checkout_cart', 'edd_discount_field', -1);
+        /**
+         * 
+         */
+        add_filter('edd_fees_get_fees', [$this, 'reword_negative_fee']);
+
+        /**
+         * 
+         */
+        add_filter('edd_get_cart_fee_tax', [$this, 'get_cart_fee_tax']);
 
         // Modify required fields
         add_filter('edd_purchase_form_required_fields', [$this, 'add_required_fields']);
@@ -116,30 +125,6 @@ class FFWP_BetterCheckout_Enable
     {
         remove_shortcode('download_checkout', 'edd_checkout_form_shortcode');
         add_shortcode('download_checkout', [$this, 'edd_checkout_form']);
-    }
-
-    /**
-     * Don't speak of a 'fee' if it's negative fee, i.e. a discount.
-     * 
-     * @param mixed $fees 
-     * 
-     * @return mixed 
-     */
-    public function reword_negative_fee($fees)
-    {
-        if (empty($fees)) {
-            return $fees;
-        }
-
-        foreach ($fees as &$fee) {
-            if ((float) $fee['amount'] >= 0) {
-                continue;
-            }
-
-            $fee['label'] = __('One-time Discount', $this->plugin_text_domain);
-        }
-
-        return $fees;
     }
 
     /**
@@ -169,6 +154,84 @@ class FFWP_BetterCheckout_Enable
         }
 
         return $translation;
+    }
+
+    /**
+     * Don't speak of a 'fee' if it's negative fee, i.e. a discount.
+     * 
+     * @param mixed $fees 
+     * 
+     * @return mixed 
+     */
+    public function reword_negative_fee($fees)
+    {
+        if (empty($fees)) {
+            return $fees;
+        }
+
+        foreach ($fees as &$fee) {
+            if ((float) $fee['amount'] >= 0) {
+                continue;
+            }
+
+            $fee['label'] = __('One-time Discount', $this->plugin_text_domain);
+        }
+
+        return $fees;
+    }
+
+    /**
+     * This is a polyfill to fix the issue in EDD that it doesn't calculate negative tax over negative fees (discounts).
+     * 
+     * It would've been better to just calculate tax over the total amount, but for some reason EDD doesn't do that.
+     * 
+     * @filter edd_get_cart_fee_tax
+     */
+    public function get_cart_fee_tax($tax)
+    {
+        $tax  = 0;
+        $fees = edd_get_cart_fees();
+
+        if ($fees) {
+            foreach ($fees as $fee_id => $fee) {
+                /**
+                 * Fees (at this time) must be exclusive of tax
+                 */
+                add_filter('edd_prices_include_tax', '__return_false');
+                $tax += $this->calculate_tax($fee['amount']);
+                remove_filter('edd_prices_include_tax', '__return_false');
+            }
+        }
+
+        return $tax;
+    }
+
+    /**
+     * Calculate the taxed amount
+     *
+     * @since 1.3.3
+     * 
+     * @param $amount float The original amount to calculate a tax cost
+     * @param $country string The country to calculate tax for. Will use default if not passed
+     * @param $state string The state to calculate tax for. Will use default if not passed
+     * 
+     * @return float $tax Taxed amount
+     */
+    private function calculate_tax($amount = 0, $country = false, $state = false)
+    {
+        $rate = edd_get_tax_rate($country, $state);
+        $tax  = 0.00;
+
+        if (edd_use_taxes()) {
+            if (edd_prices_include_tax()) {
+                $pre_tax = ($amount / (1 + $rate));
+                $tax     = $amount - $pre_tax;
+            } else {
+                $tax = $amount * $rate;
+            }
+        }
+
+        return apply_filters('edd_taxed_amount', $tax, $rate, $country, $state);
     }
 
     /**
