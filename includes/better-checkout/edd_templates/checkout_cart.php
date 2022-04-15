@@ -61,27 +61,6 @@ global $post; ?>
 			<?php endforeach; ?>
 		<?php endif; ?>
 		<?php do_action('edd_cart_items_middle'); ?>
-		<!-- Show any cart fees, both positive and negative fees -->
-		<?php if (edd_cart_has_fees()) : ?>
-			<?php foreach (edd_get_cart_fees() as $fee_id => $fee) : ?>
-				<tr class="edd_cart_fee" id="edd_cart_fee_<?php echo $fee_id; ?>">
-
-					<?php do_action('edd_cart_fee_rows_before', $fee_id, $fee); ?>
-
-					<td <?php echo (!empty($fee['type']) && $fee['type'] == 'item') ? '' : 'colspan="2"'; ?> class="edd_cart_fee_label"><?php echo esc_html($fee['label']); ?></td>
-					<td class="edd_cart_fee_amount"><?php echo esc_html(edd_currency_filter(edd_format_amount($fee['amount']))); ?></td>
-					<?php if (!empty($fee['type']) && 'item' == $fee['type']) : ?>
-						<td>
-							<a href="<?php echo esc_url(edd_remove_cart_fee_url($fee_id)); ?>"><?php _e('Remove', 'easy-digital-downloads'); ?></a>
-						</td>
-					<?php endif; ?>
-
-					<?php do_action('edd_cart_fee_rows_after', $fee_id, $fee); ?>
-
-				</tr>
-			<?php endforeach; ?>
-		<?php endif; ?>
-
 		<?php do_action('edd_cart_items_after'); ?>
 	</tbody>
 	<tfoot>
@@ -104,6 +83,29 @@ global $post; ?>
 				</th>
 				<?php do_action('edd_checkout_table_subtotal_last'); ?>
 			</tr>
+		<?php endif; ?>
+
+		<!-- Show any cart fees, both positive and negative fees -->
+		<?php if (edd_cart_has_fees()) : ?>
+			<?php foreach (edd_get_cart_fees() as $fee_id => $fee) : ?>
+				<tr class="edd_cart_footer_row edd_cart_fee" id="edd_cart_fee_<?php echo $fee_id; ?>">
+
+					<?php do_action('edd_cart_fee_rows_before', $fee_id, $fee); ?>
+
+					<?php $colspan = sprintf('colspan="%s"', (!empty($fee['type']) && $fee['type'] == 'item') ? edd_checkout_cart_columns() - 1 : edd_checkout_cart_columns()); ?>
+
+					<th <?php echo $colspan; ?> class="edd_cart_fee"><?php echo esc_html($fee['label']); ?>: <?php echo esc_html(edd_currency_filter(edd_format_amount($fee['amount']))); ?></th>
+
+					<?php if (!empty($fee['type']) && 'item' == $fee['type']) : ?>
+						<th>
+							<a href="<?php echo esc_url(edd_remove_cart_fee_url($fee_id)); ?>"><?php _e('Remove', 'easy-digital-downloads'); ?></a>
+						</th>
+					<?php endif; ?>
+
+					<?php do_action('edd_cart_fee_rows_after', $fee_id, $fee); ?>
+
+				</tr>
+			<?php endforeach; ?>
 		<?php endif; ?>
 
 		<tr class="edd_cart_footer_row edd_cart_discount_row" <?php if (!edd_cart_has_discounts())  echo ' style="display:none;"'; ?>>
