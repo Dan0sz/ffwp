@@ -385,7 +385,7 @@ table#edd_checkout_cart, td, tr, th {
     font-size: .75em;
 }
 
-td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal, th.edd_cart_fee {
+td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal, th.edd_cart_fee, th.edd_cart_discount {
     text-align: right;
 }
 
