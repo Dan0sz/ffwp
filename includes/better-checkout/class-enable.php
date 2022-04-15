@@ -101,6 +101,7 @@ class FFWP_BetterCheckout_Enable
          * 
          */
         add_filter('edd_fees_get_fees', [$this, 'reword_negative_fee']);
+        add_filter('edd_fees_get_fees', [$this, 'remove_discount_for_renewals']);
 
         /**
          * 
@@ -157,7 +158,7 @@ class FFWP_BetterCheckout_Enable
     }
 
     /**
-     * Don't speak of a 'fee' if it's negative fee, i.e. a discount.
+     * Don't speak of a 'fee' if it's a negative fee, i.e. a discount.
      * 
      * @param mixed $fees 
      * 
@@ -175,6 +176,51 @@ class FFWP_BetterCheckout_Enable
             }
 
             $fee['label'] = __('One-time Discount', $this->plugin_text_domain);
+        }
+
+        return $fees;
+    }
+
+    /**
+     * Discounts (i.e. negative fees) aren't allowed for renewals.
+     * 
+     * For some reason EDD Recurring and EDD Software Licensing don't play along
+     * nicely when it comes to do this, so this is the fix.
+     */
+    public function remove_discount_for_renewals($fees)
+    {
+        if (empty($fees)) {
+            return $fees;
+        }
+
+        $cart         = EDD()->session->get('edd_cart');
+        $renewal_fees = [];
+
+        foreach ($cart as $item) {
+            $is_renewal = $item['options']['is_renewal'] ?: false;
+
+            if (!$is_renewal) {
+                continue;
+            }
+
+            $renewal_fees[$item['id']] = $item['options']['recurring']['signup_fee'];
+        }
+
+        foreach ($fees as $key => &$fee) {
+            /**
+             * This isn't a discount, so move on...
+             */
+            if ((float) $fee['amount'] >= 0 && $key != 'signup_fee') {
+                continue;
+            }
+
+            foreach ($renewal_fees as $renewal_fee) {
+                (float) $fee['amount'] -= (float) $renewal_fee;
+            }
+
+            if ($fee['amount'] == 0) {
+                unset($fees[$key]);
+            }
         }
 
         return $fees;
