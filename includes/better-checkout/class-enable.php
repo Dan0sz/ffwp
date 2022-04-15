@@ -197,7 +197,7 @@ class FFWP_BetterCheckout_Enable
         $renewal_fees = [];
 
         foreach ($cart as $item) {
-            $is_renewal = $item['options']['is_renewal'] ?: false;
+            $is_renewal = $item['options']['is_renewal'] ?? false;
 
             if (!$is_renewal) {
                 continue;
