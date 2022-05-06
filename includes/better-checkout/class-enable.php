@@ -101,7 +101,7 @@ class FFWP_BetterCheckout_Enable
          * 
          */
         add_filter('edd_fees_get_fees', [$this, 'reword_negative_fee']);
-        add_filter('edd_fees_get_fees', [$this, 'remove_discount_for_renewals']);
+        add_filter('edd_fees_get_fees', [$this, 'remove_discount_for_existing_licenses']);
 
         /**
          * 
@@ -182,12 +182,12 @@ class FFWP_BetterCheckout_Enable
     }
 
     /**
-     * Discounts (i.e. negative fees) aren't allowed for renewals.
+     * Discounts (i.e. negative fees) aren't allowed for renewals and/or upgrades.
      * 
      * For some reason EDD Recurring and EDD Software Licensing don't play along
      * nicely when it comes to do this, so this is the fix.
      */
-    public function remove_discount_for_renewals($fees)
+    public function remove_discount_for_existing_licenses($fees)
     {
         if (empty($fees)) {
             return $fees;
@@ -198,8 +198,9 @@ class FFWP_BetterCheckout_Enable
 
         foreach ($cart as $item) {
             $is_renewal = $item['options']['is_renewal'] ?? false;
+            $is_upgrade = $item['options']['is_upgrade'] ?? false;
 
-            if (!$is_renewal) {
+            if (!$is_renewal && !$is_upgrade) {
                 continue;
             }
 
