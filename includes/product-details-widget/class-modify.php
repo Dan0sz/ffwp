@@ -128,6 +128,13 @@ class FFWP_ProductDetailsWidget_Modify
     public function add_recurring_label_to_price($formatted, $amount, $decimals, $decimal_sep, $thousands_sep)
     {
         /**
+         * Do not run this in the admin area.
+         */
+        if (is_admin()) {
+            return $formatted;
+        }
+
+        /**
          * Replace ',00' with ',-'.
          */
         $formatted = str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted);
