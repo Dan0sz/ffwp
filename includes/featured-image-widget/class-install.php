@@ -41,7 +41,11 @@ class FFWP_FeaturedImageWidget_Install extends WP_Widget
     {
         echo $args['before_widget'];
 
-        the_post_thumbnail('medium');
+?>
+        <div class="featured-image-wrapper">
+            <?php the_post_thumbnail('medium'); ?>
+        </div>
+    <?php
 
         echo $args['after_widget'];
     }
@@ -50,7 +54,7 @@ class FFWP_FeaturedImageWidget_Install extends WP_Widget
     {
         $sizes    = get_intermediate_image_sizes();
         $selected = $instance['image_size'];
-?>
+    ?>
         <p>
             <label for="<?php echo $this->get_field_id('image_size'); ?>"><?php _e('Image Size:', $this->plugin_text_domain); ?></label>
             <select class="widefat" id="<?php echo $this->get_field_id('image_size'); ?>" name="<?php echo $this->get_field_name('image_size'); ?>">
