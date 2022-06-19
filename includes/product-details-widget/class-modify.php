@@ -52,7 +52,7 @@ class FFWP_ProductDetailsWidget_Modify
 
         // Begin table
         add_action('edd_product_details_widget_before_categories_and_tags', function () {
-            if ($this->das->is_service(get_the_ID())) {
+            if (!$this->das->is_service(get_the_ID())) {
                 echo '<table class="ffw-download-details"><tbody>';
             }
         }, 9);
@@ -64,7 +64,7 @@ class FFWP_ProductDetailsWidget_Modify
 
         // End table
         add_action('edd_product_details_widget_before_categories_and_tags', function () {
-            if ($this->das->is_service(get_the_ID())) {
+            if (!$this->das->is_service(get_the_ID())) {
                 echo '</tbody></table>';
             }
         }, 12);
@@ -223,7 +223,7 @@ class FFWP_ProductDetailsWidget_Modify
     {
         $this->changelog = get_post_meta($download_id, '_edd_sl_changelog', true) ?? '';
 
-        if ($this->changelog) : ?>
+        if ($this->changelog && !$this->das->is_service($download_id)) : ?>
             <tr>
                 <td><?= __('Changelog', $this->plugin_text_domain); ?></td>
                 <td><?= __('<a href="#" id="ffw-changelog-link">View</a>', $this->plugin_text_domain); ?></td>
@@ -286,16 +286,16 @@ class FFWP_ProductDetailsWidget_Modify
      */
     public function add_changelog_popup()
     {
-        ?>
-        <div style="display: none;" id="ffw-changelog-popup">
-            <div class="ffw-changelog-popup-inner">
-                <a href="#" id="ffw-changelog-close"><?= '⮿ ' . __('close', $this->plugin_text_domain); ?></a>
-                <div class="ffw-changelog-wrapper">
-                    <?= $this->changelog; ?>
+        if (!$this->das->is_service(get_the_ID())) : ?>
+            <div style="display: none;" id="ffw-changelog-popup">
+                <div class="ffw-changelog-popup-inner">
+                    <a href="#" id="ffw-changelog-close"><?= '⮿ ' . __('close', $this->plugin_text_domain); ?></a>
+                    <div class="ffw-changelog-wrapper">
+                        <?= $this->changelog; ?>
+                    </div>
                 </div>
             </div>
-        </div>
-    <?php
+        <?php endif;
     }
 
     /**
@@ -306,7 +306,7 @@ class FFWP_ProductDetailsWidget_Modify
         if (get_post_type() !== 'download') {
             return;
         }
-    ?>
+        ?>
         <style>
             .edd-former-price {
                 position: relative;
