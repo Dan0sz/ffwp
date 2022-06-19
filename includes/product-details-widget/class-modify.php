@@ -79,8 +79,11 @@ class FFWP_ProductDetailsWidget_Modify
             return $title;
         }
 
+        /**
+         * Don't display a title if download is a service.
+         */
         if ($this->das->is_service(get_the_ID())) {
-            $title = __('Choose Your Package', $this->plugin_text_domain);
+            $title = __('', $this->plugin_text_domain);
         }
 
         return $title;
