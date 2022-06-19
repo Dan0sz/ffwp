@@ -87,7 +87,7 @@ class FFWP_ProductDetailsWidget_Modify
          * Don't display a title if download is a service.
          */
         if ($this->das->is_service(get_the_ID())) {
-            $title = __('', $this->plugin_text_domain);
+            $title = __('Get a Quote', $this->plugin_text_domain);
         }
 
         return $title;
