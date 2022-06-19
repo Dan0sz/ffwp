@@ -29,6 +29,7 @@ class FFWP
         add_action('init', [$this, 'add_changelog_shortcode']);
         add_action('init', [$this, 'add_download_info_shortcodes']);
         add_filter('login_url', [$this, 'change_login_url']);
+        add_action('widgets_init', [$this, 'install_featured_image_widget']);
 
         // Astra Theme
         add_filter('astra_featured_image_enabled', [$this, 'disable_featured_image_on_downloads']);
@@ -131,6 +132,16 @@ class FFWP
     public function change_login_url()
     {
         return home_url('account');
+    }
+
+    /**
+     * @return void 
+     */
+    public function install_featured_image_widget()
+    {
+        $widget = new FFWP_FeaturedImageWidget_Install();
+
+        register_widget($widget);
     }
 
     /**
