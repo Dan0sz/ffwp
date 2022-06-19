@@ -52,7 +52,9 @@ class FFWP_ProductDetailsWidget_Modify
 
         // Begin table
         add_action('edd_product_details_widget_before_categories_and_tags', function () {
-            echo '<table class="ffw-download-details"><tbody>';
+            if ($this->das->is_service(get_the_ID())) {
+                echo '<table class="ffw-download-details"><tbody>';
+            }
         }, 9);
 
         // Table content
@@ -62,7 +64,9 @@ class FFWP_ProductDetailsWidget_Modify
 
         // End table
         add_action('edd_product_details_widget_before_categories_and_tags', function () {
-            echo '</tbody></table>';
+            if ($this->das->is_service(get_the_ID())) {
+                echo '</tbody></table>';
+            }
         }, 12);
 
         add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_changelog_popup'], 13);
