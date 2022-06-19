@@ -43,7 +43,7 @@ class FFWP_FeaturedImageWidget_Install extends WP_Widget
 
 ?>
         <div class="featured-image-wrapper">
-            <?php the_post_thumbnail('medium'); ?>
+            <?php the_post_thumbnail($instance['image_size']); ?>
         </div>
     <?php
 
