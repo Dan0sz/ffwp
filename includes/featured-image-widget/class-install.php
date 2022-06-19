@@ -39,11 +39,16 @@ class FFWP_FeaturedImageWidget_Install extends WP_Widget
 
     public function widget($args, $instance)
     {
-        echo $args['before_widget'];
+        $thumbnail = get_the_post_thumbnail(null, $instance['image_size']);
 
+        if (!$thumbnail) {
+            return;
+        }
+
+        echo $args['before_widget'];
 ?>
         <div class="featured-image-wrapper">
-            <?php the_post_thumbnail($instance['image_size']); ?>
+            <?php $thumbnail; ?>
         </div>
     <?php
 
