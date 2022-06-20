@@ -5,11 +5,12 @@
  * @url https://ffw.press
  */
 
-#content {
-    background-repeat: no-repeat;
-    background-size: 100%;
-    background-color: #e6e6e6;
-    background-position: top center;
+.main-header-bar {
+    background-image: linear-gradient(to right, var(--ast-global-color-0), var(--ast-global-color-1));
+}
+
+.ast-breadcrumbs-wrapper {
+	display: none;
 }
 
 .edd-checkout .ast-separate-container {
@@ -68,9 +69,14 @@
     padding-top: 20px;
 }
 
+.cart-wrapper-mobile {
+	background: var(--ast-global-color-5) !important;
+}
+
 #ffwpress-cart__wrapper {
     width: 34%;
-    background: var(--ast-global-color-0);
+    background: var(--ast-global-color-6);
+    border: 1px solid var(--ast-global-color-4);
     padding: 15px 30px 30px;
 }
 
@@ -95,7 +101,7 @@
 
 #edd_checkout_wrap fieldset#edd_sl_renewal_fields {
     border: 0;
-    color: white;
+    color: var(--ast-global-color-8);
     border-radius: 3px;
     margin: 20px 10px 10px;
     padding: 10px 20px 5px;
@@ -110,7 +116,7 @@
 }
 
 #edd_checkout_wrap fieldset#edd_sl_renewal_fields a {
-    color: white;
+    color: var(--ast-global-color-8);
     text-decoration: underline;
 }
 
@@ -168,7 +174,7 @@
 }
 
 #ffwpress-payment-details__wrapper fieldset legend, #ffwpress-cart__wrapper fieldset legend {
-    color: #0daadb;
+    color: var(--ast-global-color-8);
     background-color: transparent;
     border-bottom: 0;
 }
@@ -240,7 +246,7 @@ fieldset#edd_checkout_user_info {
     position: relative;
     width: 27.96%;
     padding: 15px 0 15px 15px;
-    border: 1px #ddd solid;
+    border: 1px var(--ast-global-color-4) solid;
     border-radius: 3px;
     cursor: pointer;
 }
@@ -264,7 +270,7 @@ fieldset#edd_checkout_user_info {
 }
 
 .edd-gateway-option-selected {
-    border: 1px #0daadb solid;
+    border: 1px var(--ast-global-color-1) solid;
 }
 
 .edd-gateway-option input.edd-gateway {
@@ -344,7 +350,7 @@ fieldset#edd_checkout_user_info {
 */
 
 #ffwpress-cart__wrapper fieldset legend {
-    color: white;
+    color: var(--ast-global-color-8);
     padding: 0;
 }
 
@@ -361,7 +367,7 @@ fieldset#edd_checkout_user_info {
 }
 
 table#edd_checkout_cart, td, tr, th {
-    color: white;
+    color: var(--ast-global-color-8);
     border: 0;
 }
 
@@ -379,7 +385,7 @@ table#edd_checkout_cart, td, tr, th {
 }
 
 #edd_checkout_wrap .edd_cart_remove_item_btn {
-    color: white;
+    color:var(--ast-global-color-8);
     margin-left: 0;
     font-size: .75em;
 }
@@ -389,7 +395,7 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal, th.edd_cart_fee, 
 }
 
 .edd_cart_footer_row .edd_cart_total {
-    border-top: 1px white solid;
+    border-top: 1px var(--ast-global-color-8) solid;
 }
 
 /* Fix for Software Licensing when renewed or upgraded */
@@ -405,7 +411,7 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal, th.edd_cart_fee, 
 
 #edd_checkout_wrap #edd_discount_code {
     border: 0;
-    color: white;
+    color: var(--ast-global-color-8);
 }
 
 #edd_discount_code p {
@@ -413,7 +419,7 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal, th.edd_cart_fee, 
 }
 
 .edd_discount_link {
-    color: white;
+    color: var(--ast-global-color-8);
     text-decoration: underline;
 }
 
@@ -474,11 +480,13 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal, th.edd_cart_fee, 
     #ffwpress-cart__wrapper.cart-wrapper-mobile {
         margin: 10px 30px 0;
         padding: 15px;
+        border: 1px solid var(--ast-global-color-4);
+        background: var(--ast-global-color-6);
         text-align: center;
     }
 
     #ffwpress-cart__wrapper .ffwpress-cart-link {
-        color: white;
+        color: var(--ast-global-color-8);
         text-decoration: underline;
     }
 
