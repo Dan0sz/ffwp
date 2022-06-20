@@ -81,7 +81,7 @@ input[type="email"]:focus, input[type="password"]:focus, input[type="reset"]:foc
 	background: var(--ast-global-color-5) !important;
 }
 
-#ffwpress-cart__wrapper {
+#ffwpress-cart__wrapper:not(.cart-wrapper-mobile) {
     width: 34%;
     background: var(--ast-global-color-6);
     border: 1px solid var(--ast-global-color-4);
