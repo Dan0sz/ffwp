@@ -55,6 +55,14 @@
     cursor: pointer;
 }
 
+#edd_checkout_wrap input[type="email"], #edd_checkout_wrap input[type="number"], #edd_checkout_wrap input[type="password"], #edd_checkout_wrap input[type="reset"], #edd_checkout_wrap input[type="search"], #edd_checkout_wrap input[type="tel"], #edd_checkout_wrap input[type="text"], #edd_checkout_wrap input[type="url"], #edd_checkout_wrap textarea, .edd_download_purchase_form input[type="email"], .edd_download_purchase_form input[type="number"], .edd_download_purchase_form input[type="password"], .edd_download_purchase_form input[type="reset"], .edd_download_purchase_form input[type="search"], .edd_download_purchase_form input[type="tel"], .edd_download_purchase_form input[type="text"], .edd_download_purchase_form input[type="url"], .edd_download_purchase_form textarea {
+    border-color: var(--ast-global-color-4);
+}
+  
+input[type="email"]:focus, input[type="password"]:focus, input[type="reset"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="text"]:focus, input[type="url"]:focus, select:focus, textarea:focus {
+    border-color: var(--ast-global-color-1) !important;
+}  
+
 #edd_checkout_form_wrap fieldset {
     border: 0;
 }
