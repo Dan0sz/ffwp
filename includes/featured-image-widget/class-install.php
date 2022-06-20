@@ -48,7 +48,7 @@ class FFWP_FeaturedImageWidget_Install extends WP_Widget
         echo $args['before_widget'];
 ?>
         <div class="featured-image-wrapper">
-            <?php $thumbnail; ?>
+            <?php echo $thumbnail; ?>
         </div>
     <?php
 
