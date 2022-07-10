@@ -20,8 +20,15 @@ class FFWP_BetterBlog_Enable
     private function init()
     {
         add_filter('astra_post_date', [$this, 'display_date_modified']);
+        add_filter('the_category_rss', [$this, 'add_featured_image_to_rss_feed']);
     }
 
+    /**
+     * Display date modified above posts. 
+     * 
+     * @param mixed $html 
+     * @return mixed 
+     */
     public function display_date_modified($html)
     {
         preg_match('/<span.*datePublished.*?>(?P<published>.*?)<\/span>/', $html, $date_published);
@@ -43,5 +50,30 @@ class FFWP_BetterBlog_Enable
         }
 
         return $html;
+    }
+
+    /**
+     * Add Featured Image as <enclosure> node to RSS feed.  
+     */
+    public function add_featured_image_to_rss_feed($content)
+    {
+        global $post;
+
+        if (has_post_thumbnail($post->ID)) {
+            $thumbnail_id = get_post_thumbnail_id($post->ID);
+            $img_url      = wp_get_attachment_image_src($thumbnail_id, 'post-thumbnail')[0];
+
+            if (!$img_url) {
+                return $content;
+            }
+
+            $uploads_url  = wp_get_upload_dir()['baseurl'];
+            $uploads_path = wp_get_upload_dir()['basedir'];
+            $img_path     = str_replace($uploads_url, $uploads_path, $img_url);
+            $length       = filesize($img_path);
+            $mime_type    = mime_content_type($img_path);
+            $content      = "<enclosure url='$img_url' length='$length' type='$mime_type' />\n" . $content;
+        }
+        return $content;
     }
 }
