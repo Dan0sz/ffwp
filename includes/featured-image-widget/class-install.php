@@ -58,7 +58,7 @@ class FFWP_FeaturedImageWidget_Install extends WP_Widget
     public function form($instance)
     {
         $sizes    = get_intermediate_image_sizes();
-        $selected = $instance['image_size'];
+        $selected = $instance['image_size'] ?? '';
     ?>
         <p>
             <label for="<?php echo $this->get_field_id('image_size'); ?>"><?php _e('Image Size:', $this->plugin_text_domain); ?></label>
