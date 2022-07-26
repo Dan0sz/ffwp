@@ -94,6 +94,17 @@ input[type="email"]:focus, input[type="password"]:focus, input[type="reset"]:foc
     flex-wrap: wrap;
 }
 
+#edd_purchase_form #cl_gdpr_message {
+    display: block;
+}
+
+#edd_purchase_form #cl_gdpr_message > span {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 30px;
+    font-size: .8em;
+  }
+
 /**
 * Notification area
 */
