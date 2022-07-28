@@ -354,12 +354,16 @@ fieldset#edd_checkout_user_info {
 * Terms & Conditions
 */
 
-#edd_terms_agreement {
+#edd_terms_agreement, #edd_sendinblue_agreement {
     padding: 15px 0 10px !important;
     margin-bottom: 0 !important;
 }
 
-#edd_agree_to_terms, #edd_mailchimp_signup {
+#edd_terms_agreement {
+    padding-top: 0 !important;
+}
+
+#edd_agree_to_terms, #edd_sendinblue_agree {
     height: 1.2rem;
     width: 1.2rem;
 }
