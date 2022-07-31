@@ -19,14 +19,14 @@ class FFWP
      */
     public function __construct()
     {
-        $this->add_custom_checkout_fields();
+        // $this->add_custom_checkout_fields();
         $this->modify_product_details_widget();
         $this->insert_login_fields_legend();
         $this->set_non_required_state_field();
 
         add_action('plugins_loaded', [$this, 'enable_better_blog']);
         add_action('plugins_loaded', [$this, 'enable_better_checkout'], 100);
-        add_action('init', [$this, 'add_changelog_shortcode']);
+        // add_action('init', [$this, 'add_changelog_shortcode']);
         add_action('init', [$this, 'add_download_info_shortcodes']);
         add_filter('login_url', [$this, 'change_login_url']);
         add_action('widgets_init', [$this, 'install_featured_image_widget']);
