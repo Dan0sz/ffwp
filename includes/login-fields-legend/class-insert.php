@@ -53,6 +53,10 @@ class FFWP_LoginFieldsLegend_Insert
                 text-align: right;
             }
 
+            #ffwp-account-form .icon-user {
+                color: #135fad;
+            }
+
             #ffwp-account-form p {
                 padding-top: 0 !important;
                 padding-bottom: 0 !important;
