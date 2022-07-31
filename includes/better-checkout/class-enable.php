@@ -20,19 +20,19 @@ class FFWP_BetterCheckout_Enable
      * Format: Rewritten text => Text to be translated.
      */
     const FFWP_BETTER_CHECKOUT_REWRITE_TEXT_FIELDS = [
-        'An account associated with this email address has already been registered. Please login to complete your purchase.' => 'You must be logged in to purchase a subscription',
+        'An account associated with this email address has already been registered. Please <a href="/account/">login</a> to complete your purchase. <a href="/wp-login.php?action=lostpassword">Lost your password</a>?' => 'You must be logged in to purchase a subscription',
         'The EU VAT Validation service seems to be down. Please try again later or deduct the calculated VAT from your next VAT declaration using the invoice you\'ll receive upon purchase.' => 'We\'re having trouble checking your VAT number. Please try again or contact our support team.',
-        'City'    => 'Billing City',
-        'Country' => 'Billing Country',
+        'City'    => 'Billing city',
+        'Country' => 'Billing country',
         'Enter a valid VAT number (starting with a 2 letter country code) to reverse charge EU VAT.' => 'Enter the VAT number of your company.',
         'Name on Card'                 => 'Name on the Card',
         'Payment'                      => 'Select Payment Method',
         ''                             => 'Excluding %1$s&#37; tax',
-        'State/Province'               => 'Billing State / Province',
-        'Street + House No.'           => 'Billing Address',
-        'Suite, Apt No., PO Box, etc.' => 'Billing Address Line 2 (optional)',
+        'State/Province'               => 'Billing state/Province',
+        'Street + House No.'           => 'Billing address',
+        'Suite, Apt No., PO Box, etc.' => 'Billing address line 2 (optional)',
         'Validate'                     => 'Check',
-        'Zip/Postal Code'              => 'Billing Zip / Postal Code'
+        'Zip/Postal Code'              => 'Billing zip/Postal code'
     ];
 
     private $plugin_dir = '';
