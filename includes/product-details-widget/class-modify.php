@@ -48,7 +48,7 @@ class FFWP_ProductDetailsWidget_Modify
 
         add_filter('edd_purchase_variable_prices', [$this, 'save_recurring_license_amounts'], 10, 2);
         add_filter('edd_format_amount', [$this, 'add_recurring_label_to_price'], 10, 5);
-        add_action('edd_purchase_link_top', [$this, 'add_vat_notice']);
+        add_action('edd_after_price_options', [$this, 'add_vat_notice']);
 
         // Begin table
         add_action('edd_product_details_widget_before_categories_and_tags', function () {
