@@ -107,6 +107,7 @@ class FFWP_BetterCheckout_Enable
          * 
          */
         add_filter('edd_get_cart_fee_tax', [$this, 'get_cart_fee_tax']);
+        add_filter('edd_mollie_payment_total', [$this, 'recalculate_mollie_payment_total'], 10, 2);
 
         // Modify required fields
         add_filter('edd_purchase_form_required_fields', [$this, 'add_required_fields']);
@@ -279,6 +280,18 @@ class FFWP_BetterCheckout_Enable
         }
 
         return apply_filters('edd_taxed_amount', $tax, $rate, $country, $state);
+    }
+
+    public function recalculate_mollie_payment_total($total, $order)
+    {
+        if (edd_get_cart_total() > 0 && (float) $order->total != edd_get_cart_total()) {
+            $total = edd_get_cart_total();
+
+            edd_update_order($order->id, array(
+                'total' => $total,
+            ));
+        }
+        return $total;
     }
 
     /**
