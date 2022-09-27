@@ -106,6 +106,7 @@ class FFWP_BetterCheckout_Enable
         /**
          * 
          */
+        add_action('edd_built_order', [$this, 'recalculate_order_tax'], 10, 2);
         add_filter('edd_get_cart_fee_tax', [$this, 'get_cart_fee_tax']);
         add_filter('edd_mollie_payment_total', [$this, 'recalculate_mollie_payment_total'], 10, 2);
 
@@ -226,6 +227,43 @@ class FFWP_BetterCheckout_Enable
         }
 
         return $fees;
+    }
+
+    /**
+     * Update the tax amount for the order, right after its written to the DB to make sure it's displayed
+     * correctly in VAT invoices and Order Confirmations.
+     */
+    public function recalculate_order_tax($order_id, $order_data)
+    {
+        $order = edd_get_order($order_id);
+
+        if (!empty($order)) {
+            $fees = edd_get_cart_fees();
+        }
+
+        $signup_fee = $fees['signup_fee'] ?? '';
+
+        if (!$signup_fee) {
+            return;
+        }
+
+        $fee_amount = isset($signup_fee['amount']) && $signup_fee['amount'] < 0 ? $signup_fee['amount'] : 0;
+
+        if (!$fee_amount) {
+            return;
+        }
+
+        $subtotal    = $order->subtotal;
+        $tax_rate    = edd_get_tax_rate();
+        $total_tax   = ($subtotal + $fee_amount) * $tax_rate;
+        $order_total = ($subtotal + $fee_amount) + $total_tax;
+
+        // Update the order with all of the newly computed values.
+        edd_update_order($order_id, array(
+            'subtotal'     => $subtotal,
+            'tax'          => (string) $total_tax,
+            'total'        => (string) $order_total,
+        ));
     }
 
     /**
