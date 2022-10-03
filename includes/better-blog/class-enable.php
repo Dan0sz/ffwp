@@ -70,6 +70,14 @@ class FFWP_BetterBlog_Enable
             $uploads_url  = wp_get_upload_dir()['baseurl'];
             $uploads_path = wp_get_upload_dir()['basedir'];
             $img_path     = str_replace($uploads_url, $uploads_path, $img_url);
+
+            /**
+             * After migrating staging to production, files could get lost.
+             */
+            if (!file_exists($img_path)) {
+                return $content;
+            }
+
             $length       = filesize($img_path);
             $mime_type    = mime_content_type($img_path);
             $content      = "<enclosure url='$img_url' length='$length' type='$mime_type' />\n" . $content;
