@@ -34,6 +34,9 @@ class FFWP
         // Astra Theme
         add_filter('astra_featured_image_enabled', [$this, 'disable_featured_image_on_downloads']);
 
+        // EDD
+        add_filter('edd_file_download_has_access', [$this, 'maybe_allow_download'], 10, 3);
+
         // Software Licensing (runs at priority 100)
         add_action('edd_add_email_tags', [$this, 'add_email_tag'], 101);
         add_filter('edd_sl_url_subdomains', [$this, 'add_local_urls']);
@@ -157,6 +160,35 @@ class FFWP
         }
 
         return '';
+    }
+
+    /**
+     * Custom function to allow download, because for some reason ours keep failing since EDD 3.0.
+     * 
+     * Checks the payment status and if the token is valid.
+     */
+    public function maybe_allow_download($has_access, $payment_id, $args)
+    {
+        $payment = edd_get_payment($payment_id);
+
+        if (!$payment) {
+            return $has_access;
+        }
+
+        $status = $payment->status;
+        $deliverable_statuses = edd_get_deliverable_order_item_statuses();
+
+        if (!in_array($status, $deliverable_statuses)) {
+            return $has_access;
+        }
+
+        $parts = parse_url(add_query_arg(array()));
+        wp_parse_str($parts['query'], $query_args);
+        $url = add_query_arg($query_args, site_url());
+
+        $valid_token = edd_validate_url_token($url);
+
+        return $valid_token;
     }
 
     /**
