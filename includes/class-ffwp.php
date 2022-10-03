@@ -165,7 +165,9 @@ class FFWP
     /**
      * Custom function to allow download, because for some reason ours keep failing since EDD 3.0.
      * 
-     * Checks the payment status and if the token is valid.
+     * Checks the payment status and if the token is valid. Nothing else, which is probably enough in our case.
+     * 
+     * @return bool
      */
     public function maybe_allow_download($has_access, $payment_id, $args)
     {
