@@ -21,6 +21,19 @@ class FFWP_BetterBlog_Enable
     {
         add_filter('astra_post_date', [$this, 'display_date_modified']);
         add_filter('the_category_rss', [$this, 'add_featured_image_to_rss_feed']);
+        add_filter('astra_featured_image_markup', [$this, 'remove_lazy_loading_attribute']);
+    }
+
+    /**
+     * Remove loading="lazy" attribute from Featured Images.
+     */
+    public function remove_lazy_loading_attribute($thumb_html)
+    {
+        if (is_singular()) {
+            $thumb_html = str_replace('loading="lazy"', '', $thumb_html);
+        }
+
+        return $thumb_html;
     }
 
     /**
