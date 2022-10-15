@@ -2,6 +2,8 @@
 
 /**
  * Widget: Currency Selector
+ * 
+ * Prevents CLS.
  *
  * Dropdown view.
  *
