@@ -21,7 +21,7 @@ class FFWP_BetterCheckout_Enable
      */
     const FFWP_BETTER_CHECKOUT_REWRITE_TEXT_FIELDS = [
         'An account associated with this email address has already been registered. Please <a href="/account/">login</a> to complete your purchase. <a href="/wp-login.php?action=lostpassword">Lost your password</a>?' => 'You must be logged in to purchase a subscription',
-        'An order associated with this email address has been found. Please login to your account. If you don\'t have an account, <a href="/wp-login.php?action=register">create an account</a> before proceeding.' => 'To complete this payment, please login to your account.',
+        'An order associated with this email address has been found. Please login to your account. If you don\'t have an account, please <a href="/wp-login.php?action=register">create an account</a> before proceeding.' => 'To complete this payment, please login to your account.',
         'The EU VAT Validation service seems to be down. Please try again later or deduct the calculated VAT from your next VAT declaration using the invoice you\'ll receive upon purchase.' => 'We\'re having trouble checking your VAT number. Please try again or contact our support team.',
         'City'    => 'Billing city',
         'Country' => 'Billing country',
