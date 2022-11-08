@@ -255,7 +255,7 @@ class FFWP_BetterCheckout_Enable
         /**
          * Handle VAT input on the checkout.
          */
-        if (empty($_SERVER['REQUEST_METHOD']) || 'POST' !== $_SERVER['REQUEST_METHOD']) {
+        if (empty($_SERVER['REQUEST_METHOD']) || 'POST' !== $_SERVER['REQUEST_METHOD'] || !isset($_POST['vat_number']) || !isset($_POST['billing_country'])) {
             return $fees;
         }
 
