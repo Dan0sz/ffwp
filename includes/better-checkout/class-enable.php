@@ -266,6 +266,13 @@ class FFWP_BetterCheckout_Enable
             return $fees;
         }
 
+        /**
+         * If country is set to NL, always pay tax.
+         */
+        if ($country_code == 'NL') {
+            return $this->set_no_tax_on_fees($fees, false);
+        }
+
         // Check the submitted VAT number.
         $valid = $this->check_vat_number($vat_number, $country_code);
 
@@ -370,11 +377,14 @@ class FFWP_BetterCheckout_Enable
                  * This fixes a bug that was introduced since EDD 3.1.x and EDD EU VAT 1.5.9 and 
                  * enforces not to calculate taxes over discounts for customers with valid VAT IDs.
                  * 
-                 * @see set_no_tax_on_fees()
+                 * We check if valid_vat_id is set to true, because customers in NL would still have
+                 * to pay tax (so valid_vat_id will be set to false to hack this.)
+                 * 
+                 * @see maybe_set_no_tax_on_fees()
                  * 
                  * @since EDD 3.1.x
                  */
-                if (isset($fee['valid_vat_id'])) {
+                if (isset($fee['valid_vat_id']) && $fee['valid_vat_id']) {
                     continue;
                 }
 
