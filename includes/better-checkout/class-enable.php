@@ -40,6 +40,13 @@ class FFWP_BetterCheckout_Enable
 
     private $plugin_url = '';
 
+    /**
+     * This is an empty string on purpose, because we want to explicitly check if it's true/false later on.
+     * 
+     * @var string
+     */
+    private $vat_is_reverse_charged = '';
+
     private $gateways = [];
 
     private $plugin_text_domain = 'ffwp';
@@ -103,10 +110,12 @@ class FFWP_BetterCheckout_Enable
          */
         add_filter('edd_fees_get_fees', [$this, 'reword_negative_fee']);
         add_filter('edd_fees_get_fees', [$this, 'remove_discount_for_existing_licenses']);
+        add_filter('edd_fees_get_fees', [$this, 'maybe_set_no_tax_on_fee']);
 
         /**
          * 
          */
+        // add_filter('edd_get_cart_total', [$this, 'recalculate_cart_total']);
         add_action('edd_built_order', [$this, 'recalculate_order_tax'], 10, 2);
         add_filter('edd_get_cart_fee_tax', [$this, 'get_cart_fee_tax']);
         add_filter('edd_mollie_payment_total', [$this, 'recalculate_mollie_payment_total'], 10, 2);
@@ -231,6 +240,82 @@ class FFWP_BetterCheckout_Enable
     }
 
     /**
+     * Makes sure no tax is calculated over fees if a valid VAT number is entered during checkout.
+     * 
+     * @filter edd_fees_get_fees
+     * 
+     * @param array $fees
+     */
+    public function maybe_set_no_tax_on_fee($fees)
+    {
+        if ($this->vat_is_reverse_charged === true || $this->vat_is_reverse_charged === false) {
+            return $this->set_no_tax_on_fees($fees, $this->vat_is_reverse_charged);
+        }
+
+        /**
+         * Handle VAT input on the checkout.
+         */
+        if (empty($_SERVER['REQUEST_METHOD']) || 'POST' !== $_SERVER['REQUEST_METHOD']) {
+            return $fees;
+        }
+
+        $vat_number   = sanitize_text_field($_POST['vat_number']);
+        $country_code = sanitize_text_field($_POST['billing_country']);
+
+        if (!$vat_number || !$country_code) {
+            return $fees;
+        }
+
+        // Check the submitted VAT number.
+        $valid = $this->check_vat_number($vat_number, $country_code);
+
+        $this->vat_is_reverse_charged = $valid;
+
+        return $this->set_no_tax_on_fees($fees, $valid);
+    }
+
+    /**
+     * Sets the no_tax attribute on $fees.
+     * 
+     * @param array $fees 
+     * @param bool $no_tax 
+     * 
+     * @return array 
+     */
+    private function set_no_tax_on_fees($fees, $no_tax)
+    {
+        foreach ($fees as $fee_id => &$fee) {
+            /**
+             * This is not a negative fee, so move on.
+             */
+            if (!isset($fee['amount']) || $fee['amount'] >= 0) {
+                continue;
+            }
+
+            $fee['valid_vat_id'] = $no_tax;
+        }
+
+        return $fees;
+    }
+
+    /**
+     * Checks a VAT number
+     *
+     * @param string $vat_number
+     * @param string $country_code
+     */
+    private function check_vat_number($vat_number, $country_code)
+    {
+        $vat_details = Barn2\Plugin\EDD_VAT\VAT_Checker_API::check_vat($vat_number, $country_code);
+
+        if ($vat_details->is_valid()) {
+            return Barn2\Plugin\EDD_VAT\Util::can_reverse_charge_vat($country_code);
+        }
+
+        return false;
+    }
+
+    /**
      * Update the tax amount for the order, right after its written to the DB to make sure it's displayed
      * correctly in VAT invoices and Order Confirmations.
      */
@@ -282,6 +367,18 @@ class FFWP_BetterCheckout_Enable
         if ($fees) {
             foreach ($fees as $fee_id => $fee) {
                 /**
+                 * This fixes a bug that was introduced since EDD 3.1.x and EDD EU VAT 1.5.9 and 
+                 * enforces not to calculate taxes over discounts for customers with valid VAT IDs.
+                 * 
+                 * @see set_no_tax_on_fees()
+                 * 
+                 * @since EDD 3.1.x
+                 */
+                if (isset($fee['valid_vat_id'])) {
+                    continue;
+                }
+
+                /**
                  * Fees (at this time) must be exclusive of tax
                  */
                 add_filter('edd_prices_include_tax', '__return_false');
@@ -321,6 +418,9 @@ class FFWP_BetterCheckout_Enable
         return apply_filters('edd_taxed_amount', $tax, $rate, $country, $state);
     }
 
+    /**
+     * Make sure the recalculated total (with tax AFTER discount) is sent to Mollie, too.
+     */
     public function recalculate_mollie_payment_total($total, $order)
     {
         if (edd_get_cart_total() > 0 && (float) $order->total != edd_get_cart_total()) {
