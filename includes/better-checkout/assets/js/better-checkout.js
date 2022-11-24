@@ -22,12 +22,10 @@ jQuery(document).ready(function ($) {
             /**
              * Events after which the shopping cart is refreshed.
              */
-            $(document).on('edd_cart_billing_address_updated, edd_gateway_loaded', this.set_loader_cart);
+            $(document).on('edd_cart_billing_address_updated', this.set_loader_cart);
             $(document).on('edd_eu_vat:before_vat_check', this.set_loader_cart);
-            $('#billing_country, select#edd-gateway, input.edd-gateway').on('change', this.set_loader_cart);
+            $('#billing_country').on('change', this.set_loader_cart);
             $('.edd-apply-discount').on('click', this.set_loader_cart);
-
-            $(document.body).on('edd_gateway_loaded', this.maybe_remove_recurring_notice);
         },
 
         add_class: function () {
@@ -50,34 +48,6 @@ jQuery(document).ready(function ($) {
             $cart.css({
                 opacity: 0.5
             });
-        },
-
-        maybe_remove_recurring_notice: function () {
-            var edd_gateway = $("input[name='edd-gateway']").val();
-
-            var postData = {
-                action: 'ffwp_maybe_remove_recurring_notice',
-                gateway: edd_gateway,
-                billing_country: $('#billing_country').val(),
-                state: $('#card_state').val(),
-                nonce: $('#edd-checkout-address-fields-nonce').val()
-            };
-
-            $.ajax({
-                type: "POST",
-                data: postData,
-                dataType: "json",
-                url: edd_global_vars.ajaxurl,
-                success: function (response) {
-                    $('#edd_checkout_cart').replaceWith(response.html);
-                    $('.edd_cart_amount').html(response.total);
-                }
-            }).fail(function (data) {
-                if (window.console && window.console.log) {
-                }
-            });
-
-            return false;
         }
     };
 

@@ -94,10 +94,8 @@ class FFWP_BetterCheckout_Enable
         remove_action('edd_checkout_form_top', 'edd_discount_field', -1);
         add_action('edd_after_checkout_cart', 'edd_discount_field', -1);
 
-        // Handle PayPal notices in checkout
+        // Handle iDEAL notices in checkout
         add_action('edd_purchase_form_before_submit', [$this, 'show_ideal_notice'], -1);
-        add_action('wp_ajax_ffwp_maybe_remove_recurring_notice', array($this, 'maybe_remove_recurring_notice'));
-        add_action('wp_ajax_nopriv_ffwp_maybe_remove_recurring_notice', array($this, 'maybe_remove_recurring_notice'));
 
         /**
          * When Taxes > 'Display Tax Rate' is enabled in EDD's settings, remove the mention for each
@@ -536,24 +534,6 @@ class FFWP_BetterCheckout_Enable
                 </div>
             </fieldset>
         <?php endif;
-    }
-
-    /**
-     * Checks if reccuring notice should be removed based on selected gateway.
-     */
-    public function maybe_remove_recurring_notice()
-    {
-        if (empty($_REQUEST['action']) && $_REQUEST['action'] != 'ffwp_maybe_remove_recurring_notice' && empty($_REQUEST['gateway'])) {
-            edd_die();
-        }
-
-        $gateway = $_REQUEST['gateway'] ?? '';
-
-        if ($gateway == 'mollie_paypal') {
-            add_filter('edd_recurring_cart_item_notice', '__return_empty_string');
-        }
-
-        edd_ajax_recalculate_taxes();
     }
 
     /**
