@@ -95,7 +95,7 @@ class FFWP_BetterCheckout_Enable
         add_action('edd_after_checkout_cart', 'edd_discount_field', -1);
 
         // Handle PayPal notices in checkout
-        add_action('edd_purchase_form_before_submit', [$this, 'show_paypal_notice'], -1);
+        add_action('edd_purchase_form_before_submit', [$this, 'show_ideal_notice'], -1);
         add_action('wp_ajax_ffwp_maybe_remove_recurring_notice', array($this, 'maybe_remove_recurring_notice'));
         add_action('wp_ajax_nopriv_ffwp_maybe_remove_recurring_notice', array($this, 'maybe_remove_recurring_notice'));
 
@@ -523,19 +523,9 @@ class FFWP_BetterCheckout_Enable
     /**
      * 
      */
-    public function show_paypal_notice()
+    public function show_ideal_notice()
     {
         $selected_gateway = edd_get_chosen_gateway();
-
-        if ($selected_gateway == 'mollie_paypal') : ?>
-            <fieldset id="paypal-notice">
-                <div class="payment-method-additional-info paypal">
-                    <label>
-                        <?= __('Licenses purchased with <strong>PayPal</strong> are <u>not</u> anually billed and renewed. You can renew your license (if needed) anytime from within your account area. You will be timely notified by email before your license expires.', $this->plugin_text_domain); ?>
-                    </label>
-                </div>
-            </fieldset>
-        <?php endif;
 
         if ($selected_gateway == 'mollie_ideal') : ?>
             <fieldset id="ideal-notice">
