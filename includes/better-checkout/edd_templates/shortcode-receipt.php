@@ -109,6 +109,13 @@ do_action('edd_order_receipt_before_table', $order, $edd_receipt_args);
 			<?php endif; ?>
 		<?php endif; ?>
 
+		<?php if ($order->tax > 0) : ?>
+			<tr>
+				<td><strong><?php esc_html_e('Tax', 'easy-digital-downloads'); ?>:</strong></td>
+				<td><?php echo esc_html(edd_payment_tax($order->id)); ?></td>
+			</tr>
+		<?php endif; ?>
+
 		<?php
 		$fees = $order->get_fees();
 		if (!empty($fees)) :
@@ -130,12 +137,6 @@ do_action('edd_order_receipt_before_table', $order, $edd_receipt_args);
 			<?php endforeach; ?>
 		<?php endif; ?>
 
-		<?php if ($order->tax > 0) : ?>
-			<tr>
-				<td><strong><?php esc_html_e('Tax', 'easy-digital-downloads'); ?>:</strong></td>
-				<td><?php echo esc_html(edd_payment_tax($order->id)); ?></td>
-			</tr>
-		<?php endif; ?>
 		<?php
 		$credits = $order->get_credits();
 		if ($credits) {
