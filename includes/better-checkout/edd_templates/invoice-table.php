@@ -35,7 +35,24 @@
 			<td class="name"><?php esc_html_e('Subtotal:', 'edd-invoices'); ?></td>
 			<td class="price"><?php echo esc_html(edd_currency_filter(edd_format_amount($order->subtotal))); ?></td>
 		</tr>
+
 		<?php
+		if ($order->tax > 0) {
+			$label = __('Tax:', 'edd-invoices');
+			$rate  = edd_invoices_get_tax_rate($order);
+			if ($rate) {
+				/* translators: the order tax rate. */
+				$label = sprintf(__('Tax (%s%%):', 'edd-invoices'), $rate);
+			}
+		?>
+			<!-- Tax -->
+			<tr>
+				<td class="name"><?php echo esc_html($label); ?></td>
+				<td class="price"><?php echo esc_html(edd_payment_tax($order->ID)); ?></td>
+			</tr>
+		<?php
+		}
+
 		$fees = edd_get_payment_fees($order->ID);
 		if ($fees) {
 		?>
@@ -62,24 +79,8 @@
 					<td class="name"><?php echo esc_html($discount['name']); ?>:</td>
 					<td class="price"><?php echo esc_html($discount['amount']); ?></td>
 				</tr>
-			<?php
-			}
-		}
-
-		if ($order->tax > 0) {
-			$label = __('Tax:', 'edd-invoices');
-			$rate  = edd_invoices_get_tax_rate($order);
-			if ($rate) {
-				/* translators: the order tax rate. */
-				$label = sprintf(__('Tax (%s%%):', 'edd-invoices'), $rate);
-			}
-			?>
-			<!-- Tax -->
-			<tr>
-				<td class="name"><?php echo esc_html($label); ?></td>
-				<td class="price"><?php echo esc_html(edd_payment_tax($order->ID)); ?></td>
-			</tr>
 		<?php
+			}
 		}
 		?>
 
