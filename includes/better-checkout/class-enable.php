@@ -108,7 +108,6 @@ class FFWP_BetterCheckout_Enable
          */
         add_filter('edd_fees_get_fees', [$this, 'reword_negative_fee']);
         add_filter('edd_fees_get_fees', [$this, 'remove_discount_for_existing_licenses']);
-        add_filter('edd_fees_get_fees', [$this, 'maybe_set_no_tax_on_fee']);
 
         // Modify required fields
         add_filter('edd_purchase_form_required_fields', [$this, 'add_required_fields']);
