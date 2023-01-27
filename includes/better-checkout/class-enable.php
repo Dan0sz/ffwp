@@ -117,6 +117,9 @@ class FFWP_BetterCheckout_Enable
 
         // Force available gateways
         add_filter('edd_enabled_payment_gateways', [$this, 'force_gateways'], 10000, 1);
+
+        add_action('edds_buy_now_checkout_error_checks', [$this, 'validate_vat_id_format'], 10, 2);
+        add_action('edd_checkout_error_checks', [$this, 'validate_vat_id_format'], 10, 2);
     }
 
     /**
@@ -425,5 +428,29 @@ class FFWP_BetterCheckout_Enable
         $this->gateways = $gateways;
 
         return $gateways;
+    }
+
+    /**
+     * In the future these should throw exceptions, existing `edd_set_error()` usage will be caught below.
+     * 
+     * @param mixed $valid_data 
+     * @param mixed $post 
+     * @return void 
+     */
+    public function validate_vat_id_format($valid_data, $post)
+    {
+        $entered_vat_id = $post['vat_number'] ?? '';
+
+        if (!$entered_vat_id) {
+            return;
+        }
+
+        $valid = (bool) preg_match('/^[A-Z]{2}/', $entered_vat_id);
+
+        if ($valid) {
+            return;
+        }
+
+        edd_set_error('invalid_vat_number', __('The entered VAT ID isn\'t formatted correctly. Please add the country code at the beginning of the VAT ID, e.g. DE1234567890.', 'ffwp'));
     }
 }
