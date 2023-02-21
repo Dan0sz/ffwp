@@ -35,7 +35,7 @@ class FFWP_Recurring_Emails
             return $text;
         }
 
-        $text = str_replace('{ffwp_renewal_link}', $license->get_renewal_url(), $text);
+        $text = str_replace('{daan_renewal_link}', $license->get_renewal_url(), $text);
 
         return $text;
     }
