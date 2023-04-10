@@ -59,7 +59,7 @@ class FFWP
     /**
      * Adds shortcode support to Yoast SEO
      * 
-     * @param mixed $content 
+     * @param  mixed $content 
      * @return string 
      */
     public function add_shortcode_support($content)
@@ -153,7 +153,7 @@ class FFWP
     /**
      * Disable Featured Images on EDD pages.
      * 
-     * @param mixed $featured_image 
+     * @param  mixed $featured_image 
      * @return mixed 
      */
     public function disable_featured_image_on_downloads($featured_image)
@@ -221,7 +221,7 @@ class FFWP
     /**
      * Modify the list of subdomains to mark as local/staging.
      *
-     * @param mixed $subdomains 
+     * @param  mixed $subdomains 
      * @return string[] 
      */
     public function add_local_urls($subdomains)
@@ -230,14 +230,15 @@ class FFWP
             [
                 'test.',
                 '*.servebolt.cloud',
-                '*.kinsta.cloud'
+                '*.kinsta.cloud',
+                '*.cloudwaysapps.com'
             ],
             $subdomains
         );
     }
 
     /**
-     * @param array $countries 
+     * @param  array $countries 
      * @return array 
      */
     public function change_gb_to_zero_vat($countries)
