@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Easy Digital Downloads - FFWP Modifications
  * Description: Custom additions to EDD for Fast FW Press.
- * Version: 3.1.0
+ * Version: 3.1.1
  * Author: Daan from FFW.Press
  * Author URI: https://ffw.press
  * Text Domain: ffwp
@@ -16,7 +16,7 @@
 define('FFWP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('FFWP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('FFWP_PLUGIN_FILE', __FILE__);
-define('FFWP_STATIC_VERSION', '3.0.4');
+define('FFWP_STATIC_VERSION', '3.1.1');
 
 /**
  * Takes care of loading classes on demand.
@@ -34,7 +34,7 @@ function ffwp_autoload($class)
     }
 
     if (!class_exists('FFWP_Autoloader')) {
-        require_once(FFWP_PLUGIN_DIR . 'ffwp-autoload.php');
+        include_once FFWP_PLUGIN_DIR . 'ffwp-autoload.php';
     }
 
     $autoload = new FFWP_Autoloader($class);
