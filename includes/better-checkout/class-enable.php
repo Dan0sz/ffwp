@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package   FFWP Better Checkout
  * @author    Daan van den Bergh
@@ -9,6 +8,7 @@
  * @license   BY-NC-ND-4.0
  *            http://creativecommons.org/licenses/by-nc-nd/4.0/
  */
+use function Barn2\Plugin\EDD_VAT\edd_eu_vat;
 
 defined('ABSPATH') || exit;
 
@@ -65,9 +65,11 @@ class FFWP_BetterCheckout_Enable
         add_filter('edd_template_paths', [$this, 'add_template_path']);
 
         // Modify Text Fields
-        add_filter('edd_checkout_personal_info_text', function () {
-            return __('Your Details', $this->plugin_text_domain);
-        });
+        add_filter(
+            'edd_checkout_personal_info_text', function () {
+                return __('Your Details', $this->plugin_text_domain);
+            }
+        );
         add_filter('gettext_easy-digital-downloads', [$this, 'modify_text_fields'], 1, 3);
         add_filter('gettext_edd-eu-vat', [$this, 'modify_text_fields'], 1, 3);
         add_filter('gettext_edds', [$this, 'modify_text_fields'], 1, 3);
@@ -120,6 +122,8 @@ class FFWP_BetterCheckout_Enable
 
         add_action('edds_buy_now_checkout_error_checks', [$this, 'validate_vat_id_format'], 10, 2);
         add_action('edd_checkout_error_checks', [$this, 'validate_vat_id_format'], 10, 2);
+
+        add_action('wp_login', [ $this, 'persist_vat_on_login' ], 9);
     }
 
     /**
@@ -134,9 +138,10 @@ class FFWP_BetterCheckout_Enable
 
     /**
      * Add this plugin's edd_templates folder as a file path for template files.
+     *
      * @see edd_get_theme_template_paths()
      * 
-     * @param mixed $template_paths 
+     * @param  mixed $template_paths 
      * @return mixed 
      */
     public function add_template_path($template_paths)
@@ -147,9 +152,9 @@ class FFWP_BetterCheckout_Enable
     /**
      * Modifies lines for a few input fields.
      * 
-     * @param mixed $translation 
-     * @param mixed $text 
-     * @param mixed $domain 
+     * @param  mixed $translation 
+     * @param  mixed $text 
+     * @param  mixed $domain 
      * @return mixed 
      */
     public function modify_text_fields($translation, $text, $domain)
@@ -234,7 +239,7 @@ class FFWP_BetterCheckout_Enable
     /**
      * Get Checkout Form
      *
-     * @see easy-digital-downloads/includes/checkout/template.php::edd_checkout_form()
+     * @see    easy-digital-downloads/includes/checkout/template.php::edd_checkout_form()
      * @return string
      */
     public function edd_checkout_form()
@@ -249,7 +254,7 @@ class FFWP_BetterCheckout_Enable
                     <?php do_action('edd_before_purchase_form'); ?>
                 </div>
                 <div id="ffwpress-cart__wrapper" class="cart-wrapper-mobile">
-                    <a href="#edd_checkout_cart_form" class="ffwpress-cart-link hide-on-desktop"><?= __('View Shopping Cart', $this->plugin_text_domain); ?></a>
+                    <a href="#edd_checkout_cart_form" class="ffwpress-cart-link hide-on-desktop"><?php echo __('View Shopping Cart', $this->plugin_text_domain); ?></a>
                 </div>
                 <div id="ffwpress-payment-details__wrapper">
                     <div id="edd_checkout_form_wrap" class="edd_clearfix">
@@ -289,11 +294,11 @@ class FFWP_BetterCheckout_Enable
                 </div>
                 <div id="ffwpress-cart__wrapper">
                     <fieldset id="ffwpress_checkout_shopping_cart">
-                        <legend><?= __('Your Shopping Cart', 'easy-digital-downloads'); ?></legend>
+                        <legend><?php echo __('Your Shopping Cart', 'easy-digital-downloads'); ?></legend>
                         <?php edd_checkout_cart(); ?>
                     </fieldset>
                 </div>
-            <?php
+                <?php
             else :
                 /**
                  * Fires off when there is nothing in the cart
@@ -319,7 +324,7 @@ class FFWP_BetterCheckout_Enable
             <fieldset id="ideal-notice">
                 <div class="payment-method-additional-info ideal">
                     <label>
-                        <?= __('Your initial payment is processed using <strong>iDEAL</strong>. Recurring payments (if any) are collected using <strong>SEPA Direct Debit</strong> and will appear on your statement as a charge from <strong>FFW.Press via Mollie</strong> (IBAN: <strong>NL79DEUT7025543679</strong>)', $this->plugin_text_domain); ?>
+                        <?php echo __('Your initial payment is processed using <strong>iDEAL</strong>. Recurring payments (if any) are collected using <strong>SEPA Direct Debit</strong> and will appear on your statement as a charge from <strong>FFW.Press via Mollie</strong> (IBAN: <strong>NL79DEUT7025543679</strong>)', $this->plugin_text_domain); ?>
                     </label>
                 </div>
             </fieldset>
@@ -329,7 +334,7 @@ class FFWP_BetterCheckout_Enable
     /**
      * Add Last Name and Street + House No. as required field, because it's dumb not to ask that.
      * 
-     * @param mixed $required_fields 
+     * @param  mixed $required_fields 
      * @return mixed 
      */
     public function add_required_fields($required_fields)
@@ -357,15 +362,15 @@ class FFWP_BetterCheckout_Enable
     {
         $suffix = $this->get_script_suffix();
 
-        wp_enqueue_style('ffwpress-icons', FFWP_PLUGIN_URL . "assets/css/ffwpress-icons$suffix.css");
-        wp_enqueue_style('ffwpress', FFWP_PLUGIN_URL . "assets/css/ffwpress$suffix.css", ['astra-child-theme-css'], FFWP_STATIC_VERSION);
+        wp_enqueue_style('ffwpress-icons', FFWP_PLUGIN_URL . "assets/css/ffwpress-icons$suffix.css", null, filemtime(FFWP_PLUGIN_DIR . "assets/css/ffwpress-icons$suffix.css"));
+        wp_enqueue_style('ffwpress', FFWP_PLUGIN_URL . "assets/css/ffwpress$suffix.css", ['astra-child-theme-css'], filemtime(FFWP_PLUGIN_DIR . "assets/css/ffwpress$suffix.css"));
 
         if (!edd_is_checkout()) {
             return;
         }
 
-        wp_enqueue_script('ffwpress-better-checkout', $this->plugin_url . "assets/js/better-checkout$suffix.js", ['jquery', 'edd-checkout-global'], FFWP_STATIC_VERSION, true);
-        wp_enqueue_style('ffwpress-better-checkout', $this->plugin_url . "assets/css/better-checkout$suffix.css", ['astra-child-theme-css'], FFWP_STATIC_VERSION);
+        wp_enqueue_script('ffwpress-better-checkout', $this->plugin_url . "assets/js/better-checkout$suffix.js", ['jquery', 'edd-checkout-global'], filemtime($this->plugin_dir . "assets/js/better-checkout$suffix.js"), true);
+        wp_enqueue_style('ffwpress-better-checkout', $this->plugin_url . "assets/css/better-checkout$suffix.css", ['astra-child-theme-css'], filemtime($this->plugin_dir . "assets/css/better-checkout$suffix.css"));
         wp_add_inline_style('ffwpress-better-checkout', $this->add_inline_stylesheet());
     }
 
@@ -390,33 +395,33 @@ class FFWP_BetterCheckout_Enable
         ?>
         <style>
             #edd_payment_mode_select legend:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/powered-by-mollie.jpg?v=' . FFWP_STATIC_VERSION; ?>');
+                background-image: url('<?php echo FFWP_PLUGIN_URL . 'assets/images/powered-by-mollie.jpg?v=' . FFWP_STATIC_VERSION; ?>');
                 width: 238px;
             }
 
             #edd-gateway-option-mollie_creditcard:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/mollie-credit-cards-logo.png'; ?>');
+                background-image: url('<?php echo FFWP_PLUGIN_URL . 'assets/images/mollie-credit-cards-logo.png'; ?>');
                 width: 122px;
             }
 
             #edd-gateway-option-mollie_ideal:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/mollie-ideal-logo.png'; ?>');
+                background-image: url('<?php echo FFWP_PLUGIN_URL . 'assets/images/mollie-ideal-logo.png'; ?>');
                 width: 40px;
             }
 
             #edd-gateway-option-mollie_paypal:after {
-                background-image: url('<?= FFWP_PLUGIN_URL . 'assets/images/mollie-paypal-logo.png'; ?>');
+                background-image: url('<?php echo FFWP_PLUGIN_URL . 'assets/images/mollie-paypal-logo.png'; ?>');
                 width: 40px;
             }
         </style>
-<?php
+        <?php
         return str_replace(['<style>', '</style>'], '', ob_get_clean());
     }
 
     /**
      * Somewhere all payment methods are lost. This functions forces them back.
      * 
-     * @param mixed $gateways 
+     * @param  mixed $gateways 
      * @return mixed 
      */
     public function force_gateways($gateways)
@@ -433,8 +438,8 @@ class FFWP_BetterCheckout_Enable
     /**
      * In the future these should throw exceptions, existing `edd_set_error()` usage will be caught below.
      * 
-     * @param mixed $valid_data 
-     * @param mixed $post 
+     * @param  mixed $valid_data 
+     * @param  mixed $post 
      * @return void 
      */
     public function validate_vat_id_format($valid_data, $post)
@@ -452,5 +457,13 @@ class FFWP_BetterCheckout_Enable
         }
 
         edd_set_error('invalid_vat_number', __('The entered VAT ID isn\'t formatted correctly. Please add the country code at the beginning of the VAT ID, e.g. DE1234567890.', 'ffwp'));
+    }
+
+    public function persist_vat_on_login()
+    {
+        $edd_eu_vat = edd_eu_vat();
+        $checkout_handler = $edd_eu_vat->get_service('checkout_handler');
+
+        remove_action('wp_login', [ $checkout_handler, 'clear_vat_on_login' ], 10);
     }
 }
