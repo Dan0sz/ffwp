@@ -26,6 +26,11 @@ jQuery(document).ready(function ($) {
             $(document).on('edd_eu_vat:before_vat_check', this.set_loader_cart);
             $('#billing_country').on('change', this.set_loader_cart);
             $('.edd-apply-discount').on('click', this.set_loader_cart);
+
+            /**
+             * This will add the VAT details back to the session.
+             */
+            $(document).on('click', '#edd_payment_mode_select input', this.check_vat);
         },
 
         add_class: function () {
@@ -47,6 +52,25 @@ jQuery(document).ready(function ($) {
             $cart.append('<span class="ffwp-loader edd-loading-ajax edd-loading"></span>');
             $cart.css({
                 opacity: 0.5
+            });
+        },
+
+        check_vat: function () {
+            var billing_country = $('#billing_country').val(),
+                vat_number = $('#edd-vat-number').val();
+
+            $.ajax({
+                type: 'POST',
+                url: edd_global_vars.ajaxurl,
+                data: {
+                    action: 'edd_vat_check',
+                    billing_country: billing_country,
+                    vat_number: vat_number,
+                    nonce: $('#edd-checkout-address-fields-nonce').val()
+                },
+                complete: function () {
+                    // Do nothing.
+                }
             });
         }
     };
