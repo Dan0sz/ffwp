@@ -190,10 +190,11 @@ class FFWP_ProductDetailsWidget_Modify
             return $formatted . '<small>/' . $current_amount['period'] . '*</small>';
         }
         
-        $this->signup_discount++;
         $no_discount = (float) $current_amount['signup_discount'] == 0;
-
+        
         if (!$no_discount) {
+            $this->signup_discount++;
+
             $formatted = "<span class='edd-former-price'>$formatted</span> ";
             $amount    = (float) $amount + (float) $current_amount['signup_discount'];
             $formatted .= edd_currency_filter(number_format($amount, $decimals, $decimal_sep, $thousands_sep));
