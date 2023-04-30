@@ -201,8 +201,9 @@ class FFWP_ProductDetailsWidget_Modify
         $formatted = "<span class='edd-former-price'>$formatted</span> ";
         $amount    = (float) $amount + (float) $current_amount['signup_discount'];
         $formatted .= edd_currency_filter(number_format($amount, $decimals, $decimal_sep, $thousands_sep));
+        $no_discount = (float) $current_amount['signup_discount'] == 0;
 
-        return str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted) . '<small>/' . $current_amount['period'] . '*</small>';
+        return str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted) . '<small>/' . $current_amount['period'] . ($no_discount ? '' : '*') . '</small>';
     }
 
     /**
