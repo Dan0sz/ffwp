@@ -13,16 +13,31 @@ defined('ABSPATH') || exit;
 
 class FFWP_ProductDetailsWidget_Modify
 {
-    /** @var Downloads_As_Service $das */
+    /**
+     * @var Downloads_As_Service $das 
+     */
     private $das;
 
-    /** @var string $changelog */
+    /**
+     * @var string $changelog 
+     */
     private $changelog;
 
-    /** @var array $recurring_amounts Array containing amounts that belong to a recurring license. */
+    /**
+     * @var array $recurring_amounts Array containing amounts that belong to a recurring license. 
+     */
     private $recurring_amounts;
 
-    /** @var string $plugin_text_domain */
+    /**
+     * Stores the amount of signup discounts shown on current product page.
+     *
+     * @var int
+     */
+    private $signup_discount = 0;
+
+    /**
+     * @var string $plugin_text_domain 
+     */
     private $plugin_text_domain = 'ffwp';
 
     /**
@@ -51,11 +66,13 @@ class FFWP_ProductDetailsWidget_Modify
         add_action('edd_after_price_options', [$this, 'add_vat_notice']);
 
         // Begin table
-        add_action('edd_product_details_widget_before_categories_and_tags', function () {
-            if (!$this->das->is_service(get_the_ID())) {
-                echo '<table class="ffw-download-details"><tbody>';
-            }
-        }, 9);
+        add_action(
+            'edd_product_details_widget_before_categories_and_tags', function () {
+                if (!$this->das->is_service(get_the_ID())) {
+                    echo '<table class="ffw-download-details"><tbody>';
+                }
+            }, 9
+        );
 
         // Table content
         add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_current_version'], 10, 2);
@@ -63,11 +80,13 @@ class FFWP_ProductDetailsWidget_Modify
         add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_date_last_updated'], 12, 2);
 
         // End table
-        add_action('edd_product_details_widget_before_categories_and_tags', function () {
-            if (!$this->das->is_service(get_the_ID())) {
-                echo '</tbody></table>';
-            }
-        }, 12);
+        add_action(
+            'edd_product_details_widget_before_categories_and_tags', function () {
+                if (!$this->das->is_service(get_the_ID())) {
+                    echo '</tbody></table>';
+                }
+            }, 12
+        );
 
         add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_changelog_popup'], 13);
 
@@ -96,7 +115,7 @@ class FFWP_ProductDetailsWidget_Modify
     /**
      * Save all amounts belonging to recurring licenses for later processing.
      * 
-     * @see   self::add_recurring_label_to_price()
+     * @see self::add_recurring_label_to_price()
      * 
      * @param array $prices 
      * @param int   $download_id 
@@ -106,8 +125,7 @@ class FFWP_ProductDetailsWidget_Modify
     public function save_recurring_license_amounts($prices, $download_id)
     {
         foreach ($prices as $key => $price) {
-            if (
-                !isset($price['amount']) || $price['amount'] <= 0
+            if (!isset($price['amount']) || $price['amount'] <= 0
                 || !isset($price['recurring']) || $price['recurring'] == 'no'
             ) {
                 continue;
@@ -168,10 +186,18 @@ class FFWP_ProductDetailsWidget_Modify
          * This isn't a discount, it's a fee. So, we're not going to show it up front.
          * We're still going to add the renewal period though.
          */
-        if ((float) $current_amount['signup_discount'] >= 0) {
+        if ((float) $current_amount['signup_discount'] > 0) {
             return $formatted . '<small>/' . $current_amount['period'] . '*</small>';
         }
 
+        /**
+         * No need to show this, if there's no signup_discount.
+         */
+        if ((float) $current_amount['signup_discount'] == 0) {
+            return $formatted;
+        }
+
+        $this->signup_discount++;
         $formatted = "<span class='edd-former-price'>$formatted</span> ";
         $amount    = (float) $amount + (float) $current_amount['signup_discount'];
         $formatted .= edd_currency_filter(number_format($amount, $decimals, $decimal_sep, $thousands_sep));
@@ -186,11 +212,13 @@ class FFWP_ProductDetailsWidget_Modify
      */
     public function add_vat_notice()
     {
-?>
+        ?>
         <span class="edd_price_additional_info">
             <small>
+                <?php if ($this->signup_discount > 0) : ?>
                 * <?php echo __('Renews at regular rate', 'ffwp'); ?><br />
-                <?= __('excl. VAT for EU residents', 'ffwp'); ?>
+                <?php endif; ?>
+                <?php echo __('excl. VAT for EU residents', 'ffwp'); ?>
             </small>
         </span>
         <?php
@@ -199,8 +227,8 @@ class FFWP_ProductDetailsWidget_Modify
     /**
      * Add current version to Product Details widget.
      * 
-     * @param mixed $instance 
-     * @param mixed $download_id 
+     * @param  mixed $instance 
+     * @param  mixed $download_id 
      * @return void 
      */
     public function add_current_version($instance, $download_id)
@@ -208,15 +236,15 @@ class FFWP_ProductDetailsWidget_Modify
         $current_version = get_post_meta($download_id, '_edd_sl_version', true) ?? '';
         if ($current_version) : ?>
             <tr>
-                <td><?= __('Current version', $this->plugin_text_domain); ?></td>
-                <td><span itemscope itemtype="https://schema.org/version"><?= sprintf(__('%s', $this->plugin_text_domain), $current_version); ?></span></td>
+                <td><?php echo __('Current version', $this->plugin_text_domain); ?></td>
+                <td><span itemscope itemtype="https://schema.org/version"><?php echo sprintf(__('%s', $this->plugin_text_domain), $current_version); ?></span></td>
             </tr>
         <?php endif;
     }
 
     /**
-     * @param mixed $instance 
-     * @param mixed $download_id 
+     * @param  mixed $instance 
+     * @param  mixed $download_id 
      * @return void 
      */
     public function add_changelog_link($instance, $download_id)
@@ -225,8 +253,8 @@ class FFWP_ProductDetailsWidget_Modify
 
         if ($this->changelog && !$this->das->is_service($download_id)) : ?>
             <tr>
-                <td><?= __('Changelog', $this->plugin_text_domain); ?></td>
-                <td><?= __('<a href="#" id="ffw-changelog-link">View</a>', $this->plugin_text_domain); ?></td>
+                <td><?php echo __('Changelog', $this->plugin_text_domain); ?></td>
+                <td><?php echo __('<a href="#" id="ffw-changelog-link">View</a>', $this->plugin_text_domain); ?></td>
             </tr>
         <?php endif;
     }
@@ -234,7 +262,7 @@ class FFWP_ProductDetailsWidget_Modify
     /**
      * Get Readme Location defined in EDD Download.
      * 
-     * @param mixed $download_id 
+     * @param  mixed $download_id 
      * @return mixed 
      */
     public function get_changelog_url($download_id)
@@ -245,8 +273,8 @@ class FFWP_ProductDetailsWidget_Modify
     /**
      * Add Last Updated to Widget
      * 
-     * @param mixed $instance 
-     * @param mixed $download_id 
+     * @param  mixed $instance 
+     * @param  mixed $download_id 
      * @return void 
      */
     public function add_date_last_updated($instance, $download_id)
@@ -274,8 +302,8 @@ class FFWP_ProductDetailsWidget_Modify
 
         if ($last_updated) : ?>
             <tr>
-                <td><?= __('Last updated:', $this->plugin_text_domain); ?></td>
-                <td><span itemscope itemtype="https://schema.org/dateModified"><?= sprintf(__('%s'), $last_updated); ?></span></td>
+                <td><?php echo __('Last updated:', $this->plugin_text_domain); ?></td>
+                <td><span itemscope itemtype="https://schema.org/dateModified"><?php echo sprintf(__('%s'), $last_updated); ?></span></td>
             </tr>
         <?php endif;
     }
@@ -289,9 +317,9 @@ class FFWP_ProductDetailsWidget_Modify
         if (!$this->das->is_service(get_the_ID())) : ?>
             <div style="display: none;" id="ffw-changelog-popup">
                 <div class="ffw-changelog-popup-inner">
-                    <a href="#" id="ffw-changelog-close"><?= '⮿ ' . __('close', $this->plugin_text_domain); ?></a>
+                    <a href="#" id="ffw-changelog-close"><?php echo '⮿ ' . __('close', $this->plugin_text_domain); ?></a>
                     <div class="ffw-changelog-wrapper">
-                        <?= $this->changelog; ?>
+                        <?php echo $this->changelog; ?>
                     </div>
                 </div>
             </div>
@@ -353,6 +381,6 @@ class FFWP_ProductDetailsWidget_Modify
                 }
             }
         </script>
-<?php
+        <?php
     }
 }
