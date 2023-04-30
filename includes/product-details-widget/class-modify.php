@@ -190,13 +190,6 @@ class FFWP_ProductDetailsWidget_Modify
             return $formatted . '<small>/' . $current_amount['period'] . '*</small>';
         }
 
-        /**
-         * No need to show this, if there's no signup_discount.
-         */
-        if ((float) $current_amount['signup_discount'] == 0) {
-            return $formatted;
-        }
-
         $this->signup_discount++;
         $formatted = "<span class='edd-former-price'>$formatted</span> ";
         $amount    = (float) $amount + (float) $current_amount['signup_discount'];
