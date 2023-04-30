@@ -189,14 +189,18 @@ class FFWP_ProductDetailsWidget_Modify
         if ((float) $current_amount['signup_discount'] > 0) {
             return $formatted . '<small>/' . $current_amount['period'] . '*</small>';
         }
-
+        
         $this->signup_discount++;
-        $formatted = "<span class='edd-former-price'>$formatted</span> ";
-        $amount    = (float) $amount + (float) $current_amount['signup_discount'];
-        $formatted .= edd_currency_filter(number_format($amount, $decimals, $decimal_sep, $thousands_sep));
         $no_discount = (float) $current_amount['signup_discount'] == 0;
 
-        return str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted) . '<small>/' . $current_amount['period'] . ($no_discount ? '' : '*') . '</small>';
+        if (!$no_discount) {
+            $formatted = "<span class='edd-former-price'>$formatted</span> ";
+            $amount    = (float) $amount + (float) $current_amount['signup_discount'];
+            $formatted .= edd_currency_filter(number_format($amount, $decimals, $decimal_sep, $thousands_sep));
+            return str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted) . '<small>/' . $current_amount['period'] . '*</small>';
+        }
+
+        return str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted) . '<small>/' . $current_amount['period'] . '</small>';
     }
 
     /**
