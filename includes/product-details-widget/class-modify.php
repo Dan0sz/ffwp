@@ -47,9 +47,13 @@ class FFWP_ProductDetailsWidget_Modify
      */
     public function __construct()
     {
-        $this->das = new EDD_Downloads_As_Services();
+        if (class_exists('EDD_Downloads_As_Services')) {
+            $this->das = new EDD_Downloads_As_Services();
+        }
 
-        $this->init();
+        if ($this->das) {
+            $this->init();
+        }
     }
 
     /**
