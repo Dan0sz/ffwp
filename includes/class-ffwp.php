@@ -52,8 +52,10 @@ class FFWP
         add_filter('wpseo_title', [$this, 'add_shortcode_support']);
 
         // Rankmath
-        add_filter('rank_math/frontend/title', [$this, 'add_shortcode_support']);
-        add_filter('rank_math/frontend/description', [$this, 'add_shortcode_support']);
+        add_filter('the_seo_framework_title_from_custom_field', [$this, 'add_shortcode_support']);
+        add_filter('the_seo_framework_title_from_generation', [$this, 'add_shortcode_support']);
+        add_filter('the_seo_framework_custom_field_description', [$this, 'add_shortcode_support']);
+        add_filter('the_seo_framework_generated_description', [$this, 'add_shortcode_support']);
     }
 
     /**
