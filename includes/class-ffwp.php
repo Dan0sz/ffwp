@@ -41,6 +41,7 @@ class FFWP
         add_filter('edd_recurring_filter_reminder_template_tags', [$this, 'filter_renewal_link_tag'], 10, 2);
 
         // Software Licensing (runs at priority 100)
+        // add_action('plugins_loaded', [$this, 'remove_old_licenses'], 11);
         add_action('edd_add_email_tags', [$this, 'add_software_licensing_email_tag'], 101);
         add_filter('edd_sl_url_subdomains', [$this, 'add_local_urls']);
 
@@ -193,6 +194,23 @@ class FFWP
         $valid_token = edd_validate_url_token($url);
 
         return $valid_token;
+    }
+
+    /**
+     * Remove old licenses.
+     * 
+     * Modify $args to your wishes. Disable this function after its first run!
+     * 
+     * @return void 
+     */
+    public function remove_old_licenses()
+    {
+        $db       = edd_software_licensing()->licenses_db;
+        $licenses = $db->get_licenses([ 'license_key' => 'FFWP_LICENSE_MANAGER', 'number' => -1 ]);
+
+        foreach ($licenses as $license) {
+            $license->delete();
+        }
     }
 
     /**
