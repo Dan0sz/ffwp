@@ -56,12 +56,7 @@ class FFWP
         add_filter('the_seo_framework_generated_description', [$this, 'add_shortcode_support']);
 
         // Syntax Highlighter
-        add_filter(
-            'syntax_highlighting_code_block_style',
-            function () {
-                return 'codepen-embed';
-            }
-        );
+        add_filter('plugins_url', [$this, 'modify_css_url'], 1000, 3);
     }
 
     /**
@@ -74,6 +69,27 @@ class FFWP
     {
         $content = do_shortcode($content);
         return $content;
+    }
+
+    /**
+     * Make Syntax Highlighing Code Block use Github Dark Dimmed theme.
+     * 
+     * @param  mixed $url 
+     * @param  mixed $filename 
+     * @param  mixed $plugin_file_path 
+     * @return mixed 
+     */
+    public function modify_css_url($url, $filename, $plugin_file_path)
+    {
+        if (strpos($plugin_file_path, 'syntax-highlighting-code-block') === false) {
+            return $url;
+        }
+
+        if (strpos($filename, 'scrivo') === false) {
+            return $url;
+        }
+
+        return plugins_url('assets/css/github-dark-dimmed.min.css', WP_HELP_SCOUT_DOCS_PLUGIN_FILE);
     }
 
     /**
