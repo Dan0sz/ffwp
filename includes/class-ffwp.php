@@ -54,6 +54,14 @@ class FFWP
         add_filter('the_seo_framework_title_from_generation', [$this, 'add_shortcode_support']);
         add_filter('the_seo_framework_custom_field_description', [$this, 'add_shortcode_support']);
         add_filter('the_seo_framework_generated_description', [$this, 'add_shortcode_support']);
+
+        // Syntax Highlighter
+        add_filter(
+            'syntax_highlighting_code_block_style',
+            function () {
+                return 'codepen-embed';
+            }
+        );
     }
 
     /**
