@@ -20,7 +20,7 @@ class FFWP_Recurring_SummaryWidget {
 			<table>
 				<thead>
 					<tr>
-						<td colspan="2"><?php echo esc_attr( __( 'Upcoming Sales', 'edd-recurring' ) ); ?></td>
+						<td colspan="2"><?php echo esc_attr( __( 'Upcoming Recurring Sales', 'edd-recurring' ) ); ?></td>
 					</tr>
 				</thead>
 				<tbody>
