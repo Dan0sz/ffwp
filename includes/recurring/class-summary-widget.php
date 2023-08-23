@@ -16,21 +16,56 @@ class FFWP_Recurring_SummaryWidget {
 	 */
 	public function add_stats() {
 		?>
-				<div class="table table_right table_totals">
+		<div class="table table_left table_totals">
 			<table>
 				<thead>
 					<tr>
-						<td colspan="2"><?php echo esc_attr( __( 'Estimated Recurring Revenue', 'edd-recurring' ) ); ?></td>
+						<td colspan="2"><?php echo esc_attr( __( 'Upcoming Sales', 'edd-recurring' ) ); ?></td>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
+						<td class="t"><?php echo esc_attr( __( 'Today', 'edd-recurring' ) ); ?></td>
+						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'today', 'sales' ) ); ?></td>
+					</tr>
+					<tr>
+						<td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
+						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow', 'sales' ) ); ?></td>
+					</tr>
+					<tr>
 						<td class="t"><?php echo esc_attr( __( 'This Month', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated_revenue( date( 'm' ) ) ); ?></td>
+						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_month', 'sales' ) ); ?></td>
 					</tr>
 					<tr>
 						<td class="t"><?php echo esc_attr( __( 'Next Month', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated_revenue( date( 'm', strtotime( 'first day of +1 month' ) ) ) ); ?></td>
+						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'next_month', 'sales' ) ); ?></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="table table_right table_totals">
+			<table>
+				<thead>
+					<tr>
+						<td colspan="2"><?php echo esc_attr( __( 'Upcoming Recurring Revenue', 'edd-recurring' ) ); ?></td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="t"><?php echo esc_attr( __( 'Today', 'edd-recurring' ) ); ?></td>
+						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'today' ) ); ?></td>
+					</tr>
+					<tr>
+						<td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
+						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow' ) ); ?></td>
+					</tr>
+					<tr>
+						<td class="t"><?php echo esc_attr( __( 'This Month', 'edd-recurring' ) ); ?></td>
+						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_month' ) ); ?></td>
+					</tr>
+					<tr>
+						<td class="t"><?php echo esc_attr( __( 'Next Month', 'edd-recurring' ) ); ?></td>
+						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'next_month' ) ); ?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -41,35 +76,47 @@ class FFWP_Recurring_SummaryWidget {
 
 	/**
 	 * Get revenue for current or next month.
+	 *
+	 * @param string $period Allowed values: this_month, next_month, today, tomorrow
 	 */
-	private function get_estimated_revenue( $month ) {
+	private function get_estimated( $period = 'this_month', $type = 'revenue' ) {
 		global $wpdb;
 
-		$this_month = $month === date( 'm' );
-		$key        = 'daan_recurring_estimated_revenue_next_month';
-
-		if ( $this_month ) {
-			$key = 'daan_recurring_estimated_revenue_this_month';
-		}
-
+		$key    = 'daan_recurring_estimated_' . $type . '_' . $period;
 		$amount = get_transient( $key );
 
 		// No transient
 		if ( empty( $amount ) ) {
+			$command = $type === 'revenue' ? 'SUM(recurring_amount)' : 'COUNT(*)';
 
 			// SQL
-			$query = "SELECT SUM(recurring_amount)
+			$query = "SELECT $command
 						  FROM {$wpdb->prefix}edd_subscriptions
 						  WHERE ( expiration >= %s )
                             AND ( expiration <= %s )
                             AND status = 'active'";
 
-			if ( $this_month ) {
-				$begin = date( 'Y-m-d 00:00:00', strtotime( '+1 day' ) );
-				$end   = date( 'Y-m-t 00:00:00', strtotime( 'now' ) );
-			} else {
-				$begin = date( 'Y-m-d 00:00:00', strtotime( 'first day of +1 month' ) );
-				$end   = date( 'Y-m-t 00:00:00', strtotime( '+1 month' ) );
+			switch ( $period ) {
+				case 'this_month':
+					$begin = date( 'Y-m-d 00:00:00', strtotime( '+1 day' ) );
+					$end   = date( 'Y-m-t 00:00:00', strtotime( 'now' ) );
+
+					break;
+				case 'next_month':
+					$begin = date( 'Y-m-d 00:00:00', strtotime( 'first day of +1 month' ) );
+					$end   = date( 'Y-m-t 00:00:00', strtotime( '+1 month' ) );
+
+					break;
+				case 'today':
+					$begin = date( 'Y-m-d 00:00:00', strtotime( 'today' ) );
+					$end   = date( 'Y-m-d 23:59:59', strtotime( 'today' ) );
+
+					break;
+				case 'tomorrow':
+					$begin = date( 'Y-m-d 00:00:00', strtotime( '+1 day' ) );
+					$end   = date( 'Y-m-d 23:59:59', strtotime( '+1 day' ) );
+
+					break;
 			}
 
 			// Query the database
@@ -80,6 +127,10 @@ class FFWP_Recurring_SummaryWidget {
 			set_transient( $key, $amount, DAY_IN_SECONDS );
 		}
 
-		return edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) );
+		if ( $type == 'revenue' ) {
+			return edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) );
+		}
+
+		return $amount;
 	}
 }

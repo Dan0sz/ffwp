@@ -262,7 +262,8 @@ class FFWP {
 	public function add_local_urls( $subdomains ) {
 		return array_merge(
 			[
-				'test.',
+				'test.*',
+				'dev.*',
 				'*.servebolt.cloud',
 				'*.kinsta.cloud',
 				'*.cloudwaysapps.com',
