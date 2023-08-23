@@ -25,10 +25,6 @@ class FFWP_Recurring_SummaryWidget {
 				</thead>
 				<tbody>
 					<tr>
-						<td class="t"><?php echo esc_attr( __( 'Today', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'today', 'sales' ) ); ?></td>
-					</tr>
-					<tr>
 						<td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
 						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow', 'sales' ) ); ?></td>
 					</tr>
@@ -52,10 +48,6 @@ class FFWP_Recurring_SummaryWidget {
 				</thead>
 				<tbody>
 					<tr>
-						<td class="t"><?php echo esc_attr( __( 'Today', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'today' ) ); ?></td>
-					</tr>
-					<tr>
 						<td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
 						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow' ) ); ?></td>
 					</tr>
@@ -77,7 +69,7 @@ class FFWP_Recurring_SummaryWidget {
 	/**
 	 * Get revenue for current or next month.
 	 *
-	 * @param string $period Allowed values: this_month, next_month, today, tomorrow
+	 * @param string $period Allowed values: this_month, next_month, tomorrow
 	 */
 	private function get_estimated( $period = 'this_month', $type = 'revenue' ) {
 		global $wpdb;
@@ -105,11 +97,6 @@ class FFWP_Recurring_SummaryWidget {
 				case 'next_month':
 					$begin = date( 'Y-m-d 00:00:00', strtotime( 'first day of +1 month' ) );
 					$end   = date( 'Y-m-t 00:00:00', strtotime( '+1 month' ) );
-
-					break;
-				case 'today':
-					$begin = date( 'Y-m-d 00:00:00', strtotime( 'today' ) );
-					$end   = date( 'Y-m-d 23:59:59', strtotime( 'today' ) );
 
 					break;
 				case 'tomorrow':
