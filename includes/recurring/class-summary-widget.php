@@ -111,7 +111,7 @@ class FFWP_Recurring_SummaryWidget {
 			$amount   = $wpdb->get_var( $prepared );
 
 			// Cache
-			set_transient( $key, $amount, DAY_IN_SECONDS );
+			set_transient( $key, $amount, HOUR_IN_SECONDS * 2 );
 		}
 
 		if ( $type == 'revenue' ) {
