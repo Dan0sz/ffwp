@@ -114,7 +114,7 @@ class FFWP_Recurring_SummaryWidget {
 			set_transient( $key, $amount, HOUR_IN_SECONDS * 2 );
 		}
 
-		if ( $type == 'revenue' ) {
+		if ( $type === 'revenue' ) {
 			return edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) );
 		}
 
