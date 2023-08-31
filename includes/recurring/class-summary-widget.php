@@ -96,7 +96,7 @@ class FFWP_Recurring_SummaryWidget {
 					break;
 				case 'next_month':
 					$begin = date( 'Y-m-d 00:00:00', strtotime( 'first day of +1 month' ) );
-					$end   = date( 'Y-m-t 23:59:59', strtotime( '+1 month' ) );
+					$end   = date( 'Y-m-t 23:59:59', strtotime( 'last day of +1 month' ) );
 
 					break;
 				case 'tomorrow':
