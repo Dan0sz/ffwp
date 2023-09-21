@@ -354,7 +354,7 @@ fieldset#edd_checkout_user_info {
 * Terms & Conditions
 */
 
-#edd_terms_agreement, #edd_sendinblue_agreement {
+#edd_terms_agreement, #edd_brevo_agreement {
     padding: 15px 0 10px !important;
     margin-bottom: 0 !important;
 }
@@ -363,7 +363,7 @@ fieldset#edd_checkout_user_info {
     padding-top: 0 !important;
 }
 
-#edd_agree_to_terms, #edd_sendinblue_agree {
+#edd_agree_to_terms, #edd_brevo_agree {
     height: 1.2rem;
     width: 1.2rem;
 }
