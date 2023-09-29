@@ -90,13 +90,13 @@ class FFWP_Recurring_SummaryWidget {
 
 			switch ( $period ) {
 				case 'this_month':
-					$begin = date( 'Y-m-d 00:00:00', strtotime( '+1 day' ) );
-					$end   = date( 'Y-m-t 00:00:00', strtotime( 'now' ) );
+					$begin = date( 'Y-m-d 00:00:00', strtotime( 'now' ) );
+					$end   = date( 'Y-m-t 23:59:59', strtotime( 'now' ) );
 
 					break;
 				case 'next_month':
 					$begin = date( 'Y-m-d 00:00:00', strtotime( 'first day of +1 month' ) );
-					$end   = date( 'Y-m-t 00:00:00', strtotime( '+1 month' ) );
+					$end   = date( 'Y-m-t 23:59:59', strtotime( 'last day of +1 month' ) );
 
 					break;
 				case 'tomorrow':
