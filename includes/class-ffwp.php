@@ -13,7 +13,6 @@
 defined( 'ABSPATH' ) || exit;
 
 class FFWP {
-
 	/**
 	 * FFWP constructor.
 	 */
@@ -60,22 +59,46 @@ class FFWP {
 	}
 
 	/**
+	 * @return FFWP_ProductDetailsWidget_Modify
+	 */
+	private function modify_product_details_widget() {
+		return new FFWP_ProductDetailsWidget_Modify();
+	}
+
+	/**
+	 * @return FFWP_LoginFieldsLegend_Insert
+	 */
+	private function insert_login_fields_legend() {
+		return new FFWP_LoginFieldsLegend_Insert();
+	}
+
+	/**
+	 * @return FFWP_NonRequiredStateField_Set
+	 */
+	private function set_non_required_state_field() {
+		return new FFWP_NonRequiredStateField_Set();
+	}
+
+	/**
 	 * Adds shortcode support to Yoast SEO
 	 *
-	 * @param  mixed $content
+	 * @param mixed $content
+	 *
 	 * @return string
 	 */
 	public function add_shortcode_support( $content ) {
 		$content = do_shortcode( $content );
+
 		return $content;
 	}
 
 	/**
 	 * Make Syntax Highlighing Code Block use Github Dark Dimmed theme.
 	 *
-	 * @param  mixed $url
-	 * @param  mixed $filename
-	 * @param  mixed $plugin_file_path
+	 * @param mixed $url
+	 * @param mixed $filename
+	 * @param mixed $plugin_file_path
+	 *
 	 * @return mixed
 	 */
 	public function modify_css_url( $url, $filename, $plugin_file_path ) {
@@ -102,34 +125,6 @@ class FFWP {
 	 */
 	public function enable_better_checkout() {
 		return new FFWP_BetterCheckout_Enable();
-	}
-
-	/**
-	 * @return FFWP_CustomCheckoutFields_Add
-	 */
-	private function add_custom_checkout_fields() {
-		return new FFWP_CustomCheckoutFields_Add();
-	}
-
-	/**
-	 * @return FFWP_ProductDetailsWidget_Modify
-	 */
-	private function modify_product_details_widget() {
-		return new FFWP_ProductDetailsWidget_Modify();
-	}
-
-	/**
-	 * @return FFWP_LoginFieldsLegend_Insert
-	 */
-	private function insert_login_fields_legend() {
-		return new FFWP_LoginFieldsLegend_Insert();
-	}
-
-	/**
-	 * @return FFWP_NonRequiredStateField_Set
-	 */
-	private function set_non_required_state_field() {
-		return new FFWP_NonRequiredStateField_Set();
 	}
 
 	/**
@@ -165,7 +160,8 @@ class FFWP {
 	/**
 	 * Disable Featured Images on EDD pages.
 	 *
-	 * @param  mixed $featured_image
+	 * @param mixed $featured_image
+	 *
 	 * @return mixed
 	 */
 	public function disable_featured_image_on_downloads( $featured_image ) {
@@ -178,9 +174,7 @@ class FFWP {
 
 	/**
 	 * Custom function to allow download, because for some reason ours keep failing since EDD 3.0.
-	 *
 	 * Checks the payment status and if the token is valid. Nothing else, which is probably enough in our case.
-	 *
 	 * @return bool
 	 */
 	public function maybe_allow_download( $has_access, $payment_id, $args ) {
@@ -208,9 +202,7 @@ class FFWP {
 
 	/**
 	 * Remove old licenses.
-	 *
 	 * Modify $args to your wishes. Disable this function after its first run!
-	 *
 	 * @return void
 	 */
 	public function remove_old_licenses() {
@@ -218,7 +210,7 @@ class FFWP {
 		$licenses = $db->get_licenses(
 			[
 				'license_key' => 'FFWP_LICENSE_MANAGER',
-				'number'      => -1,
+				'number'      => - 1,
 			]
 		);
 
@@ -229,7 +221,6 @@ class FFWP {
 
 	/**
 	 * Add the new email tag.
-	 *
 	 * @return void
 	 */
 	public function add_software_licensing_email_tag() {
@@ -238,7 +229,6 @@ class FFWP {
 
 	/**
 	 * "Filters" the renewal link for EDD Recurring (which isn't available there)
-	 *
 	 * @return void
 	 */
 	public function filter_renewal_link_tag( $text, $sub_id ) {
@@ -256,7 +246,8 @@ class FFWP {
 	/**
 	 * Modify the list of subdomains to mark as local/staging.
 	 *
-	 * @param  mixed $subdomains
+	 * @param mixed $subdomains
+	 *
 	 * @return string[]
 	 */
 	public function add_local_urls( $subdomains ) {
@@ -267,18 +258,28 @@ class FFWP {
 				'*.servebolt.cloud',
 				'*.kinsta.cloud',
 				'*.cloudwaysapps.com',
+				'*.wpengine.com',
+				'*.e.wpstage.net',
 			],
 			$subdomains
 		);
 	}
 
 	/**
-	 * @param  array $countries
+	 * @param array $countries
+	 *
 	 * @return array
 	 */
 	public function change_gb_to_zero_vat( $countries ) {
 		$countries['GB'] = 0;
 
 		return $countries;
+	}
+
+	/**
+	 * @return FFWP_CustomCheckoutFields_Add
+	 */
+	private function add_custom_checkout_fields() {
+		return new FFWP_CustomCheckoutFields_Add();
 	}
 }
