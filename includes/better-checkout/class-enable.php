@@ -123,7 +123,7 @@ class FFWP_BetterCheckout_Enable
         add_action('edds_buy_now_checkout_error_checks', [$this, 'validate_vat_id_format'], 10, 2);
         add_action('edd_checkout_error_checks', [$this, 'validate_vat_id_format'], 10, 2);
 
-        add_action('wp_login', [ $this, 'persist_vat_on_login' ], 9);
+        // add_action('wp_login', [ $this, 'persist_vat_on_login' ], 9);
     }
 
     /**
