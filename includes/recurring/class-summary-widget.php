@@ -1,5 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
+
 /**
  * @package   FFWP Recurring
  * @author    Daan van den Bergh
@@ -11,71 +12,87 @@ defined( 'ABSPATH' ) || exit;
 class FFWP_Recurring_SummaryWidget {
 	/**
 	 * Render the stats.
-	 *
 	 * @return void
 	 */
 	public function add_stats() {
 		?>
-		<div class="table table_left table_totals">
-			<table>
-				<thead>
-					<tr>
-						<td colspan="2"><?php echo esc_attr( __( 'Upcoming Recurring Sales', 'edd-recurring' ) ); ?></td>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow', 'sales' ) ); ?></td>
-					</tr>
-					<tr>
-						<td class="t"><?php echo esc_attr( __( 'This Month', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_month', 'sales' ) ); ?></td>
-					</tr>
-					<tr>
-						<td class="t"><?php echo esc_attr( __( 'Next Month', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'next_month', 'sales' ) ); ?></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<div class="table table_right table_totals">
-			<table>
-				<thead>
-					<tr>
-						<td colspan="2"><?php echo esc_attr( __( 'Upcoming Recurring Revenue', 'edd-recurring' ) ); ?></td>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow' ) ); ?></td>
-					</tr>
-					<tr>
-						<td class="t"><?php echo esc_attr( __( 'This Month', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_month' ) ); ?></td>
-					</tr>
-					<tr>
-						<td class="t"><?php echo esc_attr( __( 'Next Month', 'edd-recurring' ) ); ?></td>
-						<td class="last b"><?php echo esc_attr( $this->get_estimated( 'next_month' ) ); ?></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<div style="clear: both"></div>
+        <div class="table table_left table_totals">
+            <table>
+                <thead>
+                <tr>
+                    <td colspan="2"><?php echo esc_attr( __( 'Upcoming Recurring Sales', 'edd-recurring' ) ); ?></td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow', 'sales' ) ); ?></td>
+                </tr>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'This Week', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_week', 'sales' ) ); ?></td>
+                </tr>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'This Month', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_month', 'sales' ) ); ?></td>
+                </tr>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'Next Month', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'next_month', 'sales' ) ); ?></td>
+                </tr>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'This Quarter', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_quarter', 'sales' ) ); ?></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table table_right table_totals">
+            <table>
+                <thead>
+                <tr>
+                    <td colspan="2"><?php echo esc_attr( __( 'Upcoming Recurring Revenue', 'edd-recurring' ) ); ?></td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow' ) ); ?></td>
+                </tr>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'This Week', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_week' ) ); ?></td>
+                </tr>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'This Month', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated() ); ?></td>
+                </tr>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'Next Month', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'next_month' ) ); ?></td>
+                </tr>
+                <tr>
+                    <td class="t"><?php echo esc_attr( __( 'This Quarter', 'edd-recurring' ) ); ?></td>
+                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_quarter' ) ); ?></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="clear: both"></div>
 		<?php
 	}
 
 	/**
 	 * Get revenue for current or next month.
 	 *
-	 * @param string $period Allowed values: this_month, next_month, tomorrow
+	 * @param string $period  Allowed values: this_month, this_week, next_month, tomorrow
+	 * @param string $revenue revenue | sales
 	 */
 	private function get_estimated( $period = 'this_month', $type = 'revenue' ) {
 		global $wpdb;
 
-		$key    = 'daan_recurring_estimated_' . $type . '_' . $period;
-		$amount = get_transient( $key );
+		$key = 'daan_recurring_estimated_' . $type . '_' . $period;
+		//		$amount = get_transient( $key );
 
 		// No transient
 		if ( empty( $amount ) ) {
@@ -89,6 +106,16 @@ class FFWP_Recurring_SummaryWidget {
                             AND status = 'active'";
 
 			switch ( $period ) {
+				case 'tomorrow':
+					$begin = date( 'Y-m-d 00:00:00', strtotime( '+1 day' ) );
+					$end   = date( 'Y-m-d 23:59:59', strtotime( '+1 day' ) );
+
+					break;
+				case 'this_week':
+					$begin = date( 'Y-m-d 00:00:00', strtotime( 'now ' ) );
+					$end   = date( 'Y-m-d 23:59:59', strtotime( 'next sunday' ) );
+
+					break;
 				case 'this_month':
 					$begin = date( 'Y-m-d 00:00:00', strtotime( 'now' ) );
 					$end   = date( 'Y-m-t 23:59:59', strtotime( 'now' ) );
@@ -99,11 +126,13 @@ class FFWP_Recurring_SummaryWidget {
 					$end   = date( 'Y-m-t 23:59:59', strtotime( 'last day of +1 month' ) );
 
 					break;
-				case 'tomorrow':
-					$begin = date( 'Y-m-d 00:00:00', strtotime( '+1 day' ) );
-					$end   = date( 'Y-m-d 23:59:59', strtotime( '+1 day' ) );
-
-					break;
+				case 'this_quarter':
+					$current_quarter = ceil( date( 'n' ) / 3 );
+					$begin           = date( 'Y-m-d 00:00:00', strtotime( 'now' ) );
+					$end             = date(
+						'Y-m-t 23:59:59',
+						strtotime( date( 'Y' ) . '-' . ( ( $current_quarter * 3 ) ) . '-1' )
+					);
 			}
 
 			// Query the database
@@ -111,7 +140,7 @@ class FFWP_Recurring_SummaryWidget {
 			$amount   = $wpdb->get_var( $prepared );
 
 			// Cache
-			set_transient( $key, $amount, HOUR_IN_SECONDS * 2 );
+			set_transient( $key, $amount, 300 );
 		}
 
 		if ( $type === 'revenue' ) {
