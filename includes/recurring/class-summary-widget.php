@@ -11,6 +11,18 @@ defined( 'ABSPATH' ) || exit;
  */
 class FFWP_Recurring_SummaryWidget {
 	/**
+	 * @var string[] $timespans
+	 */
+	private $timespans = [
+		'Tomorrow',
+		'This Week',
+		'This Month',
+		'Next Month',
+		'This Quarter',
+		'This Year',
+	];
+
+	/**
 	 * Render the stats.
 	 * @return void
 	 */
@@ -24,26 +36,14 @@ class FFWP_Recurring_SummaryWidget {
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow', 'sales' ) ); ?></td>
-                </tr>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'This Week', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_week', 'sales' ) ); ?></td>
-                </tr>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'This Month', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_month', 'sales' ) ); ?></td>
-                </tr>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'Next Month', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'next_month', 'sales' ) ); ?></td>
-                </tr>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'This Quarter', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_quarter', 'sales' ) ); ?></td>
-                </tr>
+				<?php foreach ( $this->timespans as $timespan ): ?>
+                    <tr>
+                        <td class="t"><?php echo esc_attr( $timespan ); ?></td>
+                        <td class="last b"><?php echo esc_attr(
+								$this->get_estimated( str_replace( ' ', '_', strtolower( $timespan ) ), 'sales' )
+							); ?></td>
+                    </tr>
+				<?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -55,26 +55,14 @@ class FFWP_Recurring_SummaryWidget {
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'Tomorrow', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'tomorrow' ) ); ?></td>
-                </tr>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'This Week', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_week' ) ); ?></td>
-                </tr>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'This Month', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated() ); ?></td>
-                </tr>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'Next Month', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'next_month' ) ); ?></td>
-                </tr>
-                <tr>
-                    <td class="t"><?php echo esc_attr( __( 'This Quarter', 'edd-recurring' ) ); ?></td>
-                    <td class="last b"><?php echo esc_attr( $this->get_estimated( 'this_quarter' ) ); ?></td>
-                </tr>
+				<?php foreach ( $this->timespans as $timespan ): ?>
+                    <tr>
+                        <td class="t"><?php echo esc_attr( $timespan ); ?></td>
+                        <td class="last b"><?php echo esc_attr(
+								$this->get_estimated( str_replace( ' ', '_', strtolower( $timespan ) ) )
+							); ?></td>
+                    </tr>
+				<?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -133,6 +121,13 @@ class FFWP_Recurring_SummaryWidget {
 						'Y-m-t 23:59:59',
 						strtotime( date( 'Y' ) . '-' . ( ( $current_quarter * 3 ) ) . '-1' )
 					);
+
+					break;
+				case 'this_year':
+					$begin = date( 'Y-m-d 00:00:00', strtotime( 'now' ) );
+					$end   = date( 'Y-12-31 23:59:59', strtotime( 'now' ) );
+                    
+					break;
 			}
 
 			// Query the database
