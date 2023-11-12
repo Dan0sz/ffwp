@@ -16,9 +16,11 @@ class FFWP_Recurring_SummaryWidget {
 	private $timespans = [
 		'Tomorrow',
 		'This Week',
+		'Next Week',
 		'This Month',
 		'Next Month',
 		'This Quarter',
+		'Next Quarter',
 		'This Year',
 	];
 
@@ -104,6 +106,11 @@ class FFWP_Recurring_SummaryWidget {
 					$end   = date( 'Y-m-d 23:59:59', strtotime( 'next sunday' ) );
 
 					break;
+				case 'next_week':
+					$begin = date( 'Y-m-d 00:00:00', strtotime( 'next monday' ) );
+					$end   = date( 'Y-m-d 23:59:59', strtotime( 'next monday +1 week' ) );
+
+					break;
 				case 'this_month':
 					$begin = date( 'Y-m-d 00:00:00', strtotime( 'now' ) );
 					$end   = date( 'Y-m-t 23:59:59', strtotime( 'now' ) );
@@ -123,10 +130,23 @@ class FFWP_Recurring_SummaryWidget {
 					);
 
 					break;
+				case 'next_quarter':
+					$next_quarter = (int) ceil( date( 'n' ) / 3 ) + 1;
+					$year         = date( 'Y', strtotime( 'now' ) );
+
+					if ( $next_quarter === 5 ) {
+						$next_quarter = 1;
+						$year ++;
+					}
+
+					$begin = date( "$year-m-d 00:00:00", strtotime( date( 'Y' ) . '-' . ( ( $next_quarter * 3 ) - 2 ) . '-1' ) );
+					$end   = date( "$year-m-t 23:59:59", strtotime( date( 'Y' ) . '-' . ( ( $next_quarter * 3 ) ) ) );
+
+					break;
 				case 'this_year':
 					$begin = date( 'Y-m-d 00:00:00', strtotime( 'now' ) );
 					$end   = date( 'Y-12-31 23:59:59', strtotime( 'now' ) );
-                    
+
 					break;
 			}
 
