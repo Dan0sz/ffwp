@@ -81,8 +81,8 @@ class FFWP_Recurring_SummaryWidget {
 	private function get_estimated( $period = 'this_month', $type = 'revenue' ) {
 		global $wpdb;
 
-		$key = 'daan_recurring_estimated_' . $type . '_' . $period;
-		//		$amount = get_transient( $key );
+		$key    = 'daan_recurring_estimated_' . $type . '_' . $period;
+		$amount = get_transient( $key );
 
 		// No transient
 		if ( empty( $amount ) ) {
