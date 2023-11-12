@@ -22,6 +22,7 @@ class FFWP_Recurring_SummaryWidget {
 		'This Quarter',
 		'Next Quarter',
 		'This Year',
+		'Next Year',
 	];
 
 	/**
@@ -148,6 +149,10 @@ class FFWP_Recurring_SummaryWidget {
 					$end   = date( 'Y-12-31 23:59:59', strtotime( 'now' ) );
 
 					break;
+				case 'next_year':
+					$year  = (int) date( 'Y', strtotime( 'now' ) ) + 1;
+					$begin = date( "$year-01-01 00:00:00", strtotime( 'now' ) );
+					$end   = date( "$year-31-12 23:59:59", strtotime( 'now' ) );
 			}
 
 			// Query the database
