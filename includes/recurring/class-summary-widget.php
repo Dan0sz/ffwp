@@ -150,9 +150,8 @@ class FFWP_Recurring_SummaryWidget {
 
 					break;
 				case 'next_year':
-					$year  = (int) date( 'Y', strtotime( 'now' ) ) + 1;
-					$begin = date( "$year-01-01 00:00:00", strtotime( 'now' ) );
-					$end   = date( "$year-31-12 23:59:59", strtotime( 'now' ) );
+					$begin = date( "Y-01-01 00:00:00", strtotime( 'first day of +1 year' ) );
+					$end   = date( "Y-12-31 23:59:59", strtotime( 'last day of +1 year' ) );
 			}
 
 			// Query the database
