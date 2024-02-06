@@ -105,6 +105,10 @@ class FFWP_ProductDetailsWidget_Modify {
 		return $download->type === 'service';
 	}
 
+	/**
+	 * Attaches current download to $this->download.
+	 * @return void
+	 */
 	public function init_download() {
 		$this->download = edd_get_download( get_the_ID() );
 	}
