@@ -307,6 +307,10 @@ class FFWP_ProductDetailsWidget_Modify {
 			$timestamp = filemtime( $readme_path );
 		}
 
+		if ( empty( $timestamp ) ) {
+			return;
+		}
+
 		$last_updated = gmdate( 'Y-m-d', $timestamp );
 
 		if ( $last_updated ) : ?>
