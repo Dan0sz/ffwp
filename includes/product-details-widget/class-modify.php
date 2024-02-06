@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') || exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @package   FFWP DownloadInfo Shortcodes
@@ -10,334 +10,333 @@ defined('ABSPATH') || exit;
  * @license   BY-NC-ND-4.0
  *            http://creativecommons.org/licenses/by-nc-nd/4.0/
  */
+class FFWP_ProductDetailsWidget_Modify {
+	/**
+	 * @var EDD\Downloads\Service
+	 */
+	private $download;
 
-class FFWP_ProductDetailsWidget_Modify
-{
-    /**
-     * @var Downloads_As_Service $das 
-     */
-    private $das;
+	/**
+	 * @var string $changelog
+	 */
+	private $changelog;
 
-    /**
-     * @var string $changelog 
-     */
-    private $changelog;
+	/**
+	 * @var array $recurring_amounts Array containing amounts that belong to a recurring license.
+	 */
+	private $recurring_amounts;
 
-    /**
-     * @var array $recurring_amounts Array containing amounts that belong to a recurring license. 
-     */
-    private $recurring_amounts;
+	/**
+	 * Stores the amount of signup discounts shown on current product page.
+	 * @var int
+	 */
+	private $signup_discount = 0;
 
-    /**
-     * Stores the amount of signup discounts shown on current product page.
-     *
-     * @var int
-     */
-    private $signup_discount = 0;
+	/**
+	 * @var string $plugin_text_domain
+	 */
+	private $plugin_text_domain = 'ffwp';
 
-    /**
-     * @var string $plugin_text_domain 
-     */
-    private $plugin_text_domain = 'ffwp';
+	/**
+	 * Build class properties
+	 * @return void
+	 */
+	public function __construct() {
+		$this->init();
+	}
 
-    /**
-     * Build class properties
-     * 
-     * @return void 
-     */
-    public function __construct()
-    {
-        if (class_exists('EDD_Downloads_As_Services')) {
-            $this->das = new EDD_Downloads_As_Services();
-        }
+	/**
+	 * Add hooks and filters.
+	 * @return void
+	 */
+	private function init() {
+		add_action( 'plugins_loaded', [ $this, 'init_download' ] );
 
-        if ($this->das) {
-            $this->init();
-        }
-    }
+		add_filter( 'widget_title', [ $this, 'modify_widget_title' ], 10 );
 
-    /**
-     * Add hooks and filters.
-     * 
-     * @return void 
-     */
-    private function init()
-    {
-        add_filter('widget_title', [$this, 'modify_widget_title'], 10);
+		add_filter( 'edd_purchase_variable_prices', [ $this, 'save_recurring_license_amounts' ], 10, 2 );
+		add_filter( 'edd_format_amount', [ $this, 'add_recurring_label_to_price' ], 10, 5 );
+		add_action( 'edd_after_price_options', [ $this, 'add_vat_notice' ] );
 
-        add_filter('edd_purchase_variable_prices', [$this, 'save_recurring_license_amounts'], 10, 2);
-        add_filter('edd_format_amount', [$this, 'add_recurring_label_to_price'], 10, 5);
-        add_action('edd_after_price_options', [$this, 'add_vat_notice']);
+		// Begin table
+		add_action(
+			'edd_product_details_widget_before_categories_and_tags',
+			function () {
+				if ( ! $this->is_service( $this->download ) ) {
+					echo '<table class="ffw-download-details"><tbody>';
+				}
+			},
+			9
+		);
 
-        // Begin table
-        add_action(
-            'edd_product_details_widget_before_categories_and_tags', function () {
-                if (!$this->das->is_service(get_the_ID())) {
-                    echo '<table class="ffw-download-details"><tbody>';
-                }
-            }, 9
-        );
+		// Table content
+		add_action( 'edd_product_details_widget_before_categories_and_tags', [ $this, 'add_current_version' ], 10, 2 );
+		add_action( 'edd_product_details_widget_before_categories_and_tags', [ $this, 'add_changelog_link' ], 11, 2 );
+		add_action( 'edd_product_details_widget_before_categories_and_tags', [ $this, 'add_date_last_updated' ], 12, 2 );
 
-        // Table content
-        add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_current_version'], 10, 2);
-        add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_changelog_link'], 11, 2);
-        add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_date_last_updated'], 12, 2);
+		// End table
+		add_action(
+			'edd_product_details_widget_before_categories_and_tags',
+			function () {
+				if ( ! $this->is_service( $this->download ) ) {
+					echo '</tbody></table>';
+				}
+			},
+			12
+		);
 
-        // End table
-        add_action(
-            'edd_product_details_widget_before_categories_and_tags', function () {
-                if (!$this->das->is_service(get_the_ID())) {
-                    echo '</tbody></table>';
-                }
-            }, 12
-        );
+		add_action( 'edd_product_details_widget_before_categories_and_tags', [ $this, 'add_changelog_popup' ], 13 );
 
-        add_action('edd_product_details_widget_before_categories_and_tags', [$this, 'add_changelog_popup'], 13);
+		add_action( 'wp_footer', [ $this, 'add_inline_script' ] );
+	}
 
-        add_action('wp_footer', [$this, 'add_inline_script']);
-    }
+	/**
+	 * Is this download a service?
+	 *
+	 * @param $download
+	 *
+	 * @return bool
+	 */
+	private function is_service( $download ) {
+		if ( ! $download instanceof EDD_Download ) {
+			return false;
+		}
 
-    /**
-     * Modifies widget title when download is a service.
-     */
-    public function modify_widget_title($title)
-    {
-        if ($title != 'Choose Your License') {
-            return $title;
-        }
+		return $download->type === 'service';
+	}
 
-        /**
-         * Don't display a title if download is a service.
-         */
-        if ($this->das->is_service(get_the_ID())) {
-            $title = __('Get a Quote', $this->plugin_text_domain);
-        }
+	public function init_download() {
+		$this->download = edd_get_download( get_the_ID() );
+	}
 
-        return $title;
-    }
+	/**
+	 * Modifies widget title when download is a service.
+	 */
+	public function modify_widget_title( $title ) {
+		if ( $title != 'Choose Your License' ) {
+			return $title;
+		}
 
-    /**
-     * Save all amounts belonging to recurring licenses for later processing.
-     * 
-     * @see self::add_recurring_label_to_price()
-     * 
-     * @param array $prices 
-     * @param int   $download_id 
-     * 
-     * @return array 
-     */
-    public function save_recurring_license_amounts($prices, $download_id)
-    {
-        foreach ($prices as $key => $price) {
-            if (!isset($price['amount']) || $price['amount'] <= 0
-                || !isset($price['recurring']) || $price['recurring'] == 'no'
-            ) {
-                continue;
-            }
+		/**
+		 * Don't display a title if download is a service.
+		 */
+		if ( $this->is_service( $this->download ) ) {
+			$title = __( 'Get a Quote', $this->plugin_text_domain );
+		}
 
-            $this->recurring_amounts[$key]['amount']          = $price['amount'];
-            $this->recurring_amounts[$key]['period']          = $price['period'];
-            $this->recurring_amounts[$key]['signup_discount'] = $price['signup_fee'];
-        }
+		return $title;
+	}
 
-        return $prices;
-    }
+	/**
+	 * Save all amounts belonging to recurring licenses for later processing.
+	 * @see self::add_recurring_label_to_price()
+	 *
+	 * @param array $prices
+	 * @param int   $download_id
+	 *
+	 * @return array
+	 */
+	public function save_recurring_license_amounts( $prices, $download_id ) {
+		foreach ( $prices as $key => $price ) {
+			if ( ! isset( $price[ 'amount' ] ) || $price[ 'amount' ] <= 0 || ! isset( $price[ 'recurring' ] ) || $price[ 'recurring' ] == 'no' ) {
+				continue;
+			}
 
-    /**
-     * Modify price label to display 
-     * 
-     * @param mixed $formatted 
-     * @param mixed $amount 
-     * @param mixed $decimals 
-     * @param mixed $decimal_sep 
-     * @param mixed $thousands_sep 
-     * 
-     * @return mixed 
-     */
-    public function add_recurring_label_to_price($formatted, $amount, $decimals, $decimal_sep, $thousands_sep)
-    {
-        /**
-         * Do not run this in the admin area.
-         */
-        if (is_admin()) {
-            return $formatted;
-        }
+			$this->recurring_amounts[ $key ][ 'amount' ]          = $price[ 'amount' ];
+			$this->recurring_amounts[ $key ][ 'period' ]          = $price[ 'period' ];
+			$this->recurring_amounts[ $key ][ 'signup_discount' ] = $price[ 'signup_fee' ];
+		}
 
-        /**
-         * Replace ',00' with ',-'.
-         */
-        $formatted = str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted);
+		return $prices;
+	}
 
-        if (!$this->recurring_amounts) {
-            return $formatted;
-        }
+	/**
+	 * Modify price label to display
+	 *
+	 * @param mixed $formatted
+	 * @param mixed $amount
+	 * @param mixed $decimals
+	 * @param mixed $decimal_sep
+	 * @param mixed $thousands_sep
+	 *
+	 * @return mixed
+	 */
+	public function add_recurring_label_to_price( $formatted, $amount, $decimals, $decimal_sep, $thousands_sep ) {
+		/**
+		 * Do not run this in the admin area.
+		 */
+		if ( is_admin() ) {
+			return $formatted;
+		}
 
-        $current_amount = [];
+		/**
+		 * Replace ',00' with ',-'.
+		 */
+		$formatted = str_replace( $decimal_sep . '00', $decimal_sep . '-', $formatted );
 
-        foreach ($this->recurring_amounts as $recurring_amount) {
-            if ($amount == $recurring_amount['amount']) {
-                $current_amount = $recurring_amount;
+		if ( ! $this->recurring_amounts ) {
+			return $formatted;
+		}
 
-                break;
-            }
-        }
+		$current_amount = [];
 
-        if (empty($current_amount)) {
-            return $formatted;
-        }
+		foreach ( $this->recurring_amounts as $recurring_amount ) {
+			if ( $amount == $recurring_amount[ 'amount' ] ) {
+				$current_amount = $recurring_amount;
 
-        /**
-         * This isn't a discount, it's a fee. So, we're not going to show it up front.
-         * We're still going to add the renewal period though.
-         */
-        if ((float) $current_amount['signup_discount'] > 0) {
-            return $formatted . '<small>/' . $current_amount['period'] . '*</small>';
-        }
-        
-        $no_discount = (float) $current_amount['signup_discount'] == 0;
-        
-        if (!$no_discount) {
-            $this->signup_discount++;
+				break;
+			}
+		}
 
-            $formatted = "<span class='edd-former-price'>$formatted</span> ";
-            $amount    = (float) $amount + (float) $current_amount['signup_discount'];
-            $formatted .= edd_currency_filter(number_format($amount, $decimals, $decimal_sep, $thousands_sep));
-            return str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted) . '<small>/' . $current_amount['period'] . '*</small>';
-        }
+		if ( empty( $current_amount ) ) {
+			return $formatted;
+		}
 
-        return str_replace($decimal_sep . '00', $decimal_sep . '-', $formatted) . '<small>/' . $current_amount['period'] . '</small>';
-    }
+		/**
+		 * This isn't a discount, it's a fee. So, we're not going to show it up front.
+		 * We're still going to add the renewal period though.
+		 */
+		if ( (float) $current_amount[ 'signup_discount' ] > 0 ) {
+			return $formatted . '<small>/' . $current_amount[ 'period' ] . '*</small>';
+		}
 
-    /**
-     * Insert custom VAT notice above 'Add to cart' button
-     * 
-     * @return void 
-     */
-    public function add_vat_notice()
-    {
-        ?>
+		$no_discount = (float) $current_amount[ 'signup_discount' ] == 0;
+
+		if ( ! $no_discount ) {
+			$this->signup_discount ++;
+
+			$formatted = "<span class='edd-former-price'>$formatted</span> ";
+			$amount    = (float) $amount + (float) $current_amount[ 'signup_discount' ];
+			$formatted .= edd_currency_filter( number_format( $amount, $decimals, $decimal_sep, $thousands_sep ) );
+
+			return str_replace( $decimal_sep . '00', $decimal_sep . '-', $formatted ) . '<small>/' . $current_amount[ 'period' ] . '*</small>';
+		}
+
+		return str_replace( $decimal_sep . '00', $decimal_sep . '-', $formatted ) . '<small>/' . $current_amount[ 'period' ] . '</small>';
+	}
+
+	/**
+	 * Insert custom VAT notice above 'Add to cart' button
+	 * @return void
+	 */
+	public function add_vat_notice() {
+		?>
         <span class="edd_price_additional_info">
             <small>
-                <?php if ($this->signup_discount > 0) : ?>
-                * <?php echo __('Renews at regular rate', 'ffwp'); ?><br />
+                <?php if ( $this->signup_discount > 0 ) : ?>
+                    * <?php echo __( 'Renews at regular rate', 'ffwp' ); ?><br/>
                 <?php endif; ?>
-                <?php echo __('excl. VAT for EU residents', 'ffwp'); ?>
+	            <?php echo __( 'excl. VAT for EU residents', 'ffwp' ); ?>
             </small>
         </span>
-        <?php
-    }
+		<?php
+	}
 
-    /**
-     * Add current version to Product Details widget.
-     * 
-     * @param  mixed $instance 
-     * @param  mixed $download_id 
-     * @return void 
-     */
-    public function add_current_version($instance, $download_id)
-    {
-        $current_version = get_post_meta($download_id, '_edd_sl_version', true) ?? '';
-        if ($current_version) : ?>
+	/**
+	 * Add current version to Product Details widget.
+	 *
+	 * @param mixed $instance
+	 * @param mixed $download_id
+	 *
+	 * @return void
+	 */
+	public function add_current_version( $instance, $download_id ) {
+		$current_version = get_post_meta( $download_id, '_edd_sl_version', true ) ?? '';
+		if ( $current_version ) : ?>
             <tr>
-                <td><?php echo __('Current version', $this->plugin_text_domain); ?></td>
-                <td><span itemscope itemtype="https://schema.org/version"><?php echo sprintf(__('%s', $this->plugin_text_domain), $current_version); ?></span></td>
+                <td><?php echo __( 'Current version', $this->plugin_text_domain ); ?></td>
+                <td><span itemscope itemtype="https://schema.org/version"><?php echo sprintf(
+							__( '%s', $this->plugin_text_domain ),
+							$current_version
+						); ?></span></td>
             </tr>
-        <?php endif;
-    }
+		<?php endif;
+	}
 
-    /**
-     * @param  mixed $instance 
-     * @param  mixed $download_id 
-     * @return void 
-     */
-    public function add_changelog_link($instance, $download_id)
-    {
-        $this->changelog = get_post_meta($download_id, '_edd_sl_changelog', true) ?? '';
+	/**
+	 * @param mixed $instance
+	 * @param mixed $download_id
+	 *
+	 * @return void
+	 */
+	public function add_changelog_link( $instance, $download_id ) {
+		$this->changelog = get_post_meta( $download_id, '_edd_sl_changelog', true ) ?? '';
 
-        if ($this->changelog && !$this->das->is_service($download_id)) : ?>
+		if ( $this->changelog && ! $this->is_service( $this->download ) ) : ?>
             <tr>
-                <td><?php echo __('Changelog', $this->plugin_text_domain); ?></td>
-                <td><?php echo __('<a href="#" id="ffw-changelog-link">View</a>', $this->plugin_text_domain); ?></td>
+                <td><?php echo __( 'Changelog', $this->plugin_text_domain ); ?></td>
+                <td><?php echo __( '<a href="#" id="ffw-changelog-link">View</a>', $this->plugin_text_domain ); ?></td>
             </tr>
-        <?php endif;
-    }
+		<?php endif;
+	}
 
-    /**
-     * Get Readme Location defined in EDD Download.
-     * 
-     * @param  mixed $download_id 
-     * @return mixed 
-     */
-    public function get_changelog_url($download_id)
-    {
-        return get_post_meta($download_id, '_edd_readme_location', true) ?? '';
-    }
+	/**
+	 * Get Readme Location defined in EDD Download.
+	 *
+	 * @param mixed $download_id
+	 *
+	 * @return mixed
+	 */
+	public function get_changelog_url( $download_id ) {
+		return get_post_meta( $download_id, '_edd_readme_location', true ) ?? '';
+	}
 
-    /**
-     * Add Last Updated to Widget
-     * 
-     * @param  mixed $instance 
-     * @param  mixed $download_id 
-     * @return void 
-     */
-    public function add_date_last_updated($instance, $download_id)
-    {
-        $readme_url   = get_post_meta($download_id, '_edd_readme_location', true) ?? '';
+	/**
+	 * Add Last Updated to Widget
+	 *
+	 * @param mixed $instance
+	 * @param mixed $download_id
+	 *
+	 * @return void
+	 */
+	public function add_date_last_updated( $instance, $download_id ) {
+		$readme_url = get_post_meta( $download_id, '_edd_readme_location', true ) ?? '';
 
-        if (!$readme_url) {
-            return;
-        }
+		if ( ! $readme_url ) {
+			return;
+		}
 
-        $headers      = get_headers($readme_url);
-        $last_updated = '';
+		$readme_path = str_replace( home_url(), rtrim( ABSPATH, '/' ), $readme_url );
+		$timestamp   = '';
 
-        if (empty($headers)) {
-            return;
-        }
+		if ( file_exists( $readme_path ) ) {
+			$timestamp = filemtime( $readme_path );
+		}
 
-        foreach ($headers as $header) {
-            if (strpos($header, 'Last-Modified') !== false) {
-                $timestamp = strtotime(str_replace('Last-Modified: ', '', $header));
+		$last_updated = gmdate( 'Y-m-d', $timestamp );
 
-                $last_updated = gmdate('Y-m-d', $timestamp);
-            }
-        }
-
-        if ($last_updated) : ?>
+		if ( $last_updated ) : ?>
             <tr>
-                <td><?php echo __('Last updated:', $this->plugin_text_domain); ?></td>
-                <td><span itemscope itemtype="https://schema.org/dateModified"><?php echo sprintf(__('%s'), $last_updated); ?></span></td>
+                <td><?php echo __( 'Last updated:', $this->plugin_text_domain ); ?></td>
+                <td><span itemscope itemtype="https://schema.org/dateModified"><?php echo sprintf( __( '%s' ), $last_updated ); ?></span></td>
             </tr>
-        <?php endif;
-    }
+		<?php endif;
+	}
 
-    /**
-     * 
-     * @return void 
-     */
-    public function add_changelog_popup()
-    {
-        if (!$this->das->is_service(get_the_ID())) : ?>
+	/**
+	 * @return void
+	 */
+	public function add_changelog_popup() {
+		if ( ! $this->is_service( $this->download ) ) : ?>
             <div style="display: none;" id="ffw-changelog-popup">
                 <div class="ffw-changelog-popup-inner">
-                    <a href="#" id="ffw-changelog-close"><?php echo '⮿ ' . __('close', $this->plugin_text_domain); ?></a>
+                    <a href="#" id="ffw-changelog-close"><?php echo '⮿ ' . __( 'close', $this->plugin_text_domain ); ?></a>
                     <div class="ffw-changelog-wrapper">
-                        <?php echo $this->changelog; ?>
+						<?php echo $this->changelog; ?>
                     </div>
                 </div>
             </div>
-        <?php endif;
-    }
+		<?php endif;
+	}
 
-    /**
-     * @return void 
-     */
-    public function add_inline_script()
-    {
-        if (get_post_type() !== 'download') {
-            return;
-        }
-        ?>
+	/**
+	 * @return void
+	 */
+	public function add_inline_script() {
+		if ( get_post_type() !== 'download' ) {
+			return;
+		}
+		?>
         <style>
             .edd-former-price {
                 position: relative;
@@ -384,6 +383,6 @@ class FFWP_ProductDetailsWidget_Modify
                 }
             }
         </script>
-        <?php
-    }
+		<?php
+	}
 }
