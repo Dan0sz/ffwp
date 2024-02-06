@@ -31,6 +31,7 @@ class FFWP {
 
 		// Astra Theme
 		add_filter( 'astra_featured_image_enabled', [ $this, 'disable_featured_image_on_downloads' ] );
+		add_filter( 'astra_get_option_v4-6-2-backward-option', '__return_true' );
 
 		// EDD
 		add_filter( 'edd_file_download_has_access', [ $this, 'maybe_allow_download' ], 10, 3 );
@@ -192,7 +193,7 @@ class FFWP {
 		}
 
 		$parts = parse_url( add_query_arg( [] ) );
-		wp_parse_str( $parts['query'], $query_args );
+		wp_parse_str( $parts[ 'query' ], $query_args );
 		$url = add_query_arg( $query_args, site_url() );
 
 		$valid_token = edd_validate_url_token( $url );
@@ -271,7 +272,7 @@ class FFWP {
 	 * @return array
 	 */
 	public function change_gb_to_zero_vat( $countries ) {
-		$countries['GB'] = 0;
+		$countries[ 'GB' ] = 0;
 
 		return $countries;
 	}
