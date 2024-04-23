@@ -42,6 +42,7 @@ class FFWP_BetterCheckout_Enable {
 
 	/**
 	 * This is an empty string on purpose, because we want to explicitly check if it's true/false later on.
+	 *
 	 * @var string
 	 */
 	private $vat_is_reverse_charged = '';
@@ -95,9 +96,6 @@ class FFWP_BetterCheckout_Enable {
 		remove_action( 'edd_checkout_form_top', 'edd_discount_field', - 1 );
 		add_action( 'edd_after_checkout_cart', 'edd_discount_field', - 1 );
 
-		// Handle iDEAL notices in checkout
-		add_action( 'edd_purchase_form_before_submit', [ $this, 'show_ideal_notice' ], - 1 );
-
 		/**
 		 * When Taxes > 'Display Tax Rate' is enabled in EDD's settings, remove the mention for each
 		 * shopping cart item, because it seems excessive.
@@ -135,6 +133,7 @@ class FFWP_BetterCheckout_Enable {
 
 	/**
 	 * Add this plugin's edd_templates folder as a file path for template files.
+	 *
 	 * @see edd_get_theme_template_paths()
 	 *
 	 * @param mixed $template_paths
@@ -175,11 +174,11 @@ class FFWP_BetterCheckout_Enable {
 		}
 
 		foreach ( $fees as &$fee ) {
-			if ( (float) $fee['amount'] >= 0 ) {
+			if ( (float) $fee[ 'amount' ] >= 0 ) {
 				continue;
 			}
 
-			$fee['label'] = __( 'One-time Discount', $this->plugin_text_domain );
+			$fee[ 'label' ] = __( 'One-time Discount', $this->plugin_text_domain );
 		}
 
 		return $fees;
@@ -199,29 +198,29 @@ class FFWP_BetterCheckout_Enable {
 		$renewal_fees = [];
 
 		foreach ( $cart as $item ) {
-			$is_renewal = $item['options']['is_renewal'] ?? false;
-			$is_upgrade = $item['options']['is_upgrade'] ?? false;
+			$is_renewal = $item[ 'options' ][ 'is_renewal' ] ?? false;
+			$is_upgrade = $item[ 'options' ][ 'is_upgrade' ] ?? false;
 
 			if ( ! $is_renewal && ! $is_upgrade ) {
 				continue;
 			}
 
-			$renewal_fees[ $item['id'] ] = $item['options']['recurring']['signup_fee'];
+			$renewal_fees[ $item[ 'id' ] ] = $item[ 'options' ][ 'recurring' ][ 'signup_fee' ];
 		}
 
 		foreach ( $fees as $key => &$fee ) {
 			/**
 			 * This isn't a discount, so move on...
 			 */
-			if ( (float) $fee['amount'] >= 0 && $key != 'signup_fee' ) {
+			if ( (float) $fee[ 'amount' ] >= 0 && $key != 'signup_fee' ) {
 				continue;
 			}
 
 			foreach ( $renewal_fees as $renewal_fee ) {
-				(float) $fee['amount'] -= (float) $renewal_fee;
+				(float) $fee[ 'amount' ] -= (float) $renewal_fee;
 			}
 
-			if ( $fee['amount'] == 0 ) {
+			if ( $fee[ 'amount' ] == 0 ) {
 				unset( $fees[ $key ] );
 			}
 		}
@@ -231,6 +230,7 @@ class FFWP_BetterCheckout_Enable {
 
 	/**
 	 * Get Checkout Form
+	 *
 	 * @see    easy-digital-downloads/includes/checkout/template.php::edd_checkout_form()
 	 * @return string
 	 */
@@ -255,11 +255,12 @@ class FFWP_BetterCheckout_Enable {
 							<?php
 							/**
 							 * Hooks in at the top of the checkout form
+							 *
 							 * @since 1.0
 							 */
 							do_action( 'edd_checkout_form_top' );
 
-							if ( edd_is_ajax_disabled() && ! empty( $_REQUEST['payment-mode'] ) ) {
+							if ( edd_is_ajax_disabled() && ! empty( $_REQUEST[ 'payment-mode' ] ) ) {
 								do_action( 'edd_purchase_form' );
 							} elseif ( edd_show_gateways() ) {
 								do_action( 'edd_payment_mode_select' );
@@ -269,6 +270,7 @@ class FFWP_BetterCheckout_Enable {
 
 							/**
 							 * Hooks in at the bottom of the checkout form
+							 *
 							 * @since 1.0
 							 */
 							do_action( 'edd_checkout_form_bottom' )
@@ -293,6 +295,7 @@ class FFWP_BetterCheckout_Enable {
 			else :
 				/**
 				 * Fires off when there is nothing in the cart
+				 *
 				 * @since 1.0
 				 */ do_action( 'edd_cart_empty' );
 			endif; ?>
@@ -300,26 +303,6 @@ class FFWP_BetterCheckout_Enable {
         <!--end #edd_checkout_wrap-->
 		<?php
 		return ob_get_clean();
-	}
-
-	/**
-	 *
-	 */
-	public function show_ideal_notice() {
-		$selected_gateway = edd_get_chosen_gateway();
-
-		if ( $selected_gateway == 'mollie_ideal' ) : ?>
-            <fieldset id="ideal-notice">
-                <div class="payment-method-additional-info ideal">
-                    <label>
-						<?php echo __(
-							'Your initial payment is processed using <strong>iDEAL</strong>. Recurring payments (if any) are collected using <strong>SEPA Direct Debit</strong> and will appear on your statement as a charge from <strong>FFW.Press via Mollie</strong> (IBAN: <strong>NL79DEUT7025543679</strong>)',
-							$this->plugin_text_domain
-						); ?>
-                    </label>
-                </div>
-            </fieldset>
-		<?php endif;
 	}
 
 	/**
@@ -331,11 +314,11 @@ class FFWP_BetterCheckout_Enable {
 	 */
 	public function add_required_fields( $required_fields ) {
 		if ( edd_cart_needs_tax_address_fields() && edd_get_cart_total() ) {
-			$required_fields['edd_last']     = [
+			$required_fields[ 'edd_last' ]     = [
 				'error_id'      => 'invalid_last_name',
 				'error_message' => 'Please enter your last name',
 			];
-			$required_fields['card_address'] = [
+			$required_fields[ 'card_address' ] = [
 				'error_id'      => 'invalid_card_address',
 				'error_message' => 'Please enter your Street + House no.',
 			];
@@ -346,6 +329,7 @@ class FFWP_BetterCheckout_Enable {
 
 	/**
 	 * Enqueue scripts and styles.
+	 *
 	 * @return void
 	 */
 	public function enqueue_scripts_and_styles() {
@@ -389,6 +373,7 @@ class FFWP_BetterCheckout_Enable {
 
 	/**
 	 * Checks if debugging is enabled for local machines.
+	 *
 	 * @return string .min | ''
 	 */
 	public function get_script_suffix() {
@@ -411,11 +396,6 @@ class FFWP_BetterCheckout_Enable {
             #edd-gateway-option-mollie_creditcard:after {
                 background-image: url('<?php echo FFWP_PLUGIN_URL . 'assets/images/mollie-credit-cards-logo.png'; ?>');
                 width: 122px;
-            }
-
-            #edd-gateway-option-mollie_ideal:after {
-                background-image: url('<?php echo FFWP_PLUGIN_URL . 'assets/images/mollie-ideal-logo.png'; ?>');
-                width: 40px;
             }
 
             #edd-gateway-option-mollie_paypal:after {
@@ -453,7 +433,7 @@ class FFWP_BetterCheckout_Enable {
 	 * @return void
 	 */
 	public function validate_vat_id_format( $valid_data, $post ) {
-		$entered_vat_id = $post['vat_number'] ?? '';
+		$entered_vat_id = $post[ 'vat_number' ] ?? '';
 
 		if ( ! $entered_vat_id ) {
 			return;

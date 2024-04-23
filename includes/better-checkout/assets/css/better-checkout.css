@@ -263,7 +263,7 @@ fieldset#edd_checkout_user_info {
 
 .edd-gateway-option {
     position: relative;
-    width: 27.96%;
+    width: 48.89%;
     padding: 15px 0 15px 15px;
     border: 1px var(--ast-global-color-4) solid;
     border-radius: 3px;
@@ -271,11 +271,6 @@ fieldset#edd_checkout_user_info {
 }
 
 /** Credit Card payment methods has more logos, that's why we give it a little more space */
-
-#edd-gateway-option-mollie_creditcard {
-    width: 40%;
-}
-
 .edd-gateway-option:after {
     content: '';
     position: absolute;
@@ -542,7 +537,7 @@ td.edd_cart_item_price, th.edd_cart_tax, th.edd_cart_subtotal, th.edd_cart_fee, 
         margin-top: 0;
     }
 
-    .edd-gateway-option, #edd-gateway-option-mollie_creditcard {
+    .edd-gateway-option {
         width: 100%;
     }
 
