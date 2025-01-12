@@ -94,7 +94,7 @@ class FFWP_BetterCheckout_Enable {
 
 		// Move Discount Form
 		remove_action( 'edd_checkout_form_top', 'edd_discount_field', - 1 );
-		add_action( 'edd_after_checkout_cart', 'edd_discount_field', - 1 );
+		add_action( 'daan_after_shopping_cart', 'edd_discount_field', - 1 );
 
 		/**
 		 * When Taxes > 'Display Tax Rate' is enabled in EDD's settings, remove the mention for each
@@ -115,7 +115,7 @@ class FFWP_BetterCheckout_Enable {
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts_and_styles' ] );
 
 		// Force available gateways
-		add_filter( 'edd_enabled_payment_gateways', [ $this, 'force_gateways' ], 10000, 1 );
+		// add_filter( 'edd_enabled_payment_gateways', [ $this, 'force_gateways' ], 10000, 1 );
 
 		add_action( 'edds_buy_now_checkout_error_checks', [ $this, 'validate_vat_id_format' ], 10, 2 );
 		add_action( 'edd_checkout_error_checks', [ $this, 'validate_vat_id_format' ], 10, 2 );
@@ -134,11 +134,11 @@ class FFWP_BetterCheckout_Enable {
 	/**
 	 * Add this plugin's edd_templates folder as a file path for template files.
 	 *
-	 * @see edd_get_theme_template_paths()
-	 *
 	 * @param mixed $template_paths
 	 *
 	 * @return mixed
+	 * @see edd_get_theme_template_paths()
+	 *
 	 */
 	public function add_template_path( $template_paths ) {
 		return [ 5 => $this->plugin_dir . 'edd_templates/' ] + $template_paths;
@@ -174,11 +174,11 @@ class FFWP_BetterCheckout_Enable {
 		}
 
 		foreach ( $fees as &$fee ) {
-			if ( (float) $fee[ 'amount' ] >= 0 ) {
+			if ( (float) $fee['amount'] >= 0 ) {
 				continue;
 			}
 
-			$fee[ 'label' ] = __( 'One-time Discount', $this->plugin_text_domain );
+			$fee['label'] = __( 'One-time Discount', $this->plugin_text_domain );
 		}
 
 		return $fees;
@@ -198,29 +198,29 @@ class FFWP_BetterCheckout_Enable {
 		$renewal_fees = [];
 
 		foreach ( $cart as $item ) {
-			$is_renewal = $item[ 'options' ][ 'is_renewal' ] ?? false;
-			$is_upgrade = $item[ 'options' ][ 'is_upgrade' ] ?? false;
+			$is_renewal = $item['options']['is_renewal'] ?? false;
+			$is_upgrade = $item['options']['is_upgrade'] ?? false;
 
 			if ( ! $is_renewal && ! $is_upgrade ) {
 				continue;
 			}
 
-			$renewal_fees[ $item[ 'id' ] ] = $item[ 'options' ][ 'recurring' ][ 'signup_fee' ];
+			$renewal_fees[ $item['id'] ] = $item['options']['recurring']['signup_fee'];
 		}
 
 		foreach ( $fees as $key => &$fee ) {
 			/**
 			 * This isn't a discount, so move on...
 			 */
-			if ( (float) $fee[ 'amount' ] >= 0 && $key != 'signup_fee' ) {
+			if ( (float) $fee['amount'] >= 0 && $key != 'signup_fee' ) {
 				continue;
 			}
 
 			foreach ( $renewal_fees as $renewal_fee ) {
-				(float) $fee[ 'amount' ] -= (float) $renewal_fee;
+				(float) $fee['amount'] -= (float) $renewal_fee;
 			}
 
-			if ( $fee[ 'amount' ] == 0 ) {
+			if ( $fee['amount'] == 0 ) {
 				unset( $fees[ $key ] );
 			}
 		}
@@ -231,8 +231,8 @@ class FFWP_BetterCheckout_Enable {
 	/**
 	 * Get Checkout Form
 	 *
-	 * @see    easy-digital-downloads/includes/checkout/template.php::edd_checkout_form()
 	 * @return string
+	 * @see    easy-digital-downloads/includes/checkout/template.php::edd_checkout_form()
 	 */
 	public function edd_checkout_form() {
 		$payment_mode = edd_get_chosen_gateway();
@@ -260,7 +260,7 @@ class FFWP_BetterCheckout_Enable {
 							 */
 							do_action( 'edd_checkout_form_top' );
 
-							if ( edd_is_ajax_disabled() && ! empty( $_REQUEST[ 'payment-mode' ] ) ) {
+							if ( edd_is_ajax_disabled() && ! empty( $_REQUEST['payment-mode'] ) ) {
 								do_action( 'edd_purchase_form' );
 							} elseif ( edd_show_gateways() ) {
 								do_action( 'edd_payment_mode_select' );
@@ -289,6 +289,7 @@ class FFWP_BetterCheckout_Enable {
                     <fieldset id="ffwpress_checkout_shopping_cart">
                         <legend><?php echo __( 'Your Shopping Cart', 'easy-digital-downloads' ); ?></legend>
 						<?php edd_checkout_cart(); ?>
+						<?php do_action( 'daan_after_shopping_cart' ); ?>
                     </fieldset>
                 </div>
 			<?php
@@ -314,11 +315,11 @@ class FFWP_BetterCheckout_Enable {
 	 */
 	public function add_required_fields( $required_fields ) {
 		if ( edd_cart_needs_tax_address_fields() && edd_get_cart_total() ) {
-			$required_fields[ 'edd_last' ]     = [
+			$required_fields['edd_last']     = [
 				'error_id'      => 'invalid_last_name',
 				'error_message' => 'Please enter your last name',
 			];
-			$required_fields[ 'card_address' ] = [
+			$required_fields['card_address'] = [
 				'error_id'      => 'invalid_card_address',
 				'error_message' => 'Please enter your Street + House no.',
 			];
@@ -433,7 +434,7 @@ class FFWP_BetterCheckout_Enable {
 	 * @return void
 	 */
 	public function validate_vat_id_format( $valid_data, $post ) {
-		$entered_vat_id = $post[ 'vat_number' ] ?? '';
+		$entered_vat_id = $post['vat_number'] ?? '';
 
 		if ( ! $entered_vat_id ) {
 			return;
