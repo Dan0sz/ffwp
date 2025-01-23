@@ -37,7 +37,8 @@ class FFWP {
 		add_filter( 'edd_file_download_has_access', [ $this, 'maybe_allow_download' ], 10, 3 );
 
 		// Recurring Payments
-		add_filter( 'edd_recurring_filter_reminder_template_tags', [ $this, 'filter_renewal_link_tag' ], 10, 2 );
+		// add_filter( 'edd_sl_can_renew_license', '__return_true' ); // Strictly for testing.
+		add_action( 'edd_add_email_tags', [ $this, 'add_renewal_link_tag' ], 99 );
 		add_action( 'edd_sales_summary_widget_after_stats', [ $this, 'add_summary_widget' ], 11 );
 
 		// Software Licensing (runs at priority 100)
@@ -229,15 +230,20 @@ class FFWP {
 	}
 
 	/**
-	 * "Filters" the renewal link for EDD Recurring (which isn't available there)
-	 * @return void
+	 *
 	 */
-	public function filter_renewal_link_tag( $text, $sub_id ) {
+	public function add_renewal_link_tag() {
 		$class = new FFWP_Recurring_Emails();
 
-		return $class->filter_tag( $text, $sub_id );
+		$class->add_tag();
 	}
 
+	/**
+	 * Adds a summary widget by initializing the FFWP_Recurring_SummaryWidget class
+	 * and calling its add_stats method.
+	 *
+	 * @return mixed The result of the add_stats method from the FFWP_Recurring_SummaryWidget class.
+	 */
 	public function add_summary_widget() {
 		$class = new FFWP_Recurring_SummaryWidget();
 
