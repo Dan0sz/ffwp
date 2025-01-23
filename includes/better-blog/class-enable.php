@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') || exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @package   FFWP Better Checkout
@@ -10,91 +10,111 @@ defined('ABSPATH') || exit;
  * @license   BY-NC-ND-4.0
  *            http://creativecommons.org/licenses/by-nc-nd/4.0/
  */
-class FFWP_BetterBlog_Enable
-{
-    public function __construct()
-    {
-        $this->init();
-    }
+class FFWP_BetterBlog_Enable {
+	public function __construct() {
+		$this->init();
+	}
 
-    private function init()
-    {
-        add_filter('astra_post_date', [$this, 'display_date_modified']);
-        add_filter('the_category_rss', [$this, 'add_featured_image_to_rss_feed']);
-        add_filter('astra_featured_image_markup', [$this, 'remove_lazy_loading_attribute']);
-    }
+	private function init() {
+		add_filter( 'astra_post_date', [ $this, 'display_date_modified' ] );
+		add_filter( 'the_category_rss', [ $this, 'add_featured_image_to_rss_feed' ] );
+		add_filter( 'astra_featured_image_markup', [ $this, 'remove_lazy_loading_attribute' ] );
+		add_filter( 'astra_breadcrumb_trail_items', [ $this, 'set_astra_breadcrumbs' ] );
+	}
 
-    /**
-     * Remove loading="lazy" attribute from Featured Images.
-     */
-    public function remove_lazy_loading_attribute($thumb_html)
-    {
-        if (is_singular()) {
-            $thumb_html = str_replace('loading="lazy"', '', $thumb_html);
-        }
+	public function set_astra_breadcrumbs( $crumbs ) {
+		global $wp;
 
-        return $thumb_html;
-    }
+		$raw_crumbs = $wp->request;
 
-    /**
-     * Display date modified above posts. 
-     * 
-     * @param mixed $html 
-     * @return mixed 
-     */
-    public function display_date_modified($html)
-    {
-        preg_match('/<span.*datePublished.*?>(?P<published>.*?)<\/span>/', $html, $date_published);
-        preg_match('/<span.*dateModified.*?>(?P<modified>.*?)<\/span>/', $html, $date_modified);
+		/**
+		 * This is how we know it's a EDD Download.
+		 */
+		if ( ! str_starts_with( $raw_crumbs, EDD_SLUG . '/' ) ) {
+			return $crumbs;
+		}
 
-        if (!isset($date_published['published']) || !isset($date_modified['modified'])) {
-            return $html;
-        }
+		$page = get_page_by_path( 'wordpress-plugins' );
+		$html = '<a href="' . get_permalink( $page->ID ) . '">' . $page->post_title . '</a>';
 
-        $date_published = ltrim($date_published['published']);
-        $date_modified  = ltrim($date_modified['modified']);
+		/**
+		 * Insert breadcrumb to WordPress Plugins page at 2nd position in $crumbs.
+		 */
+		array_splice( $crumbs, 1, 0, [ $html ] );
 
-        $published_time = strtotime($date_published);
-        $modified_time  = strtotime($date_modified);
+		return $crumbs;
+	}
 
-        if ($modified_time > $published_time) {
-            $html = str_replace('updated', 'updated visible', $html);
-            $html = str_replace($date_modified, '(updated: ' . $date_modified . ')', $html);
-        }
+	/**
+	 * Remove loading="lazy" attribute from Featured Images.
+	 */
+	public function remove_lazy_loading_attribute( $thumb_html ) {
+		if ( is_singular() ) {
+			$thumb_html = str_replace( 'loading="lazy"', '', $thumb_html );
+		}
 
-        return $html;
-    }
+		return $thumb_html;
+	}
 
-    /**
-     * Add Featured Image as <enclosure> node to RSS feed.  
-     */
-    public function add_featured_image_to_rss_feed($content)
-    {
-        global $post;
+	/**
+	 * Display date modified above posts.
+	 *
+	 * @param mixed $html
+	 *
+	 * @return mixed
+	 */
+	public function display_date_modified( $html ) {
+		preg_match( '/<span.*datePublished.*?>(?P<published>.*?)<\/span>/', $html, $date_published );
+		preg_match( '/<span.*dateModified.*?>(?P<modified>.*?)<\/span>/', $html, $date_modified );
 
-        if (has_post_thumbnail($post->ID)) {
-            $thumbnail_id = get_post_thumbnail_id($post->ID);
-            $img_url      = wp_get_attachment_image_src($thumbnail_id, 'post-thumbnail')[0];
+		if ( ! isset( $date_published[ 'published' ] ) || ! isset( $date_modified[ 'modified' ] ) ) {
+			return $html;
+		}
 
-            if (!$img_url) {
-                return $content;
-            }
+		$date_published = ltrim( $date_published[ 'published' ] );
+		$date_modified  = ltrim( $date_modified[ 'modified' ] );
 
-            $uploads_url  = wp_get_upload_dir()['baseurl'];
-            $uploads_path = wp_get_upload_dir()['basedir'];
-            $img_path     = str_replace($uploads_url, $uploads_path, $img_url);
+		$published_time = strtotime( $date_published );
+		$modified_time  = strtotime( $date_modified );
 
-            /**
-             * After migrating staging to production, files could get lost.
-             */
-            if (!file_exists($img_path)) {
-                return $content;
-            }
+		if ( $modified_time > $published_time ) {
+			$html = str_replace( 'updated', 'updated visible', $html );
+			$html = str_replace( $date_modified, '(updated: ' . $date_modified . ')', $html );
+		}
 
-            $length       = filesize($img_path);
-            $mime_type    = mime_content_type($img_path);
-            $content      = "<enclosure url='$img_url' length='$length' type='$mime_type' />\n" . $content;
-        }
-        return $content;
-    }
+		return $html;
+	}
+
+	/**
+	 * Add Featured Image as <enclosure> node to RSS feed.
+	 */
+	public function add_featured_image_to_rss_feed( $content ) {
+		global $post;
+
+		if ( has_post_thumbnail( $post->ID ) ) {
+			$thumbnail_id = get_post_thumbnail_id( $post->ID );
+			$img_url      = wp_get_attachment_image_src( $thumbnail_id, 'post-thumbnail' )[ 0 ];
+
+			if ( ! $img_url ) {
+				return $content;
+			}
+
+			$uploads_url  = wp_get_upload_dir()[ 'baseurl' ];
+			$uploads_path = wp_get_upload_dir()[ 'basedir' ];
+			$img_path     = str_replace( $uploads_url, $uploads_path, $img_url );
+
+			/**
+			 * After migrating staging to production, files could get lost.
+			 */
+			if ( ! file_exists( $img_path ) ) {
+				return $content;
+			}
+
+			$length    = filesize( $img_path );
+			$mime_type = mime_content_type( $img_path );
+			$content   = "<enclosure url='$img_url' length='$length' type='$mime_type' />\n" . $content;
+		}
+
+		return $content;
+	}
 }
