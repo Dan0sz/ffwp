@@ -50,6 +50,11 @@ class FFWP_Recurring_Emails {
 			return '';
 		}
 
-		return $license->get_renewal_url();
+		$args = [
+			'edd_license_key' => $license->key,
+			'download_id'     => $license->download_id,
+		];
+
+		return add_query_arg( $args, edd_get_checkout_uri() );
 	}
 }
