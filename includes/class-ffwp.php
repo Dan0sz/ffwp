@@ -104,6 +104,10 @@ class FFWP {
 	 * @return mixed
 	 */
 	public function modify_css_url( $url, $filename, $plugin_file_path ) {
+		if ( ! defined( 'WP_HELP_SCOUT_DOCS_PLUGIN_FILE' ) ) {
+			return $url;
+		}
+
 		if ( strpos( $plugin_file_path, 'syntax-highlighting-code-block' ) === false ) {
 			return $url;
 		}
